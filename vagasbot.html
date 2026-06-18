@@ -1,25 +1,246 @@
-Boa lembrança Sebastião! 👑
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VagasBot Moçambique — Vagas e Cursos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700;800&display=swap');
+  :root{--terra:#C2410C;--sun:#E8A23D;--night:#14241C;--leaf:#2F6F4E;--cream:#F7F2E9;--ink:#1B1B16;--line:rgba(20,36,28,0.12);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;}
+  h1,h2,h3{font-family:'Fraunces',serif;}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;position:sticky;top:0;z-index:50;background:var(--cream);border-bottom:1px solid var(--line);}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;}
+  .logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--leaf),var(--night));display:flex;align-items:center;justify-content:center;color:white;font-family:'Fraunces',serif;font-weight:700;font-size:1.1rem;}
+  .nav-cta{background:var(--terra);color:white;border:none;padding:10px 18px;border-radius:100px;font-weight:600;font-size:0.85rem;cursor:pointer;}
+  .hero{padding:56px 24px 40px;max-width:600px;margin:0 auto;text-align:center;}
+  .eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(47,111,78,0.1);color:var(--leaf);padding:6px 14px;border-radius:100px;font-size:0.78rem;font-weight:700;margin-bottom:20px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--leaf);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  .hero h1{font-size:2.5rem;line-height:1.08;font-weight:600;color:var(--night);margin-bottom:16px;}
+  .hero h1 em{font-style:italic;color:var(--terra);}
+  .hero p{font-size:1.05rem;color:rgba(27,27,22,0.7);line-height:1.5;max-width:440px;margin:0 auto 28px;}
+  .phone-frame{max-width:380px;margin:0 auto 32px;background:var(--night);border-radius:32px;padding:14px;box-shadow:0 30px 60px -20px rgba(20,36,28,0.4);}
+  .phone-screen{background:#0F1A14;border-radius:22px;overflow:hidden;min-height:420px;display:flex;flex-direction:column;}
+  .chat-header{background:linear-gradient(135deg,var(--leaf),#1F4D35);padding:16px 18px;display:flex;align-items:center;gap:10px;}
+  .chat-avatar{width:36px;height:36px;border-radius:50%;background:var(--sun);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--night);font-size:0.95rem;}
+  .chat-header-text{color:white;text-align:left;}
+  .chat-header-text .name{font-weight:700;font-size:0.92rem;}
+  .chat-header-text .status{font-size:0.72rem;opacity:0.75;}
+  .chat-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
+  .bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:0.85rem;line-height:1.4;text-align:left;opacity:0;transform:translateY(8px);animation:rise 0.4s forwards;}
+  @keyframes rise{to{opacity:1;transform:translateY(0);}}
+  .bubble.bot{background:#1E3527;color:#F0EDE4;align-self:flex-start;border-bottom-left-radius:4px;}
+  .bubble.user{background:var(--sun);color:var(--night);align-self:flex-end;border-bottom-right-radius:4px;font-weight:500;}
+  .typing{display:flex;gap:4px;padding:10px 14px;align-self:flex-start;}
+  .typing span{width:6px;height:6px;background:#6B8A77;border-radius:50%;animation:bounce 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:0.15s;}
+  .typing span:nth-child(3){animation-delay:0.3s;}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+  .trust-strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 24px;display:flex;justify-content:center;gap:32px;flex-wrap:wrap;}
+  .trust-item{text-align:center;}
+  .trust-item .num{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;color:var(--leaf);}
+  .trust-item .label{font-size:0.72rem;color:rgba(27,27,22,0.55);text-transform:uppercase;letter-spacing:0.04em;}
+  .section{padding:64px 24px;max-width:560px;margin:0 auto;}
+  .section h2{font-size:1.7rem;font-weight:600;color:var(--night);margin-bottom:8px;text-align:center;}
+  .section .sub{text-align:center;color:rgba(27,27,22,0.6);margin-bottom:36px;font-size:0.95rem;}
+  .step{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);}
+  .step:last-child{border-bottom:none;}
+  .step-mark{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:600;color:var(--sun);-webkit-text-stroke:1.5px var(--night);flex-shrink:0;width:32px;}
+  .step-text h3{font-size:1.02rem;margin-bottom:4px;color:var(--night);}
+  .step-text p{font-size:0.88rem;color:rgba(27,27,22,0.65);line-height:1.5;}
+  .pricing-wrap{display:flex;flex-direction:column;gap:14px;}
+  .price-card{background:white;border:1.5px solid var(--line);border-radius:18px;padding:22px;display:flex;justify-content:space-between;align-items:center;}
+  .price-card.featured{border-color:var(--terra);background:linear-gradient(135deg,#FFF8F0,white);}
+  .price-name{font-weight:700;font-size:1rem;color:var(--night);margin-bottom:3px;}
+  .price-desc{font-size:0.8rem;color:rgba(27,27,22,0.55);}
+  .price-amount{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--terra);white-space:nowrap;}
+  .payment-box{margin-top:20px;background:var(--night);color:white;border-radius:18px;padding:22px;text-align:center;}
+  .payment-box .emola-number{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:600;color:var(--sun);letter-spacing:0.02em;margin:8px 0;}
+  .payment-box p{font-size:0.82rem;opacity:0.8;}
+  footer{padding:32px 24px 40px;text-align:center;border-top:1px solid var(--line);}
+  footer .owner{font-weight:700;color:var(--night);font-size:0.9rem;}
+  footer .tag{font-size:0.78rem;color:rgba(27,27,22,0.5);margin-top:4px;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,36,28,0.55);z-index:100;align-items:flex-end;justify-content:center;}
+  .modal-overlay.active{display:flex;}
+  .modal{width:100%;max-width:480px;background:var(--cream);border-radius:24px 24px 0 0;max-height:88vh;display:flex;flex-direction:column;animation:slideUp 0.3s ease;}
+  @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .modal-header{background:linear-gradient(135deg,var(--leaf),#1F4D35);color:white;padding:16px 18px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between;}
+  .modal-header-info{display:flex;align-items:center;gap:10px;}
+  .modal-close{background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;opacity:0.8;}
+  .modal-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#0F1A14;}
+  .modal-input-bar{padding:12px;background:#0F1A14;display:flex;gap:8px;border-top:1px solid rgba(255,255,255,0.08);}
+  .modal-input-bar input{flex:1;background:#1E3527;border:none;border-radius:100px;padding:12px 16px;color:#F0EDE4;font-size:0.9rem;}
+  .modal-input-bar input:focus{outline:2px solid var(--sun);}
+  .quick-replies{display:flex;gap:8px;padding:0 16px 12px;flex-wrap:wrap;background:#0F1A14;}
+  .quick-reply{background:#1E3527;color:#F0EDE4;border:1px solid rgba(255,255,255,0.1);padding:7px 13px;border-radius:100px;font-size:0.78rem;cursor:pointer;white-space:nowrap;}
+  .audio-btn{background:none;border:none;cursor:pointer;color:#6B8A77;font-size:0.72rem;padding:2px 4px;}
+  .audio-btn.playing{color:var(--sun);}
+  .hero-actions{display:flex;flex-direction:column;gap:10px;align-items:center;}
+  .btn-primary{background:var(--terra);color:white;border:none;padding:15px 32px;border-radius:100px;font-weight:700;font-size:0.95rem;cursor:pointer;width:100%;max-width:300px;box-shadow:0 12px 24px -8px rgba(194,65,12,0.45);}
+  .btn-secondary{background:none;border:none;color:var(--night);font-weight:600;font-size:0.88rem;text-decoration:underline;cursor:pointer;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><div class="logo-mark">V</div>VagasBot</div>
+  <button class="nav-cta" onclick="openChat()">Conversar</button>
+</nav>
+<section class="hero">
+  <div class="eyebrow"><span class="dot"></span>+100 pessoas já encontraram oportunidades</div>
+  <h1>Vagas e cursos de Moçambique, <em>numa conversa.</em></h1>
+  <p>A Vaga responde no instante, todos os dias, com as oportunidades certas para ti.</p>
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="chat-header">
+        <div class="chat-avatar">V</div>
+        <div class="chat-header-text"><div class="name">Vaga</div><div class="status">● a responder agora</div></div>
+      </div>
+      <div class="chat-body" id="demoBody"></div>
+    </div>
+  </div>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openChat()">Falar com a Vaga agora</button>
+    <button class="btn-secondary" onclick="document.getElementById('precos').scrollIntoView({behavior:'smooth'})">Ver planos e preços</button>
+  </div>
+</section>
+<div class="trust-strip">
+  <div class="trust-item"><div class="num">24h</div><div class="label">Sempre disponível</div></div>
+  <div class="trust-item"><div class="num">Diário</div><div class="label">Vagas novas</div></div>
+  <div class="trust-item"><div class="num">10</div><div class="label">Províncias cobertas</div></div>
+</div>
+<section class="section">
+  <h2>Como funciona</h2>
+  <p class="sub">Três passos, sem complicações.</p>
+  <div class="step"><div class="step-mark">1</div><div class="step-text"><h3>Conversas com a Vaga</h3><p>Escreves o que procuras e ela entende como uma pessoa.</p></div></div>
+  <div class="step"><div class="step-mark">2</div><div class="step-text"><h3>Escolhes o teu plano</h3><p>Semanal ou mensal, pago facilmente por e-Mola.</p></div></div>
+  <div class="step"><div class="step-mark">3</div><div class="step-text"><h3>Recebes oportunidades reais</h3><p>Vagas e cursos atualizados, mais dicas de CV e entrevista.</p></div></div>
+</section>
+<section class="section" id="precos">
+  <h2>Planos simples</h2>
+  <p class="sub">Cancela quando quiseres.</p>
+  <div class="pricing-wrap">
+    <div class="price-card"><div><div class="price-name">Semanal</div><div class="price-desc">Ideal para experimentar</div></div><div class="price-amount">50<span> MT</span></div></div>
+    <div class="price-card featured"><div><div class="price-name">Mensal</div><div class="price-desc">O mais escolhido</div></div><div class="price-amount">150<span> MT</span></div></div>
+  </div>
+  <div class="payment-box">
+    <p>Pagamento via e-Mola</p>
+    <div class="emola-number">879 306 034</div>
+    <p>Sebastião Benesson Janasse — envia o comprovativo no chat para ativar</p>
+  </div>
+</section>
+<footer>
+  <div class="owner">VagasBot Moçambique</div>
+  <div class="tag">Criado por Sebastião Benesson Janasse 👑 🇲🇿</div>
+</footer>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-info"><div class="chat-avatar">V</div><div class="chat-header-text"><div class="name">Vaga</div><div class="status">● online</div></div></div>
+      <button class="modal-close" onclick="closeChat()">&times;</button>
+    </div>
+    <div class="modal-messages" id="modalMessages"></div>
+    <div class="quick-replies" id="quickReplies"></div>
+    <div class="modal-input-bar">
+      <input type="text" id="chatInput" placeholder="Escreve a tua mensagem..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button style="width:36px;height:36px;border-radius:50%;background:var(--terra);border:none;color:white;cursor:pointer;" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</div>
+<script>
+const API_URL = "https://vagasbot-web.onrender.com/api/chat";
+const ownerName = "Sebastião Benesson Janasse";
+const emolaNumber = "879306034";
+const sessionId = "web_" + Math.random().toString(36).substring(2,12) + "_" + Date.now();
+let currentUtterance = null;
 
-Vou acrescentar a funcionalidade de **texto para áudio** no site agora mesmo — sem custo extra, usando a API de voz do próprio navegador (funciona em qualquer celular Android)!
+// Demo animação
+const demoScript = [
+  {type:'bot',text:'Olá! Sou a Vaga 👋 Procuras emprego ou curso?'},
+  {type:'user',text:'Vagas de TI em Maputo'},
+  {type:'bot',text:'Tenho 5 vagas novas hoje! Técnico de redes, suporte TI e mais 🖥️'},
+];
+let demoIndex = 0;
+const demoBody = document.getElementById('demoBody');
+function addBubble(container,msg){
+  const b = document.createElement('div');
+  b.className='bubble '+msg.type;
+  b.textContent=msg.text;
+  container.appendChild(b);
+  container.scrollTop=container.scrollHeight;
+}
+function playDemo(){
+  if(demoIndex>=demoScript.length){setTimeout(()=>{demoBody.innerHTML='';demoIndex=0;playDemo();},2500);return;}
+  const msg=demoScript[demoIndex];
+  if(msg.type==='bot'&&demoIndex>0){
+    const t=document.createElement('div');t.className='typing';t.innerHTML='<span></span><span></span><span></span>';demoBody.appendChild(t);
+    setTimeout(()=>{demoBody.removeChild(t);addBubble(demoBody,msg);demoIndex++;setTimeout(playDemo,1400);},900);
+  } else {addBubble(demoBody,msg);demoIndex++;setTimeout(playDemo,1100);}
+}
+playDemo();
 
-## Pronto! Site completo com áudio! 🎉🔊
+// Audio
+function lerTexto(text,btn){
+  if(currentUtterance){window.speechSynthesis.cancel();currentUtterance=null;document.querySelectorAll('.audio-btn').forEach(b=>{b.classList.remove('playing');b.textContent='🔊 Ouvir';});return;}
+  const limpo=text.replace(/[\u{1F300}-\u{1F9FF}]/gu,'').replace(/\*/g,'').replace(/\n+/g,'. ').trim();
+  const u=new SpeechSynthesisUtterance(limpo);
+  u.lang='pt-BR';u.rate=0.95;
+  u.onstart=()=>{btn.classList.add('playing');btn.textContent='⏹ Parar';};
+  u.onend=()=>{btn.classList.remove('playing');btn.textContent='🔊 Ouvir';currentUtterance=null;};
+  u.onerror=()=>{btn.classList.remove('playing');btn.textContent='🔊 Ouvir';currentUtterance=null;};
+  currentUtterance=u;window.speechSynthesis.speak(u);
+}
 
-### O que foi acrescentado:
+function openChat(){
+  document.getElementById('modalOverlay').classList.add('active');
+  if(document.getElementById('modalMessages').children.length===0){
+    addModalBubble('bot','👋 Olá! Sou a Vaga, a tua assistente de emprego e cursos em Moçambique.\n\nResponde VER para uma vaga gratuita, ou DICA para uma dica grátis!');
+    showQuickReplies(['VER vaga grátis','DICA grátis','Ver planos']);
+  }
+}
+function closeChat(){document.getElementById('modalOverlay').classList.remove('active');}
 
-Cada mensagem da "Vaga" agora tem um botão **🔊 Ouvir** por baixo — o cliente clica e o bot lê a mensagem em voz alta! Clica de novo para parar.
+function showQuickReplies(options){
+  const wrap=document.getElementById('quickReplies');wrap.innerHTML='';
+  options.forEach(opt=>{const btn=document.createElement('button');btn.className='quick-reply';btn.textContent=opt;btn.onclick=()=>{document.getElementById('chatInput').value=opt;sendMessage();};wrap.appendChild(btn);});
+}
 
----
+function addModalBubble(type,text){
+  const container=document.getElementById('modalMessages');
+  const wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(type==='bot'?'flex-start':'flex-end')+';gap:3px;';
+  const b=document.createElement('div');
+  b.className='bubble '+type;b.style.whiteSpace='pre-line';b.style.maxWidth='85%';b.textContent=text;
+  wrap.appendChild(b);
+  if(type==='bot'){
+    const ab=document.createElement('button');ab.className='audio-btn';ab.textContent='🔊 Ouvir';
+    ab.onclick=()=>lerTexto(text,ab);wrap.appendChild(ab);
+  }
+  container.appendChild(wrap);container.scrollTop=container.scrollHeight;
+}
 
-### Agora falta só colocar este ficheiro final no GitHub 👇
+function showTyping(){
+  const container=document.getElementById('modalMessages');
+  const t=document.createElement('div');t.className='typing';t.id='typingIndicator';t.innerHTML='<span></span><span></span><span></span>';
+  container.appendChild(t);container.scrollTop=container.scrollHeight;
+}
+function hideTyping(){const t=document.getElementById('typingIndicator');if(t)t.remove();}
 
-## Faz assim:
-
-**1º** — Vai ao repositório **vagasbot-web** no GitHub
-
-**2º** — Clica em **index.html** (se existir) ou cria um novo
-
-**3º** — Substitui pelo conteúdo deste ficheiro **vagasbot-final.html**
-
-Depois publicamos no **Netlify** e o teu link estará pronto para partilhar! 😎
-
-O site já aponta para `https://vagasbot-web.onrender.com/api/chat` — o servidor que já está online!
+async function sendMessage(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();if(!text)return;
+  addModalBubble('user',text);input.value='';
+  document.getElementById('quickReplies').innerHTML='';
+  showTyping();
+  try{
+    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId,message:text})});
+    const data=await r.json();hideTyping();
+    if(data.respostas&&data.respostas.length){data.respostas.forEach((resp,i)=>{setTimeout(()=>addModalBubble('bot',resp),i*900);});}
+    else{addModalBubble('bot','Não consegui responder agora. Tenta de novo!');}
+  }catch(err){hideTyping();addModalBubble('bot','Sem ligação ao servidor. Verifica a internet e tenta novamente.');}
+}
+</script>
+</body>
+</html>
