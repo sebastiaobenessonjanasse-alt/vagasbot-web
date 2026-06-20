@@ -72,7 +72,6 @@
             font-weight: bold;
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            /* Se tiver uma foto, use background-image: url('sua-foto.jpg'); background-size: cover; */
         }
         .message {
             padding: 12px 16px;
@@ -105,7 +104,6 @@
             margin-left: 6px;
         }
 
-        /* Botões de áudio */
         .audio-actions {
             display: flex;
             align-items: center;
@@ -115,7 +113,7 @@
         .btn-audio {
             background: transparent;
             border: none;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
             padding: 4px 6px;
             border-radius: 30px;
@@ -123,20 +121,18 @@
             color: #4a5b6e;
             line-height: 1;
         }
-        .btn-audio:hover {
-            background: #d0d9e3;
-            transform: scale(1.1);
-        }
+        .btn-audio:hover { background: #d0d9e3; transform: scale(1.1); }
         .btn-audio.playing {
             color: #1f5e9e;
             animation: pulse-audio 0.8s infinite;
         }
         .btn-audio.idioma {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             background: #eef3f9;
             border: 1px solid #bcc9d9;
-            padding: 2px 10px;
+            padding: 2px 12px;
+            border-radius: 30px;
         }
         .btn-audio.idioma:hover { background: #d0def0; }
         @keyframes pulse-audio {
@@ -281,6 +277,7 @@
         <div class="footer">
             <span id="footerStatus">🙌 +120 pessoas já encontraram</span>
             <div class="footer-actions">
+                <button class="btn-audio idioma" id="idiomaBtn">🇧🇷 PT</button>
                 <button class="btn-stop-global" id="stopAudioBtn" style="display:none;">⏹ Parar</button>
                 <button class="btn-assinar" id="assinarBtn">✨ Assinar Premium</button>
             </div>
@@ -303,66 +300,52 @@
         const badgeStatus = document.getElementById('badgeStatus');
         const footerStatus = document.getElementById('footerStatus');
         const stopAudioBtn = document.getElementById('stopAudioBtn');
+        const idiomaBtn = document.getElementById('idiomaBtn');
 
         let aguardandoPlano = false;
-        const idiomaUsuario = navigator.language.split('-')[0] || 'pt';
-        let audioIdioma = 'pt-BR'; // idioma padrão da leitura
+        let audioIdioma = 'pt-BR';
 
-        // --- Síntese de voz ---
-        let synth = window.speechSynthesis;
-        let utteranceAtual = null;
-        let mensagemAtualSendoLida = null;
-
-        // --- Função para obter voz feminina suave ---
-        function obterVozFeminina(idioma) {
-            const voices = synth.getVoices();
-            // Prioriza vozes femininas (Google, Microsoft, Apple)
-            const feminina = voices.find(v =>
-                v.lang.startsWith(idioma) &&
-                (v.name.toLowerCase().includes('female') ||
-                 v.name.toLowerCase().includes('feminina') ||
-                 v.name.toLowerCase().includes('google') ||
-                 v.name.toLowerCase().includes('samantha') ||
-                 v.name.toLowerCase().includes('maria') ||
-                 v.name.toLowerCase().includes('luciana'))
-            );
-            // Se não encontrar, qualquer voz do idioma
-            return feminina || voices.find(v => v.lang.startsWith(idioma)) || null;
-        }
-
+        // ============================================================
+        // SÍNTESE DE VOZ (FALAR)
+        // ============================================================
         function falar(texto, elementoAudio, idioma = 'pt-BR') {
-            // Para qualquer leitura anterior
-            if (synth.speaking) {
-                synth.cancel();
-                if (mensagemAtualSendoLida) {
-                    mensagemAtualSendoLida.classList.remove('playing');
-                    mensagemAtualSendoLida = null;
-                }
+            // Cancela qualquer leitura anterior
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
             }
 
+            // Verifica suporte
             if (!('speechSynthesis' in window)) {
                 alert('Seu navegador não suporta leitura em voz alta.');
                 return;
             }
 
-            // Limpa o texto (remove HTML e emojis, mantém pontuação básica)
-            const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ');
+            // Limpa o texto (remove HTML, mantém caracteres básicos)
+            const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
+            if (!textoLimpo) return;
 
             const utterance = new SpeechSynthesisUtterance(textoLimpo);
-            utterance.lang = idioma; // 'pt-BR' ou 'en-US'
+            utterance.lang = idioma;
             utterance.rate = 0.9;
             utterance.pitch = 1.0;
             utterance.volume = 1;
 
-            // Tenta obter voz feminina suave
-            const voz = obterVozFeminina(idioma);
-            if (voz) utterance.voice = voz;
+            // Tenta obter uma voz feminina (se disponível)
+            const voices = window.speechSynthesis.getVoices();
+            const vozFeminina = voices.find(v =>
+                v.lang.startsWith(idioma) &&
+                (v.name.toLowerCase().includes('female') ||
+                 v.name.toLowerCase().includes('feminina') ||
+                 v.name.toLowerCase().includes('google') ||
+                 v.name.toLowerCase().includes('samantha') ||
+                 v.name.toLowerCase().includes('maria'))
+            );
+            if (vozFeminina) utterance.voice = vozFeminina;
 
-            // Marca o botão como "a tocar"
+            // Feedback visual no botão
             if (elementoAudio) {
                 elementoAudio.classList.add('playing');
                 elementoAudio.textContent = '🔊';
-                mensagemAtualSendoLida = elementoAudio;
                 stopAudioBtn.style.display = 'inline-block';
             }
 
@@ -371,55 +354,50 @@
                     elementoAudio.classList.remove('playing');
                     elementoAudio.textContent = '🔊';
                 }
-                mensagemAtualSendoLida = null;
                 stopAudioBtn.style.display = 'none';
             };
 
-            utterance.onerror = function() {
+            utterance.onerror = function(e) {
+                console.error('Erro na síntese de voz:', e);
                 if (elementoAudio) {
                     elementoAudio.classList.remove('playing');
                     elementoAudio.textContent = '🔊';
                 }
-                mensagemAtualSendoLida = null;
                 stopAudioBtn.style.display = 'none';
+                alert('Não foi possível reproduzir o áudio. Tente novamente.');
             };
 
-            utteranceAtual = utterance;
-            synth.speak(utterance);
+            window.speechSynthesis.speak(utterance);
         }
 
+        // ============================================================
+        // PARAR LEITURA
+        // ============================================================
         function pararLeitura() {
-            if (synth.speaking) synth.cancel();
-            if (mensagemAtualSendoLida) {
-                mensagemAtualSendoLida.classList.remove('playing');
-                mensagemAtualSendoLida.textContent = '🔊';
-                mensagemAtualSendoLida = null;
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
             }
+            document.querySelectorAll('.btn-audio.playing').forEach(btn => {
+                btn.classList.remove('playing');
+                btn.textContent = '🔊';
+            });
             stopAudioBtn.style.display = 'none';
         }
 
         stopAudioBtn.addEventListener('click', pararLeitura);
 
-        // Carregar vozes (necessário para alguns navegadores)
-        if (synth) {
-            synth.getVoices();
-            synth.onvoiceschanged = () => { synth.getVoices(); };
+        // ============================================================
+        // ALTERNAR IDIOMA
+        // ============================================================
+        function alternarIdioma() {
+            audioIdioma = audioIdioma === 'pt-BR' ? 'en-US' : 'pt-BR';
+            idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
         }
+        idiomaBtn.addEventListener('click', alternarIdioma);
 
-        // --- Alternar idioma da leitura ---
-        function alternarIdiomaAudio() {
-            if (audioIdioma === 'pt-BR') {
-                audioIdioma = 'en-US';
-            } else {
-                audioIdioma = 'pt-BR';
-            }
-            // Atualiza todos os botões de idioma (se houver)
-            document.querySelectorAll('.btn-audio.idioma').forEach(btn => {
-                btn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
-            });
-        }
-
-        // --- UI ---
+        // ============================================================
+        // UI / INTERFACE
+        // ============================================================
         function isDono() {
             return usuarioTelefone === DONO_TELEFONE;
         }
@@ -436,70 +414,54 @@
             }
         }
 
-        // --- Adicionar mensagem com avatar e botões de áudio ---
+        // ============================================================
+        // ADICIONAR MENSAGEM (COM ÁUDIO)
+        // ============================================================
         function addMessage(text, tipo = 'bot', extra = '') {
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${tipo}`;
 
-            // Avatar (apenas para o bot)
+            // Avatar do bot
             if (tipo === 'bot') {
                 const avatar = document.createElement('div');
                 avatar.className = 'avatar-bot';
-                avatar.textContent = 'V'; // ou coloque um emoji: '🤖'
-                // Se tiver foto: avatar.style.backgroundImage = "url('sua-foto.jpg')";
+                avatar.textContent = 'V';
                 wrapper.appendChild(avatar);
             }
 
+            // Bolha da mensagem
             const bubble = document.createElement('div');
             bubble.className = `message ${tipo}`;
             bubble.innerHTML = text + extra;
             wrapper.appendChild(bubble);
 
-            // Botões de áudio (apenas para mensagens do bot)
+            // Botão de áudio (apenas para mensagens do bot)
             if (tipo === 'bot') {
-                const audioDiv = document.createElement('div');
-                audioDiv.className = 'audio-actions';
-
-                // Botão ouvir
-                const ouvirBtn = document.createElement('button');
-                ouvirBtn.className = 'btn-audio';
-                ouvirBtn.textContent = '🔊';
-                ouvirBtn.setAttribute('aria-label', 'Ouvir mensagem');
-                ouvirBtn.addEventListener('click', function(e) {
+                const audioBtn = document.createElement('button');
+                audioBtn.className = 'btn-audio';
+                audioBtn.textContent = '🔊';
+                audioBtn.setAttribute('aria-label', 'Ouvir mensagem');
+                audioBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const textoMsg = bubble.innerText || bubble.textContent;
-                    falar(textoMsg, ouvirBtn, audioIdioma);
+                    // Remove textos de botões de plano para não ler "Semanal" isolado
+                    const textoLimpo = textoMsg.replace(/Semanal|Mensal|50 MT|150 MT/g, '').trim();
+                    if (textoLimpo) {
+                        falar(textoLimpo, audioBtn, audioIdioma);
+                    } else {
+                        falar('Escolha uma opção de plano.', audioBtn, audioIdioma);
+                    }
                 });
-                audioDiv.appendChild(ouvirBtn);
-
-                // Botão alternar idioma (apenas um por mensagem, mas global)
-                // Vamos colocar um único botão global no footer em vez de por mensagem
-                // Mas para manter a simplicidade, adicionamos um indicador pequeno
-                // que mostra o idioma atual ao passar o mouse
-
-                wrapper.appendChild(audioDiv);
+                wrapper.appendChild(audioBtn);
             }
 
             chat.appendChild(wrapper);
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // --- Adicionar botão de idioma no footer ---
-        function adicionarBotaoIdioma() {
-            const footerActions = document.querySelector('.footer-actions');
-            const idiomaBtn = document.createElement('button');
-            idiomaBtn.className = 'btn-audio idioma';
-            idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
-            idiomaBtn.addEventListener('click', () => {
-                alternarIdiomaAudio();
-                // Atualiza o texto do botão
-                idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
-            });
-            // Insere antes do botão "Parar"
-            footerActions.insertBefore(idiomaBtn, stopAudioBtn);
-        }
-
-        // --- Indicador de digitação ---
+        // ============================================================
+        // INDICADOR DE DIGITAÇÃO
+        // ============================================================
         function mostrarDigitando() {
             const div = document.createElement('div');
             div.className = 'typing';
@@ -513,10 +475,12 @@
             if (el) el.remove();
         }
 
-        // --- Chamada à API ---
+        // ============================================================
+        // CHAMADAS À API
+        // ============================================================
         async function chamarAPI(endpoint, dados) {
             try {
-                const payload = { ...dados, idioma: idiomaUsuario };
+                const payload = { ...dados, idioma: navigator.language.split('-')[0] || 'pt' };
                 const resp = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -645,7 +609,6 @@
         // ============================================================
         // FUNÇÕES DA API
         // ============================================================
-
         async function buscarVagas(cidade = null, area = null) {
             mostrarDigitando();
             const payload = { telefone: usuarioTelefone };
@@ -765,7 +728,7 @@
         }
 
         // ============================================================
-        // FUNÇÕES GLOBAIS (para botões)
+        // FUNÇÕES GLOBAIS (para botões inline)
         // ============================================================
         window.escolherPlano = function(plano) {
             aguardandoPlano = false;
@@ -773,7 +736,7 @@
         };
 
         // ============================================================
-        // EVENTOS
+        // EVENTOS DO CHAT
         // ============================================================
         sendBtn.addEventListener('click', enviarMensagem);
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
@@ -801,7 +764,14 @@
         // INICIALIZAÇÃO
         // ============================================================
         atualizarInterface();
-        adicionarBotaoIdioma();
+
+        // Carregar vozes (necessário para alguns navegadores)
+        if (window.speechSynthesis) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
 
         window.addEventListener('load', () => {
             setTimeout(() => {
