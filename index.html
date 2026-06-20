@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VagasBot Moçambique</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
         body {
             background: #0b1a2e;
             display: flex;
@@ -22,6 +27,7 @@
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
+        /* Header */
         .header {
             background: linear-gradient(145deg, #0d2844, #1a3a5c);
             padding: 20px 20px 14px;
@@ -31,13 +37,58 @@
             align-items: center;
             border-bottom: 2px solid #2e5a7a;
         }
-        .header h1 { font-size: 22px; font-weight: 700; }
-        .header h1 span { color: #6fc3ff; }
-        .badge { background: #1f8b4c; padding: 4px 12px; border-radius: 30px; font-size: 12px; font-weight: 600; color: #fff; }
-        .badge.dono { background: #f5b042; color: #1f2a38; }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .header h1 span {
+            color: #6fc3ff;
+        }
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .badge {
+            background: #1f8b4c;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .badge.dono {
+            background: #f5b042;
+            color: #1f2a38;
+        }
+
+        /* Stats Banner */
+        .stats-banner {
+            display: flex;
+            justify-content: space-around;
+            background: #ffffff;
+            padding: 12px 10px;
+            border-bottom: 1px solid #d0d9e3;
+            margin: 0 0 4px 0;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a5f9e;
+            display: block;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #4a5b6e;
+        }
+
+        /* Chat */
         .chat {
             padding: 16px 14px 8px;
-            height: 460px;
+            height: 400px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -92,18 +143,14 @@
             color: white;
             border-bottom-right-radius: 4px;
         }
-        .message .small { font-size: 12px; opacity: 0.7; margin-top: 6px; display: block; }
-        .message .dono-tag {
-            background: #f5b042;
-            color: #1f2a38;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 10px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-left: 6px;
+        .message .small {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 6px;
+            display: block;
         }
 
+        /* Action buttons */
         .action-buttons {
             display: flex;
             align-items: center;
@@ -144,12 +191,21 @@
             padding: 2px 12px;
             border-radius: 30px;
         }
-        .btn-action.idioma:hover { background: #d0def0; }
+        .btn-action.idioma:hover {
+            background: #d0def0;
+        }
         @keyframes pulse-audio {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.25); }
         }
 
+        /* Audio controls */
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
         .btn-controle-audio {
             background: transparent;
             border: 1px solid #bcc9d9;
@@ -162,8 +218,12 @@
             color: #1a2634;
             font-weight: 600;
         }
-        .btn-controle-audio:hover { background: #d0def0; }
-        .btn-controle-audio:active { transform: scale(0.95); }
+        .btn-controle-audio:hover {
+            background: #d0def0;
+        }
+        .btn-controle-audio:active {
+            transform: scale(0.95);
+        }
 
         .btn-stop-global {
             background: #e74c3c;
@@ -175,8 +235,40 @@
             font-size: 12px;
             cursor: pointer;
         }
-        .btn-stop-global:active { opacity: 0.7; }
+        .btn-stop-global:active {
+            opacity: 0.7;
+        }
 
+        /* Voice selector */
+        .voice-selector {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            background: #eef3f9;
+            border-radius: 30px;
+            padding: 2px 6px;
+            border: 1px solid #bcc9d9;
+        }
+        .voice-option {
+            background: transparent;
+            border: none;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #4a5b6e;
+            transition: 0.2s;
+        }
+        .voice-option.active {
+            background: #1a5f9e;
+            color: white;
+        }
+        .voice-option:active {
+            transform: scale(0.95);
+        }
+
+        /* Typing */
         .typing {
             align-self: flex-start;
             background: #e4eaf1;
@@ -187,15 +279,22 @@
             display: flex;
             gap: 6px;
         }
-        .typing span { animation: pulse 1.4s infinite; display: inline-block; }
+        .typing span {
+            animation: pulse 1.4s infinite;
+            display: inline-block;
+        }
         .typing span:nth-child(2) { animation-delay: 0.2s; }
         .typing span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes pulse {
             0%, 80%, 100% { opacity: 0.3; transform: scale(0.9); }
             40% { opacity: 1; transform: scale(1.1); }
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
+        /* Input */
         .input-area {
             display: flex;
             gap: 8px;
@@ -249,6 +348,7 @@
         .input-area button.btn-enviar:active { transform: scale(0.94); background: #0f3f6b; }
         .input-area button.btn-enviar:disabled { opacity: 0.5; pointer-events: none; }
 
+        /* Footer */
         .footer {
             background: #dce3ec;
             padding: 10px 16px;
@@ -308,59 +408,101 @@
 </head>
 <body>
     <div class="app">
+        <!-- HEADER -->
         <div class="header">
-            <h1>Vagas<span>Bot</span></h1>
-            <div class="badge" id="badgeStatus">🇲🇿 Moçambique</div>
+            <div>
+                <h1>Vagas<span>Bot</span></h1>
+                <div class="subtitle">Encontre oportunidades em Moçambique 🇲🇿</div>
+            </div>
+            <div class="badge" id="badgeStatus">🇲🇿</div>
         </div>
+
+        <!-- STATS BANNER -->
+        <div class="stats-banner">
+            <div class="stat-item">
+                <span class="stat-number">+120</span>
+                <span class="stat-label">Pessoas ajudadas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">30+</span>
+                <span class="stat-label">Vagas disponíveis</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">3</span>
+                <span class="stat-label">Cidades</span>
+            </div>
+        </div>
+
+        <!-- CHAT -->
         <div class="chat" id="chatContainer">
             <!-- Mensagens serão inseridas aqui -->
         </div>
+
+        <!-- INPUT -->
         <div class="input-area">
             <input type="text" id="msgInput" placeholder="Escreve ou fala a tua mensagem..." autocomplete="off">
-            <button class="btn-microfone" id="microfoneBtn" aria-label="Falar em vez de escrever">🎤</button>
+            <button class="btn-microfone" id="microfoneBtn" aria-label="Falar">🎤</button>
             <button class="btn-enviar" id="sendBtn">Enviar</button>
         </div>
+
+        <!-- FOOTER -->
         <div class="footer">
             <span id="footerStatus">🙌 +120 pessoas já encontraram</span>
             <div class="footer-actions">
-                <button class="btn-action idioma" id="idiomaBtn">🇧🇷 PT</button>
-                <button class="btn-controle-audio" id="pausarBtn">⏸ Pausar</button>
-                <button class="btn-stop-global" id="stopAudioBtn">⏹ Parar</button>
-                <button class="btn-assinar" id="assinarBtn">✨ Assinar Premium</button>
+                <!-- Seletor de voz -->
+                <div class="voice-selector" id="voiceSelector">
+                    <button class="voice-option active" data-voz="feminina">👩</button>
+                    <button class="voice-option" data-voz="masculina">👨</button>
+                    <button class="voice-option" data-voz="crianca">🧒</button>
+                </div>
+                <!-- Controles de áudio -->
+                <div class="audio-controls" id="audioControls" style="display:none;">
+                    <button class="btn-controle-audio" id="pausarBtn">⏸ Pausar</button>
+                    <button class="btn-stop-global" id="stopAudioBtn">⏹ Parar</button>
+                </div>
+                <button class="btn-assinar" id="assinarBtn">✨ Assinar</button>
             </div>
         </div>
     </div>
 
     <script>
         // ============================================================
-        // CONFIGURAÇÕES DO UTILIZADOR
+        // CONFIGURAÇÕES
         // ============================================================
         const DONO_TELEFONE = '879306034';
         let usuarioTelefone = '879306034';
-        // ============================================================
-
         const API_BASE = 'https://vagasbot-web-api.onrender.com';
+
+        // ============================================================
+        // DOM ELEMENTOS
+        // ============================================================
         const chat = document.getElementById('chatContainer');
         const input = document.getElementById('msgInput');
         const sendBtn = document.getElementById('sendBtn');
         const assinarBtn = document.getElementById('assinarBtn');
         const badgeStatus = document.getElementById('badgeStatus');
         const footerStatus = document.getElementById('footerStatus');
-        const stopAudioBtn = document.getElementById('stopAudioBtn');
-        const idiomaBtn = document.getElementById('idiomaBtn');
         const microfoneBtn = document.getElementById('microfoneBtn');
         const pausarBtn = document.getElementById('pausarBtn');
+        const stopAudioBtn = document.getElementById('stopAudioBtn');
+        const audioControls = document.getElementById('audioControls');
+        const voiceSelector = document.getElementById('voiceSelector');
 
         let aguardandoPlano = false;
-        let audioIdioma = 'pt-BR';
+        let vozSelecionada = 'feminina'; // 'feminina', 'masculina', 'crianca'
 
         // ============================================================
-        // CONTROLE DE ÁUDIO (PAUSAR/RETOMAR)
+        // SELETOR DE VOZ
         // ============================================================
-        let textoPausado = null;
-        let elementoAudioPausado = null;
-        let idiomaPausado = 'pt-BR';
-        let audioPausado = false;
+        voiceSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.voice-option');
+            if (!btn) return;
+            document.querySelectorAll('.voice-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            vozSelecionada = btn.dataset.voz;
+            // Cancela leitura atual para aplicar nova voz
+            pararLeitura();
+        });
 
         // ============================================================
         // SPEECH-TO-TEXT (MICROFONE)
@@ -373,7 +515,6 @@
                 alert('Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.');
                 return;
             }
-
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.lang = 'pt-BR';
@@ -392,9 +533,7 @@
                 const transcript = event.results[0][0].transcript;
                 input.value = transcript;
                 setTimeout(() => {
-                    if (input.value.trim()) {
-                        enviarMensagem();
-                    }
+                    if (input.value.trim()) enviarMensagem();
                 }, 600);
             };
 
@@ -425,11 +564,8 @@
 
         microfoneBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            if (estaGravando) {
-                pararReconhecimento();
-            } else {
-                iniciarReconhecimento();
-            }
+            if (estaGravando) pararReconhecimento();
+            else iniciarReconhecimento();
         });
 
         input.addEventListener('focus', function() {
@@ -437,12 +573,39 @@
         });
 
         // ============================================================
-        // TEXT-TO-SPEECH (FALAR)
+        // TEXT-TO-SPEECH (COM SELEÇÃO DE VOZ)
         // ============================================================
-        function falar(texto, elementoAudio, idioma = 'pt-BR') {
-            // Se já está a falar, cancela
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
+        let audioAtual = null;
+        let elementoAudioAtual = null;
+        let audioPausado = false;
+
+        function obterVozPorTipo(tipo, idioma = 'pt-BR') {
+            const voices = window.speechSynthesis.getVoices();
+            // Filtra vozes do idioma
+            const vozesIdioma = voices.filter(v => v.lang.startsWith(idioma));
+            // Prioriza vozes específicas
+            const mapa = {
+                'feminina': ['Google Português do Brasil', 'Microsoft Maria', 'Samantha', 'Zira', 'female'],
+                'masculina': ['Google português', 'Microsoft João', 'Daniel', 'male'],
+                'crianca': ['child', 'kid', 'criança', 'Google UK English Female'] // fallback para feminina
+            };
+            const palavras = mapa[tipo] || mapa['feminina'];
+            let voz = vozesIdioma.find(v => palavras.some(p => v.name.toLowerCase().includes(p.toLowerCase())));
+            if (!voz && vozesIdioma.length > 0) voz = vozesIdioma[0];
+            return voz || null;
+        }
+
+        function falar(texto, elementoBotao, idioma = 'pt-BR') {
+            // Cancela áudio anterior
+            if (audioAtual) {
+                audioAtual.pause();
+                audioAtual.currentTime = 0;
+                audioAtual = null;
+                if (elementoAudioAtual) {
+                    elementoAudioAtual.classList.remove('playing', 'pausado');
+                    elementoAudioAtual.textContent = '🔊';
+                }
+                audioControls.style.display = 'none';
             }
 
             if (!('speechSynthesis' in window)) {
@@ -453,128 +616,108 @@
             const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
             if (!textoLimpo) return;
 
-            // Guarda o texto e elemento para possível pausa
-            textoPausado = textoLimpo;
-            elementoAudioPausado = elementoAudio;
-            idiomaPausado = idioma;
-
             const utterance = new SpeechSynthesisUtterance(textoLimpo);
             utterance.lang = idioma;
             utterance.rate = 0.9;
             utterance.pitch = 1.0;
             utterance.volume = 1;
 
-            const voices = window.speechSynthesis.getVoices();
-            const vozFeminina = voices.find(v =>
-                v.lang.startsWith(idioma) &&
-                (v.name.toLowerCase().includes('female') ||
-                 v.name.toLowerCase().includes('feminina') ||
-                 v.name.toLowerCase().includes('google') ||
-                 v.name.toLowerCase().includes('samantha') ||
-                 v.name.toLowerCase().includes('maria'))
-            );
-            if (vozFeminina) utterance.voice = vozFeminina;
+            // Aplica a voz selecionada
+            const voz = obterVozPorTipo(vozSelecionada, idioma);
+            if (voz) utterance.voice = voz;
+
+            // Ajusta pitch para criança (mais agudo)
+            if (vozSelecionada === 'crianca') {
+                utterance.pitch = 1.4;
+                utterance.rate = 0.85;
+            } else if (vozSelecionada === 'masculina') {
+                utterance.pitch = 0.8;
+                utterance.rate = 0.9;
+            } else {
+                utterance.pitch = 1.0;
+                utterance.rate = 0.9;
+            }
 
             // Feedback visual
-            if (elementoAudio) {
-                elementoAudio.classList.add('playing');
-                elementoAudio.textContent = '🔊';
+            if (elementoBotao) {
+                elementoBotao.classList.add('playing');
+                elementoBotao.textContent = '🔊';
+                elementoAudioAtual = elementoBotao;
             }
-            // Mostra botões de controle
-            stopAudioBtn.style.display = 'inline-block';
+            audioControls.style.display = 'flex';
             pausarBtn.textContent = '⏸ Pausar';
-            pausarBtn.style.display = 'inline-block';
             audioPausado = false;
 
             utterance.onend = function() {
-                if (elementoAudio) {
-                    elementoAudio.classList.remove('playing');
-                    elementoAudio.textContent = '🔊';
+                if (elementoBotao) {
+                    elementoBotao.classList.remove('playing', 'pausado');
+                    elementoBotao.textContent = '🔊';
                 }
-                stopAudioBtn.style.display = 'none';
-                pausarBtn.style.display = 'none';
-                textoPausado = null;
-                elementoAudioPausado = null;
-                audioPausado = false;
+                audioControls.style.display = 'none';
+                audioAtual = null;
+                elementoAudioAtual = null;
             };
 
             utterance.onerror = function(e) {
-                console.error('Erro na síntese de voz:', e);
-                if (elementoAudio) {
-                    elementoAudio.classList.remove('playing');
-                    elementoAudio.textContent = '🔊';
+                console.error('Erro na síntese:', e);
+                if (elementoBotao) {
+                    elementoBotao.classList.remove('playing', 'pausado');
+                    elementoBotao.textContent = '🔊';
                 }
-                stopAudioBtn.style.display = 'none';
-                pausarBtn.style.display = 'none';
-                textoPausado = null;
-                elementoAudioPausado = null;
-                audioPausado = false;
-                alert('Não foi possível reproduzir o áudio. Tente novamente.');
+                audioControls.style.display = 'none';
+                alert('Não foi possível reproduzir o áudio.');
             };
 
+            audioAtual = utterance;
             window.speechSynthesis.speak(utterance);
         }
 
         // ============================================================
-        // PAUSAR / RETOMAR LEITURA
+        // PAUSAR / RETOMAR
         // ============================================================
         function pausarOuRetomar() {
+            if (!audioAtual) return;
             if (window.speechSynthesis.speaking) {
-                // Está a tocar -> Pausar
-                window.speechSynthesis.cancel();
+                window.speechSynthesis.pause();
                 audioPausado = true;
                 pausarBtn.textContent = '▶️ Retomar';
-                if (elementoAudioPausado) {
-                    elementoAudioPausado.classList.remove('playing');
-                    elementoAudioPausado.classList.add('pausado');
-                    elementoAudioPausado.textContent = '⏸';
+                if (elementoAudioAtual) {
+                    elementoAudioAtual.classList.remove('playing');
+                    elementoAudioAtual.classList.add('pausado');
+                    elementoAudioAtual.textContent = '⏸';
                 }
-            } else if (audioPausado && textoPausado) {
-                // Está pausado -> Retomar
+            } else if (audioPausado) {
+                window.speechSynthesis.resume();
                 audioPausado = false;
                 pausarBtn.textContent = '⏸ Pausar';
-                // Retoma a leitura com o mesmo texto e elemento
-                const el = elementoAudioPausado;
-                if (el) {
-                    el.classList.remove('pausado');
-                    el.classList.add('playing');
-                    el.textContent = '🔊';
+                if (elementoAudioAtual) {
+                    elementoAudioAtual.classList.remove('pausado');
+                    elementoAudioAtual.classList.add('playing');
+                    elementoAudioAtual.textContent = '🔊';
                 }
-                falar(textoPausado, el, idiomaPausado);
-                // Nota: o falar vai cancelar qualquer coisa, mas já cancelámos
             }
         }
 
         pausarBtn.addEventListener('click', pausarOuRetomar);
 
         // ============================================================
-        // PARAR LEITURA (CANCELAR TOTALMENTE)
+        // PARAR LEITURA
         // ============================================================
         function pararLeitura() {
-            if (window.speechSynthesis.speaking) {
+            if (window.speechSynthesis.speaking || window.speechSynthesis.paused) {
                 window.speechSynthesis.cancel();
             }
-            document.querySelectorAll('.btn-action.playing, .btn-action.pausado').forEach(btn => {
-                btn.classList.remove('playing', 'pausado');
-                btn.textContent = '🔊';
-            });
-            stopAudioBtn.style.display = 'none';
-            pausarBtn.style.display = 'none';
-            textoPausado = null;
-            elementoAudioPausado = null;
+            if (elementoAudioAtual) {
+                elementoAudioAtual.classList.remove('playing', 'pausado');
+                elementoAudioAtual.textContent = '🔊';
+            }
+            audioControls.style.display = 'none';
+            audioAtual = null;
+            elementoAudioAtual = null;
             audioPausado = false;
         }
 
         stopAudioBtn.addEventListener('click', pararLeitura);
-
-        // ============================================================
-        // ALTERNAR IDIOMA
-        // ============================================================
-        function alternarIdioma() {
-            audioIdioma = audioIdioma === 'pt-BR' ? 'en-US' : 'pt-BR';
-            idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
-        }
-        idiomaBtn.addEventListener('click', alternarIdioma);
 
         // ============================================================
         // COPIAR TEXTO
@@ -589,13 +732,12 @@
                     elementoBotao.classList.remove('copiado');
                 }, 2000);
             } catch (err) {
-                console.error('Erro ao copiar:', err);
-                alert('Não foi possível copiar. Tente selecionar o texto manualmente.');
+                alert('Não foi possível copiar.');
             }
         }
 
         // ============================================================
-        // UI / INTERFACE
+        // UI
         // ============================================================
         function isDono() {
             return usuarioTelefone === DONO_TELEFONE;
@@ -636,28 +778,21 @@
                 const actionDiv = document.createElement('div');
                 actionDiv.className = 'action-buttons';
 
-                // Botão Ouvir
                 const audioBtn = document.createElement('button');
                 audioBtn.className = 'btn-action';
                 audioBtn.textContent = '🔊';
-                audioBtn.setAttribute('aria-label', 'Ouvir mensagem');
                 audioBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const textoMsg = bubble.innerText || bubble.textContent;
                     const textoLimpo = textoMsg.replace(/Semanal|Mensal|50 MT|150 MT/g, '').trim();
-                    if (textoLimpo) {
-                        falar(textoLimpo, audioBtn, audioIdioma);
-                    } else {
-                        falar('Escolha uma opção de plano.', audioBtn, audioIdioma);
-                    }
+                    if (textoLimpo) falar(textoLimpo, audioBtn, 'pt-BR');
+                    else falar('Escolha uma opção de plano.', audioBtn, 'pt-BR');
                 });
                 actionDiv.appendChild(audioBtn);
 
-                // Botão Copiar
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'btn-action';
                 copyBtn.textContent = '📋';
-                copyBtn.setAttribute('aria-label', 'Copiar mensagem');
                 copyBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const textoMsg = bubble.innerText || bubble.textContent;
@@ -689,7 +824,7 @@
         }
 
         // ============================================================
-        // CHAMADAS À API
+        // CHAMADAS À API (back-end)
         // ============================================================
         async function chamarAPI(endpoint, dados) {
             try {
@@ -708,7 +843,7 @@
         }
 
         // ============================================================
-        // PROCESSAR MENSAGEM
+        // PROCESSAR MENSAGEM (comandos)
         // ============================================================
         async function processarMensagem(texto) {
             const lower = texto.trim().toLowerCase();
@@ -818,37 +953,30 @@
         }
 
         // ============================================================
-        // FUNÇÕES DA API
+        // FUNÇÕES DA API (backend)
         // ============================================================
         async function buscarVagas(cidade = null, area = null) {
             mostrarDigitando();
             const payload = { telefone: usuarioTelefone };
             if (cidade) payload.cidade = cidade;
             if (area) payload.area = area;
-
             const dados = await chamarAPI('/vagas', payload);
             removerDigitando();
-
             if (!dados) {
                 addMessage('⚠️ Não consegui buscar vagas agora. Tenta novamente em instantes!', 'bot');
                 return;
             }
-
             if (dados.total === 0) {
                 addMessage('😕 Nenhuma vaga encontrada para esse filtro. Tenta outro.', 'bot');
                 return;
             }
-
             let prefixo = '';
             if (cidade) prefixo = ` em ${cidade}`;
             if (area) prefixo += ` (${area})`;
             if (!cidade && !area) prefixo = ' (todas)';
-
             const donoTag = isDono() ? ' 👑' : '';
             addMessage(`📌 *Vagas${prefixo}* – ${dados.total} encontradas${donoTag}`, 'bot');
-
             dados.vagas.forEach(v => addMessage(`• ${v}`, 'bot'));
-
             if (dados.plano === 'gratuito') {
                 addMessage('🔒 *Assine Premium* para ver benefícios e detalhes completos! Envie "assinar".', 'bot');
             } else if (dados.plano === 'dono') {
@@ -939,16 +1067,13 @@
         }
 
         // ============================================================
-        // FUNÇÕES GLOBAIS (para botões inline)
+        // EVENTOS
         // ============================================================
         window.escolherPlano = function(plano) {
             aguardandoPlano = false;
             criarPagamento(plano);
         };
 
-        // ============================================================
-        // EVENTOS DO CHAT
-        // ============================================================
         sendBtn.addEventListener('click', enviarMensagem);
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') enviarMensagem();
@@ -977,17 +1102,14 @@
         // INICIALIZAÇÃO
         // ============================================================
         atualizarInterface();
-
+        // Carrega vozes
         if (window.speechSynthesis) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
         }
-
-        // Oculta os botões de áudio inicialmente
-        stopAudioBtn.style.display = 'none';
-        pausarBtn.style.display = 'none';
+        audioControls.style.display = 'none';
 
         window.addEventListener('load', () => {
             setTimeout(() => {
