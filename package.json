@@ -10,3 +10,9 @@
     "node-fetch": "^2.6.7"
   }
 }
+{
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}
