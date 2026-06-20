@@ -48,7 +48,7 @@
         .message-wrapper {
             display: flex;
             align-items: flex-end;
-            gap: 8px;
+            gap: 6px;
             max-width: 95%;
             animation: fadeIn 0.25s ease;
         }
@@ -104,16 +104,16 @@
             margin-left: 6px;
         }
 
-        .audio-actions {
+        .action-buttons {
             display: flex;
             align-items: center;
             gap: 4px;
             flex-shrink: 0;
         }
-        .btn-audio {
+        .btn-action {
             background: transparent;
             border: none;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             padding: 4px 6px;
             border-radius: 30px;
@@ -121,12 +121,22 @@
             color: #4a5b6e;
             line-height: 1;
         }
-        .btn-audio:hover { background: #d0d9e3; transform: scale(1.1); }
-        .btn-audio.playing {
+        .btn-action:hover {
+            background: #d0d9e3;
+            transform: scale(1.1);
+        }
+        .btn-action.playing {
             color: #1f5e9e;
             animation: pulse-audio 0.8s infinite;
         }
-        .btn-audio.idioma {
+        .btn-action.pausado {
+            color: #f5b042;
+            animation: none;
+        }
+        .btn-action.copiado {
+            color: #1f8b4c;
+        }
+        .btn-action.idioma {
             font-size: 13px;
             font-weight: 600;
             background: #eef3f9;
@@ -134,11 +144,26 @@
             padding: 2px 12px;
             border-radius: 30px;
         }
-        .btn-audio.idioma:hover { background: #d0def0; }
+        .btn-action.idioma:hover { background: #d0def0; }
         @keyframes pulse-audio {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.25); }
         }
+
+        .btn-controle-audio {
+            background: transparent;
+            border: 1px solid #bcc9d9;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #eef3f9;
+            transition: 0.2s;
+            color: #1a2634;
+            font-weight: 600;
+        }
+        .btn-controle-audio:hover { background: #d0def0; }
+        .btn-controle-audio:active { transform: scale(0.95); }
 
         .btn-stop-global {
             background: #e74c3c;
@@ -149,7 +174,6 @@
             font-weight: 600;
             font-size: 12px;
             cursor: pointer;
-            margin-left: 8px;
         }
         .btn-stop-global:active { opacity: 0.7; }
 
@@ -178,6 +202,7 @@
             padding: 10px 14px 16px;
             background: #f0f4fa;
             border-top: 1px solid #d0d9e3;
+            align-items: center;
         }
         .input-area input {
             flex: 1;
@@ -189,7 +214,27 @@
             box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
             outline: none;
         }
-        .input-area button {
+        .input-area .btn-microfone {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            transition: 0.2s;
+            color: #1a5f9e;
+            line-height: 1;
+        }
+        .input-area .btn-microfone:active { transform: scale(0.9); }
+        .input-area .btn-microfone.gravando {
+            color: #e74c3c;
+            animation: pulse-microfone 1.2s infinite;
+        }
+        @keyframes pulse-microfone {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .input-area button.btn-enviar {
             background: #1a5f9e;
             border: none;
             border-radius: 30px;
@@ -201,8 +246,8 @@
             transition: 0.2s;
             box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3);
         }
-        .input-area button:active { transform: scale(0.94); background: #0f3f6b; }
-        .input-area button:disabled { opacity: 0.5; pointer-events: none; }
+        .input-area button.btn-enviar:active { transform: scale(0.94); background: #0f3f6b; }
+        .input-area button.btn-enviar:disabled { opacity: 0.5; pointer-events: none; }
 
         .footer {
             background: #dce3ec;
@@ -220,7 +265,7 @@
         .footer-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .btn-assinar {
@@ -271,14 +316,16 @@
             <!-- Mensagens serão inseridas aqui -->
         </div>
         <div class="input-area">
-            <input type="text" id="msgInput" placeholder="Escreve a tua mensagem..." autocomplete="off">
-            <button id="sendBtn">Enviar</button>
+            <input type="text" id="msgInput" placeholder="Escreve ou fala a tua mensagem..." autocomplete="off">
+            <button class="btn-microfone" id="microfoneBtn" aria-label="Falar em vez de escrever">🎤</button>
+            <button class="btn-enviar" id="sendBtn">Enviar</button>
         </div>
         <div class="footer">
             <span id="footerStatus">🙌 +120 pessoas já encontraram</span>
             <div class="footer-actions">
-                <button class="btn-audio idioma" id="idiomaBtn">🇧🇷 PT</button>
-                <button class="btn-stop-global" id="stopAudioBtn" style="display:none;">⏹ Parar</button>
+                <button class="btn-action idioma" id="idiomaBtn">🇧🇷 PT</button>
+                <button class="btn-controle-audio" id="pausarBtn">⏸ Pausar</button>
+                <button class="btn-stop-global" id="stopAudioBtn">⏹ Parar</button>
                 <button class="btn-assinar" id="assinarBtn">✨ Assinar Premium</button>
             </div>
         </div>
@@ -301,28 +348,115 @@
         const footerStatus = document.getElementById('footerStatus');
         const stopAudioBtn = document.getElementById('stopAudioBtn');
         const idiomaBtn = document.getElementById('idiomaBtn');
+        const microfoneBtn = document.getElementById('microfoneBtn');
+        const pausarBtn = document.getElementById('pausarBtn');
 
         let aguardandoPlano = false;
         let audioIdioma = 'pt-BR';
 
         // ============================================================
-        // SÍNTESE DE VOZ (FALAR)
+        // CONTROLE DE ÁUDIO (PAUSAR/RETOMAR)
+        // ============================================================
+        let textoPausado = null;
+        let elementoAudioPausado = null;
+        let idiomaPausado = 'pt-BR';
+        let audioPausado = false;
+
+        // ============================================================
+        // SPEECH-TO-TEXT (MICROFONE)
+        // ============================================================
+        let recognition = null;
+        let estaGravando = false;
+
+        function iniciarReconhecimento() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                estaGravando = true;
+                microfoneBtn.classList.add('gravando');
+                microfoneBtn.textContent = '⏺️';
+                input.placeholder = '🎤 Ouvindo...';
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+                setTimeout(() => {
+                    if (input.value.trim()) {
+                        enviarMensagem();
+                    }
+                }, 600);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Erro no reconhecimento:', event.error);
+                if (event.error === 'not-allowed') {
+                    alert('Permissão de microfone negada. Ative-a nas configurações do navegador.');
+                }
+                pararReconhecimento();
+            };
+
+            recognition.onend = function() {
+                pararReconhecimento();
+            };
+
+            recognition.start();
+        }
+
+        function pararReconhecimento() {
+            if (recognition) {
+                try { recognition.stop(); } catch (e) {}
+            }
+            estaGravando = false;
+            microfoneBtn.classList.remove('gravando');
+            microfoneBtn.textContent = '🎤';
+            input.placeholder = 'Escreve ou fala a tua mensagem...';
+        }
+
+        microfoneBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (estaGravando) {
+                pararReconhecimento();
+            } else {
+                iniciarReconhecimento();
+            }
+        });
+
+        input.addEventListener('focus', function() {
+            if (estaGravando) pararReconhecimento();
+        });
+
+        // ============================================================
+        // TEXT-TO-SPEECH (FALAR)
         // ============================================================
         function falar(texto, elementoAudio, idioma = 'pt-BR') {
-            // Cancela qualquer leitura anterior
+            // Se já está a falar, cancela
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
 
-            // Verifica suporte
             if (!('speechSynthesis' in window)) {
                 alert('Seu navegador não suporta leitura em voz alta.');
                 return;
             }
 
-            // Limpa o texto (remove HTML, mantém caracteres básicos)
             const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
             if (!textoLimpo) return;
+
+            // Guarda o texto e elemento para possível pausa
+            textoPausado = textoLimpo;
+            elementoAudioPausado = elementoAudio;
+            idiomaPausado = idioma;
 
             const utterance = new SpeechSynthesisUtterance(textoLimpo);
             utterance.lang = idioma;
@@ -330,7 +464,6 @@
             utterance.pitch = 1.0;
             utterance.volume = 1;
 
-            // Tenta obter uma voz feminina (se disponível)
             const voices = window.speechSynthesis.getVoices();
             const vozFeminina = voices.find(v =>
                 v.lang.startsWith(idioma) &&
@@ -342,12 +475,16 @@
             );
             if (vozFeminina) utterance.voice = vozFeminina;
 
-            // Feedback visual no botão
+            // Feedback visual
             if (elementoAudio) {
                 elementoAudio.classList.add('playing');
                 elementoAudio.textContent = '🔊';
-                stopAudioBtn.style.display = 'inline-block';
             }
+            // Mostra botões de controle
+            stopAudioBtn.style.display = 'inline-block';
+            pausarBtn.textContent = '⏸ Pausar';
+            pausarBtn.style.display = 'inline-block';
+            audioPausado = false;
 
             utterance.onend = function() {
                 if (elementoAudio) {
@@ -355,6 +492,10 @@
                     elementoAudio.textContent = '🔊';
                 }
                 stopAudioBtn.style.display = 'none';
+                pausarBtn.style.display = 'none';
+                textoPausado = null;
+                elementoAudioPausado = null;
+                audioPausado = false;
             };
 
             utterance.onerror = function(e) {
@@ -364,6 +505,10 @@
                     elementoAudio.textContent = '🔊';
                 }
                 stopAudioBtn.style.display = 'none';
+                pausarBtn.style.display = 'none';
+                textoPausado = null;
+                elementoAudioPausado = null;
+                audioPausado = false;
                 alert('Não foi possível reproduzir o áudio. Tente novamente.');
             };
 
@@ -371,17 +516,53 @@
         }
 
         // ============================================================
-        // PARAR LEITURA
+        // PAUSAR / RETOMAR LEITURA
+        // ============================================================
+        function pausarOuRetomar() {
+            if (window.speechSynthesis.speaking) {
+                // Está a tocar -> Pausar
+                window.speechSynthesis.cancel();
+                audioPausado = true;
+                pausarBtn.textContent = '▶️ Retomar';
+                if (elementoAudioPausado) {
+                    elementoAudioPausado.classList.remove('playing');
+                    elementoAudioPausado.classList.add('pausado');
+                    elementoAudioPausado.textContent = '⏸';
+                }
+            } else if (audioPausado && textoPausado) {
+                // Está pausado -> Retomar
+                audioPausado = false;
+                pausarBtn.textContent = '⏸ Pausar';
+                // Retoma a leitura com o mesmo texto e elemento
+                const el = elementoAudioPausado;
+                if (el) {
+                    el.classList.remove('pausado');
+                    el.classList.add('playing');
+                    el.textContent = '🔊';
+                }
+                falar(textoPausado, el, idiomaPausado);
+                // Nota: o falar vai cancelar qualquer coisa, mas já cancelámos
+            }
+        }
+
+        pausarBtn.addEventListener('click', pausarOuRetomar);
+
+        // ============================================================
+        // PARAR LEITURA (CANCELAR TOTALMENTE)
         // ============================================================
         function pararLeitura() {
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
-            document.querySelectorAll('.btn-audio.playing').forEach(btn => {
-                btn.classList.remove('playing');
+            document.querySelectorAll('.btn-action.playing, .btn-action.pausado').forEach(btn => {
+                btn.classList.remove('playing', 'pausado');
                 btn.textContent = '🔊';
             });
             stopAudioBtn.style.display = 'none';
+            pausarBtn.style.display = 'none';
+            textoPausado = null;
+            elementoAudioPausado = null;
+            audioPausado = false;
         }
 
         stopAudioBtn.addEventListener('click', pararLeitura);
@@ -394,6 +575,24 @@
             idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
         }
         idiomaBtn.addEventListener('click', alternarIdioma);
+
+        // ============================================================
+        // COPIAR TEXTO
+        // ============================================================
+        async function copiarTexto(texto, elementoBotao) {
+            try {
+                await navigator.clipboard.writeText(texto);
+                elementoBotao.textContent = '✅';
+                elementoBotao.classList.add('copiado');
+                setTimeout(() => {
+                    elementoBotao.textContent = '📋';
+                    elementoBotao.classList.remove('copiado');
+                }, 2000);
+            } catch (err) {
+                console.error('Erro ao copiar:', err);
+                alert('Não foi possível copiar. Tente selecionar o texto manualmente.');
+            }
+        }
 
         // ============================================================
         // UI / INTERFACE
@@ -415,13 +614,12 @@
         }
 
         // ============================================================
-        // ADICIONAR MENSAGEM (COM ÁUDIO)
+        // ADICIONAR MENSAGEM (COM ÁUDIO E COPIAR)
         // ============================================================
         function addMessage(text, tipo = 'bot', extra = '') {
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${tipo}`;
 
-            // Avatar do bot
             if (tipo === 'bot') {
                 const avatar = document.createElement('div');
                 avatar.className = 'avatar-bot';
@@ -429,22 +627,23 @@
                 wrapper.appendChild(avatar);
             }
 
-            // Bolha da mensagem
             const bubble = document.createElement('div');
             bubble.className = `message ${tipo}`;
             bubble.innerHTML = text + extra;
             wrapper.appendChild(bubble);
 
-            // Botão de áudio (apenas para mensagens do bot)
             if (tipo === 'bot') {
+                const actionDiv = document.createElement('div');
+                actionDiv.className = 'action-buttons';
+
+                // Botão Ouvir
                 const audioBtn = document.createElement('button');
-                audioBtn.className = 'btn-audio';
+                audioBtn.className = 'btn-action';
                 audioBtn.textContent = '🔊';
                 audioBtn.setAttribute('aria-label', 'Ouvir mensagem');
                 audioBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const textoMsg = bubble.innerText || bubble.textContent;
-                    // Remove textos de botões de plano para não ler "Semanal" isolado
                     const textoLimpo = textoMsg.replace(/Semanal|Mensal|50 MT|150 MT/g, '').trim();
                     if (textoLimpo) {
                         falar(textoLimpo, audioBtn, audioIdioma);
@@ -452,7 +651,21 @@
                         falar('Escolha uma opção de plano.', audioBtn, audioIdioma);
                     }
                 });
-                wrapper.appendChild(audioBtn);
+                actionDiv.appendChild(audioBtn);
+
+                // Botão Copiar
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'btn-action';
+                copyBtn.textContent = '📋';
+                copyBtn.setAttribute('aria-label', 'Copiar mensagem');
+                copyBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const textoMsg = bubble.innerText || bubble.textContent;
+                    copiarTexto(textoMsg, copyBtn);
+                });
+                actionDiv.appendChild(copyBtn);
+
+                wrapper.appendChild(actionDiv);
             }
 
             chat.appendChild(wrapper);
@@ -515,7 +728,6 @@
                 }
             }
 
-            // Comandos secretos (dono)
             if (lower.startsWith('!')) {
                 if (!isDono()) {
                     addMessage('⛔ Comando secreto apenas para o Dono Supremo.', 'bot');
@@ -563,7 +775,6 @@
                 return;
             }
 
-            // Comandos normais
             if (lower.startsWith('vagas')) {
                 const partes = lower.split(' ');
                 let cidade = null, area = null;
@@ -739,7 +950,9 @@
         // EVENTOS DO CHAT
         // ============================================================
         sendBtn.addEventListener('click', enviarMensagem);
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') enviarMensagem();
+        });
 
         function enviarMensagem() {
             const texto = input.value.trim();
@@ -765,13 +978,16 @@
         // ============================================================
         atualizarInterface();
 
-        // Carregar vozes (necessário para alguns navegadores)
         if (window.speechSynthesis) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
         }
+
+        // Oculta os botões de áudio inicialmente
+        stopAudioBtn.style.display = 'none';
+        pausarBtn.style.display = 'none';
 
         window.addEventListener('load', () => {
             setTimeout(() => {
