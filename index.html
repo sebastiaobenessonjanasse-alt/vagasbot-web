@@ -218,6 +218,7 @@
         const footerStatus = document.getElementById('footerStatus');
 
         let aguardandoPlano = false;
+        const idiomaUsuario = navigator.language.split('-')[0] || 'pt';
 
         // --- Identificar se é dono ---
         function isDono() {
@@ -260,13 +261,14 @@
             if (el) el.remove();
         }
 
-        // --- Chamada à API ---
+        // --- Chamada à API com idioma ---
         async function chamarAPI(endpoint, dados) {
             try {
+                const payload = { ...dados, idioma: idiomaUsuario };
                 const resp = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
+                    body: JSON.stringify(payload)
                 });
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 return await resp.json();
@@ -304,7 +306,6 @@
                     addMessage('⛔ Comando secreto apenas para o Dono Supremo.', 'bot');
                     return;
                 }
-                // Dividir comando
                 const partes = lower.split(' ');
                 const cmd = partes[0];
 
@@ -319,8 +320,7 @@
                 }
 
                 if (cmd === '!add') {
-                    // Espera o resto: título|cidade|salário|área|benefício
-                    const resto = texto.substring(4).trim(); // remove "!add"
+                    const resto = texto.substring(4).trim();
                     if (!resto.includes('|')) {
                         addMessage('⚠️ Formato inválido. Use: `!add título|cidade|salário|área|benefício`', 'bot');
                         return;
@@ -335,7 +335,7 @@
                 }
 
                 if (cmd === '!remover') {
-                    const titulo = texto.substring(9).trim(); // remove "!remover "
+                    const titulo = texto.substring(9).trim();
                     if (!titulo) {
                         addMessage('⚠️ Diga o título da vaga a remover. Ex: `!remover Desenvolvedor Java Pleno`', 'bot');
                         return;
@@ -396,7 +396,6 @@
         // FUNÇÕES DA API
         // ============================================================
 
-        // Buscar vagas (com filtros)
         async function buscarVagas(cidade = null, area = null) {
             mostrarDigitando();
             const payload = { telefone: usuarioTelefone };
@@ -424,7 +423,6 @@
             const donoTag = isDono() ? ' 👑' : '';
             addMessage(`📌 *Vagas${prefixo}* – ${dados.total} encontradas${donoTag}`, 'bot');
 
-            // Se for dono, sempre mostra completo (já vem do backend)
             dados.vagas.forEach(v => addMessage(`• ${v}`, 'bot'));
 
             if (dados.plano === 'gratuito') {
@@ -432,12 +430,10 @@
             } else if (dados.plano === 'dono') {
                 addMessage('👑 Dono Supremo – todas as vagas com detalhes estão disponíveis!', 'bot');
             } else {
-                // premium
                 addMessage('🔓 Detalhes completos disponíveis!', 'bot');
             }
         }
 
-        // Verificar acesso
         async function verificarAcesso() {
             mostrarDigitando();
             const dados = await chamarAPI('/verificar-acesso', { telefone: usuarioTelefone });
@@ -455,7 +451,6 @@
             }
         }
 
-        // Criar pagamento
         async function criarPagamento(plano) {
             mostrarDigitando();
             const dados = await chamarAPI('/criar-pagamento', {
@@ -475,7 +470,7 @@
             }
         }
 
-        // --- Admin: listar assinantes ---
+        // --- Admin ---
         async function listarAssinantes() {
             mostrarDigitando();
             const dados = await chamarAPI('/admin/assinantes', { telefone: usuarioTelefone });
@@ -491,7 +486,6 @@
             }
         }
 
-        // --- Admin: adicionar vaga ---
         async function adicionarVaga(vaga) {
             mostrarDigitando();
             const dados = await chamarAPI('/admin/add-vaga', {
@@ -506,7 +500,6 @@
             addMessage(`✅ Vaga "${vaga.titulo}" adicionada com sucesso! Total: ${dados.total} vagas.`, 'bot');
         }
 
-        // --- Admin: remover vaga ---
         async function removerVaga(titulo) {
             mostrarDigitando();
             const dados = await chamarAPI('/admin/remover-vaga', {
