@@ -59,6 +59,21 @@
         .message-wrapper.bot {
             align-self: flex-start;
         }
+        .avatar-bot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a5f9e, #6fc3ff);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            /* Se tiver uma foto, use background-image: url('sua-foto.jpg'); background-size: cover; */
+        }
         .message {
             padding: 12px 16px;
             border-radius: 20px;
@@ -90,7 +105,13 @@
             margin-left: 6px;
         }
 
-        /* Botão de áudio */
+        /* Botões de áudio */
+        .audio-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
         .btn-audio {
             background: transparent;
             border: none;
@@ -100,7 +121,6 @@
             border-radius: 30px;
             transition: 0.2s;
             color: #4a5b6e;
-            flex-shrink: 0;
             line-height: 1;
         }
         .btn-audio:hover {
@@ -111,6 +131,14 @@
             color: #1f5e9e;
             animation: pulse-audio 0.8s infinite;
         }
+        .btn-audio.idioma {
+            font-size: 14px;
+            font-weight: 600;
+            background: #eef3f9;
+            border: 1px solid #bcc9d9;
+            padding: 2px 10px;
+        }
+        .btn-audio.idioma:hover { background: #d0def0; }
         @keyframes pulse-audio {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.25); }
@@ -197,6 +225,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .btn-assinar {
             background: #f5b042;
@@ -277,13 +306,31 @@
 
         let aguardandoPlano = false;
         const idiomaUsuario = navigator.language.split('-')[0] || 'pt';
+        let audioIdioma = 'pt-BR'; // idioma padrão da leitura
 
         // --- Síntese de voz ---
         let synth = window.speechSynthesis;
         let utteranceAtual = null;
         let mensagemAtualSendoLida = null;
 
-        function falar(texto, elementoAudio) {
+        // --- Função para obter voz feminina suave ---
+        function obterVozFeminina(idioma) {
+            const voices = synth.getVoices();
+            // Prioriza vozes femininas (Google, Microsoft, Apple)
+            const feminina = voices.find(v =>
+                v.lang.startsWith(idioma) &&
+                (v.name.toLowerCase().includes('female') ||
+                 v.name.toLowerCase().includes('feminina') ||
+                 v.name.toLowerCase().includes('google') ||
+                 v.name.toLowerCase().includes('samantha') ||
+                 v.name.toLowerCase().includes('maria') ||
+                 v.name.toLowerCase().includes('luciana'))
+            );
+            // Se não encontrar, qualquer voz do idioma
+            return feminina || voices.find(v => v.lang.startsWith(idioma)) || null;
+        }
+
+        function falar(texto, elementoAudio, idioma = 'pt-BR') {
             // Para qualquer leitura anterior
             if (synth.speaking) {
                 synth.cancel();
@@ -293,27 +340,23 @@
                 }
             }
 
-            // Verifica se o navegador suporta
             if (!('speechSynthesis' in window)) {
                 alert('Seu navegador não suporta leitura em voz alta.');
                 return;
             }
 
-            // Remove tags HTML e emojis (opcional)
+            // Limpa o texto (remove HTML e emojis, mantém pontuação básica)
             const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ');
 
             const utterance = new SpeechSynthesisUtterance(textoLimpo);
-            utterance.lang = 'pt-PT'; // Pode ser 'pt-MZ' se disponível
-            utterance.rate = 0.9;      // Velocidade ligeiramente mais lenta para melhor compreensão
+            utterance.lang = idioma; // 'pt-BR' ou 'en-US'
+            utterance.rate = 0.9;
             utterance.pitch = 1.0;
             utterance.volume = 1;
 
-            // Tenta escolher uma voz feminina em português
-            const voices = synth.getVoices();
-            const vozPt = voices.find(v => v.lang.startsWith('pt') && v.name.includes('Feminina')) ||
-                         voices.find(v => v.lang.startsWith('pt')) ||
-                         voices.find(v => v.lang.startsWith('pt'));
-            if (vozPt) utterance.voice = vozPt;
+            // Tenta obter voz feminina suave
+            const voz = obterVozFeminina(idioma);
+            if (voz) utterance.voice = voz;
 
             // Marca o botão como "a tocar"
             if (elementoAudio) {
@@ -345,11 +388,8 @@
             synth.speak(utterance);
         }
 
-        // Parar leitura
         function pararLeitura() {
-            if (synth.speaking) {
-                synth.cancel();
-            }
+            if (synth.speaking) synth.cancel();
             if (mensagemAtualSendoLida) {
                 mensagemAtualSendoLida.classList.remove('playing');
                 mensagemAtualSendoLida.textContent = '🔊';
@@ -362,8 +402,21 @@
 
         // Carregar vozes (necessário para alguns navegadores)
         if (synth) {
-            synth.getVoices(); // força o carregamento
+            synth.getVoices();
             synth.onvoiceschanged = () => { synth.getVoices(); };
+        }
+
+        // --- Alternar idioma da leitura ---
+        function alternarIdiomaAudio() {
+            if (audioIdioma === 'pt-BR') {
+                audioIdioma = 'en-US';
+            } else {
+                audioIdioma = 'pt-BR';
+            }
+            // Atualiza todos os botões de idioma (se houver)
+            document.querySelectorAll('.btn-audio.idioma').forEach(btn => {
+                btn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
+            });
         }
 
         // --- UI ---
@@ -383,34 +436,67 @@
             }
         }
 
-        // --- Adicionar mensagem (com botão de áudio) ---
+        // --- Adicionar mensagem com avatar e botões de áudio ---
         function addMessage(text, tipo = 'bot', extra = '') {
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${tipo}`;
 
+            // Avatar (apenas para o bot)
+            if (tipo === 'bot') {
+                const avatar = document.createElement('div');
+                avatar.className = 'avatar-bot';
+                avatar.textContent = 'V'; // ou coloque um emoji: '🤖'
+                // Se tiver foto: avatar.style.backgroundImage = "url('sua-foto.jpg')";
+                wrapper.appendChild(avatar);
+            }
+
             const bubble = document.createElement('div');
             bubble.className = `message ${tipo}`;
             bubble.innerHTML = text + extra;
-
             wrapper.appendChild(bubble);
 
-            // Botão de áudio (apenas para mensagens do bot)
+            // Botões de áudio (apenas para mensagens do bot)
             if (tipo === 'bot') {
-                const audioBtn = document.createElement('button');
-                audioBtn.className = 'btn-audio';
-                audioBtn.textContent = '🔊';
-                audioBtn.setAttribute('aria-label', 'Ouvir mensagem');
-                audioBtn.addEventListener('click', function(e) {
+                const audioDiv = document.createElement('div');
+                audioDiv.className = 'audio-actions';
+
+                // Botão ouvir
+                const ouvirBtn = document.createElement('button');
+                ouvirBtn.className = 'btn-audio';
+                ouvirBtn.textContent = '🔊';
+                ouvirBtn.setAttribute('aria-label', 'Ouvir mensagem');
+                ouvirBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    // Pega o texto da mensagem (sem os botões de plano)
                     const textoMsg = bubble.innerText || bubble.textContent;
-                    falar(textoMsg, audioBtn);
+                    falar(textoMsg, ouvirBtn, audioIdioma);
                 });
-                wrapper.appendChild(audioBtn);
+                audioDiv.appendChild(ouvirBtn);
+
+                // Botão alternar idioma (apenas um por mensagem, mas global)
+                // Vamos colocar um único botão global no footer em vez de por mensagem
+                // Mas para manter a simplicidade, adicionamos um indicador pequeno
+                // que mostra o idioma atual ao passar o mouse
+
+                wrapper.appendChild(audioDiv);
             }
 
             chat.appendChild(wrapper);
             chat.scrollTop = chat.scrollHeight;
+        }
+
+        // --- Adicionar botão de idioma no footer ---
+        function adicionarBotaoIdioma() {
+            const footerActions = document.querySelector('.footer-actions');
+            const idiomaBtn = document.createElement('button');
+            idiomaBtn.className = 'btn-audio idioma';
+            idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
+            idiomaBtn.addEventListener('click', () => {
+                alternarIdiomaAudio();
+                // Atualiza o texto do botão
+                idiomaBtn.textContent = audioIdioma === 'pt-BR' ? '🇧🇷 PT' : '🇺🇸 EN';
+            });
+            // Insere antes do botão "Parar"
+            footerActions.insertBefore(idiomaBtn, stopAudioBtn);
         }
 
         // --- Indicador de digitação ---
@@ -715,6 +801,7 @@
         // INICIALIZAÇÃO
         // ============================================================
         atualizarInterface();
+        adicionarBotaoIdioma();
 
         window.addEventListener('load', () => {
             setTimeout(() => {
