@@ -2,9 +2,7 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-// =============================================
 // CORS
-// =============================================
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -20,20 +18,28 @@ const DONO_TELEFONE = '879306034';
 const PAYSUITE_API_KEY = process.env.PAYSUITE_API_KEY || 'SUA_API_KEY';
 const PAYSUITE_SECRET = process.env.PAYSUITE_SECRET || 'SUA_SECRET';
 const PAYSUITE_BASE_URL = 'https://api.paysuite.tech/v1';
-
-// ClicPay (opcional)
 const CLICPAY_API_KEY = process.env.CLICPAY_API_KEY || 'SUA_CLICPAY_API_KEY';
 const CLICPAY_WALLET_ID = process.env.CLICPAY_WALLET_ID || 'SEU_WALLET_ID';
 const CLICPAY_BASE_URL = 'https://clicpay.co.mz/api/v2';
 
 // =============================================
-// ARMAZENAMENTO (substituir por BD depois)
+// CHAVES DAS IAS
 // =============================================
-const assinantes = new Set();
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
+const Anthropic = require('@anthropic-ai/sdk');
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const deepseekClient = new OpenAI({
+    baseURL: 'https://api.deepseek.com/v1',
+    apiKey: process.env.DEEPSEEK_API_KEY
+});
+const anthropic = process.env.CLAUDE_API_KEY ? new Anthropic({ apiKey: process.env.CLAUDE_API_KEY }) : null;
 
 // =============================================
-// BASE DE VAGAS (30+ oportunidades)
+// ARMAZENAMENTO E VAGAS
 // =============================================
+const assinantes = new Set();
 let todasVagas = [
     { titulo: 'Desenvolvedor Java Pleno', cidade: 'Maputo', salario: '65.000 MT', area: 'TI', beneficio: 'Seguro médico, vale alimentação, home office 2x/semana' },
     { titulo: 'Analista de Sistemas', cidade: 'Maputo', salario: '58.000 MT', area: 'TI', beneficio: 'Vale transporte, bônus anual' },
@@ -69,101 +75,76 @@ let todasVagas = [
 ];
 
 // =============================================
-// ENDPOINTS
+// ENDPOINT: TTS (VoiceRSS gratuito)
 // =============================================
-
-app.get('/', (req, res) => res.send('Servidor online!'));
-
-// --- PaySuite (pagamento) ---
-app.post('/criar-pagamento', async (req, res) => {
-    const { telefone, plano } = req.body;
-    if (!telefone || !plano) return res.status(400).json({ erro: 'Telefone e plano são obrigatórios' });
-    const valor = plano === 'semanal' ? 50 : 150;
+app.post('/sintetizar-voz', async (req, res) => {
+    const { texto, idioma = 'pt-BR' } = req.body;
+    if (!texto) return res.status(400).json({ erro: 'Texto é obrigatório' });
     try {
-        const response = await fetch(`${PAYSUITE_BASE_URL}/transactions`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${PAYSUITE_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: valor,
-                currency: 'MZN',
-                description: `Assinatura ${plano} - VagasBot`,
-                customer: { phone: telefone },
-                callback_url: 'https://vagasbot-web-api.onrender.com/webhook-paysuite'
-            })
-        });
-        const data = await response.json();
-        res.json({ success: true, payment_url: data.payment_url, reference: data.reference });
+        const url = `https://api.voicerss.org/?key=SUA_CHAVE_VOICERSS&hl=${idioma === 'pt-BR' ? 'pt-br' : 'en-us'}&v=Maria&src=${encodeURIComponent(texto)}`;
+        const response = await fetch(url);
+        const audioBuffer = await response.arrayBuffer();
+        const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+        res.json({ audio: audioBase64 });
     } catch (error) {
-        res.status(500).json({ success: false, erro: error.message });
+        console.error('Erro no TTS:', error);
+        res.status(500).json({ erro: 'Falha ao gerar áudio' });
     }
 });
 
-// --- Webhook PaySuite ---
-app.post('/webhook-paysuite', (req, res) => {
-    const { reference, status, customer_phone } = req.body;
-    console.log('Webhook PaySuite:', { reference, status, customer_phone });
-    if (status === 'completed') {
-        assinantes.add(customer_phone);
-        console.log(`✅ Assinante ativado: ${customer_phone}`);
-    }
-    res.sendStatus(200);
-});
+// =============================================
+// ENDPOINT: IA (Gemini, DeepSeek, Claude)
+// =============================================
+app.post('/chat-ia', async (req, res) => {
+    const { mensagem, idioma = 'pt', modelo = 'gemini' } = req.body;
 
-// --- ClicPay (alternativa) ---
-app.post('/criar-pagamento-clicpay', async (req, res) => {
-    const { telefone, plano } = req.body;
-    if (!telefone || !plano) return res.status(400).json({ erro: 'Telefone e plano são obrigatórios' });
-    const valor = plano === 'semanal' ? 50 : 150;
+    const prompt = idioma === 'en'
+        ? `You are Vaga, a job assistant in Mozambique. Respond briefly and helpfully, using emojis. Question: ${mensagem}`
+        : `Você é a Vaga, uma assistente de empregos em Moçambique. Responda de forma breve e útil, usando emojis. Pergunta: ${mensagem}`;
+
     try {
-        const response = await fetch(
-            `${CLICPAY_BASE_URL}/wallets/${CLICPAY_WALLET_ID}/c2b/mpesa`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${CLICPAY_API_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    msisdn: telefone,
-                    amount: valor,
-                    reference_description: `Assinatura ${plano} - VagasBot`,
-                    internal_notes: `Pedido ${Date.now()}`
-                })
+        let resposta = '';
+        switch (modelo) {
+            case 'gemini': {
+                const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+                const result = await model.generateContent(prompt);
+                resposta = result.response.text();
+                break;
             }
-        );
-        const data = await response.json();
-        res.json({ success: true, transaction_id: data.transaction_id, status: data.status, payment_url: data.payment_url || null });
+            case 'deepseek': {
+                const resp = await deepseekClient.chat.completions.create({
+                    model: 'deepseek-chat',
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 1024,
+                });
+                resposta = resp.choices[0].message.content;
+                break;
+            }
+            case 'claude': {
+                if (!anthropic) throw new Error('Claude não configurado.');
+                const resp = await anthropic.messages.create({
+                    model: 'claude-3-haiku-20240307',
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 1024
+                });
+                resposta = resp.content[0].text;
+                break;
+            }
+            default: throw new Error('Modelo não suportado.');
+        }
+        res.json({ resposta });
     } catch (error) {
-        res.status(500).json({ success: false, erro: error.message });
+        console.error('Erro na IA:', error);
+        res.status(500).json({ erro: `Falha ao gerar resposta com ${modelo}.` });
     }
 });
 
-app.post('/webhook-clicpay', (req, res) => {
-    const { transaction_id, status, customer_msisdn } = req.body;
-    console.log('Webhook ClicPay:', { transaction_id, status, customer_msisdn });
-    if (status === 'completed' || status === 'success') {
-        assinantes.add(customer_msisdn);
-        console.log(`✅ Assinante ativado (ClicPay): ${customer_msisdn}`);
-    }
-    res.sendStatus(200);
-});
-
-// --- Verificar acesso ---
-app.post('/verificar-acesso', (req, res) => {
-    const { telefone } = req.body;
-    const temAcesso = assinantes.has(telefone) || telefone === DONO_TELEFONE;
-    res.json({ assinante: temAcesso, dono: telefone === DONO_TELEFONE });
-});
-
-// --- Vagas (com filtros) ---
+// =============================================
+// ENDPOINT: VAGAS
+// =============================================
 app.post('/vagas', async (req, res) => {
-    const { telefone, cidade, area, idioma = 'pt' } = req.body;
+    const { telefone, cidade, area } = req.body;
     const isDono = (telefone === DONO_TELEFONE);
-
     let vagasFiltradas = todasVagas;
     if (cidade) {
         const cid = cidade.trim().toLowerCase();
@@ -176,35 +157,31 @@ app.post('/vagas', async (req, res) => {
     if (!cidade && !area) vagasFiltradas = todasVagas;
 
     const isPremium = assinantes.has(telefone) || isDono;
-
     const resumo = vagasFiltradas.map(v => `${v.titulo} – ${v.cidade} – ${v.salario}`);
-    const completo = vagasFiltradas.map(v =>
-        `${v.titulo} – ${v.cidade} – ${v.salario}\n   • Benefícios: ${v.beneficio}`
-    );
-
-    let mensagemBase = '';
-    let listaVagas = [];
-
-    if (isPremium) {
-        mensagemBase = isDono ? '👑 Olá, Dono! Aqui estão todas as vagas com todos os detalhes.' : '🔓 Detalhes completos disponíveis!';
-        listaVagas = completo;
-    } else {
-        mensagemBase = '🔒 Assine Premium para ver benefícios e detalhes completos!';
-        listaVagas = resumo;
-    }
-
-    // Tradução leve (se necessário, pode usar uma API)
-    // Como estamos a usar o frontend para tradução, mantemos em português
+    const completo = vagasFiltradas.map(v => `${v.titulo} – ${v.cidade} – ${v.salario}\n   • Benefícios: ${v.beneficio}`);
 
     res.json({
-        vagas: listaVagas,
+        vagas: isPremium ? completo : resumo,
         plano: isPremium ? (isDono ? 'dono' : 'premium') : 'gratuito',
-        total: listaVagas.length,
-        mensagem: mensagemBase
+        total: vagasFiltradas.length,
+        mensagem: isPremium ? (isDono ? '👑 Olá, Dono!' : '🔓 Detalhes completos disponíveis!') : '🔒 Assine Premium para ver detalhes.'
     });
 });
 
-// --- ADMIN (apenas dono) ---
+// =============================================
+// ENDPOINT: VERIFICAR ACESSO
+// =============================================
+app.post('/verificar-acesso', (req, res) => {
+    const { telefone } = req.body;
+    res.json({
+        assinante: assinantes.has(telefone) || telefone === DONO_TELEFONE,
+        dono: telefone === DONO_TELEFONE
+    });
+});
+
+// =============================================
+// ADMIN (apenas dono)
+// =============================================
 app.post('/admin/assinantes', (req, res) => {
     const { telefone } = req.body;
     if (telefone !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
@@ -215,10 +192,10 @@ app.post('/admin/add-vaga', (req, res) => {
     const { telefone, vaga } = req.body;
     if (telefone !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
     if (!vaga || !vaga.titulo || !vaga.cidade || !vaga.salario || !vaga.area || !vaga.beneficio) {
-        return res.status(400).json({ erro: 'Vaga inválida. Necessário: titulo, cidade, salario, area, beneficio' });
+        return res.status(400).json({ erro: 'Vaga inválida' });
     }
     todasVagas.push(vaga);
-    res.json({ success: true, mensagem: 'Vaga adicionada com sucesso!', total: todasVagas.length });
+    res.json({ success: true, mensagem: 'Vaga adicionada!', total: todasVagas.length });
 });
 
 app.post('/admin/remover-vaga', (req, res) => {
@@ -227,7 +204,7 @@ app.post('/admin/remover-vaga', (req, res) => {
     const index = todasVagas.findIndex(v => v.titulo.toLowerCase() === titulo.toLowerCase());
     if (index === -1) return res.status(404).json({ erro: 'Vaga não encontrada' });
     todasVagas.splice(index, 1);
-    res.json({ success: true, mensagem: 'Vaga removida com sucesso!', total: todasVagas.length });
+    res.json({ success: true, mensagem: 'Vaga removida!', total: todasVagas.length });
 });
 
 // =============================================
