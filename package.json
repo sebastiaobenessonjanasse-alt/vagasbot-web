@@ -1,7 +1,7 @@
 {
   "name": "vagasbot-backend",
   "version": "2.0.0",
-  "description": "Backend do VagasBot com IA Gemini, pagamentos e administração",
+  "description": "Backend do VagasBot com IA Gemini, DeepSeek, Claude e TTS",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -9,7 +9,9 @@
   "dependencies": {
     "express": "^4.18.2",
     "node-fetch": "^2.6.7",
-    "@google/generative-ai": "^0.21.0"
+    "@google/generative-ai": "^0.21.0",
+    "openai": "^4.52.0",
+    "@anthropic-ai/sdk": "^0.24.0"
   },
   "engines": {
     "node": ">=18.0.0"
