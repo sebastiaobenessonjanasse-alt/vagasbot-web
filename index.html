@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VagasBot Moçambique</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* ===== RESET E BASE ===== */
+        /* ===== RESET ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
         body { background: #0b1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 12px; }
         .app { max-width: 1200px; width: 100%; background: #f4f7fc; border-radius: 32px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); display: grid; grid-template-columns: 250px 1fr; grid-template-rows: auto 1fr auto; height: 90vh; }
@@ -40,7 +39,7 @@
             background-image: url('sua-foto.jpg');
             background-size: cover; background-position: center;
         }
-        .sidebar .user-info .nome { font-weight: 600; font-size: 14px; text-align: center; margin-top: 4px; }
+        .sidebar .user-info .nome { font-weight: 600; font-size: 14px; text-align: center; }
         .sidebar .user-info .dono-tag { background: #f5b042; color: #1f2a38; font-size: 11px; padding: 2px 12px; border-radius: 30px; font-weight: 700; }
 
         .sidebar nav {
@@ -277,7 +276,7 @@
         // ============================================================
         const DONO_TELEFONE = '879306034';
         let usuarioTelefone = '879306034';
-        const API_BASE = 'https://vagasbot-web-api.onrender.com';
+        const API_BASE = 'https://vagasbapi.onrender.com'; // ✅ URL CORRIGIDA
 
         // ============================================================
         // DOM ELEMENTOS
@@ -347,7 +346,6 @@
             if (tipo === 'bot') {
                 const actionDiv = document.createElement('div');
                 actionDiv.className = 'action-buttons';
-                // Botão ouvir
                 const audioBtn = document.createElement('button');
                 audioBtn.className = 'btn-action';
                 audioBtn.textContent = '🔊';
@@ -496,7 +494,6 @@
             if (!texto) return;
             addMessage(texto, 'user');
             input.value = '';
-            // Indicador de digitação
             addMessage('⏳ A pensar...', 'bot');
             const dados = await chamarAPI('/chat-ia', { mensagem: texto, modelo: modeloIA, telefone: usuarioTelefone });
             const ultima = chatContainer.lastElementChild;
@@ -504,7 +501,7 @@
             if (dados && dados.resposta) {
                 addMessage(dados.resposta, 'bot');
             } else {
-                addMessage('⚠️ Erro ao gerar resposta. Verifica a tua conexão ou tenta novamente.', 'bot');
+                addMessage('⚠️ Erro ao gerar resposta. Verifica a tua conexão.', 'bot');
             }
         }
 
@@ -552,7 +549,7 @@
         }
 
         // ============================================================
-        // SELETORES (IA, IDIOMA, VOZ)
+        // SELETORES
         // ============================================================
         document.querySelectorAll('.selector-group').forEach(group => {
             group.addEventListener('click', (e) => {
@@ -567,7 +564,6 @@
                     idiomaAtual = btn.dataset.idioma;
                     addMessage(idiomaAtual === 'pt' ? 'Idioma: Português 🇧🇷' : 'Language: English 🇺🇸', 'bot');
                 } else if (group.id === 'voiceSelector') {
-                    // Apenas feedback visual – a voz é gerada no backend
                     addMessage(`Voz alterada para ${btn.textContent.trim()}`, 'bot');
                 }
             });
@@ -578,11 +574,11 @@
         // ============================================================
         addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos em Moçambique.', 'bot');
         addMessage('🔧 Modelo atual: Gemini | Idioma: PT', 'bot');
-        addMessage('📌 Envia "vagas", "assinar", "verificar" ou faz uma pergunta qualquer.', 'bot');
-        addMessage('🎤 Podes também usar o microfone para falar em vez de escrever.', 'bot');
+        addMessage('📌 Envia "vagas", "assinar", "verificar" ou faz uma pergunta.', 'bot');
+        addMessage('🎤 Usa o microfone para falar em vez de escrever.', 'bot');
         addMessage('🔊 Clica no 🔊 para ouvir qualquer resposta.', 'bot');
 
-        console.log('✅ VagasBot carregado com sucesso!');
+        console.log('✅ VagasBot carregado!');
     </script>
 </body>
 </html>
