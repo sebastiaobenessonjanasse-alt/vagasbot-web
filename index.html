@@ -5,390 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VagasBot Moçambique</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-        }
-        body {
-            background: #0b1a2e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 12px;
-        }
-        .app {
-            max-width: 480px;
-            width: 100%;
-            background: #f0f4fa;
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-        }
-        /* HEADER */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: #0b1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 12px; }
+        .app { max-width: 480px; width: 100%; background: #f0f4fa; border-radius: 32px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+
+        /* HEADER com foto e nome do dono */
         .header {
             background: linear-gradient(145deg, #0d2844, #1a3a5c);
             padding: 20px 20px 14px;
             color: white;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 14px;
             border-bottom: 2px solid #2e5a7a;
         }
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
+        .header-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 3px solid #6fc3ff;
+            flex-shrink: 0;
+            background-image: url('foto.jpg');
+            background-size: cover;
+            background-position: center;
         }
-        .header h1 span {
-            color: #6fc3ff;
-        }
-        .header .subtitle {
+        .header-info h1 { font-size: 20px; font-weight: 700; }
+        .header-info h1 span { color: #6fc3ff; }
+        .header-info .dono-nome {
             font-size: 12px;
-            opacity: 0.8;
-            margin-top: 2px;
-        }
-        .badge {
-            background: #1f8b4c;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #fff;
-        }
-        .badge.dono {
+            opacity: 0.9;
             background: #f5b042;
             color: #1f2a38;
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 2px;
+            font-weight: 600;
         }
+        .badge { background: #1f8b4c; padding: 4px 12px; border-radius: 30px; font-size: 12px; font-weight: 600; color: #fff; margin-left: auto; }
 
         /* STATS BANNER */
-        .stats-banner {
-            display: flex;
-            justify-content: space-around;
-            background: #ffffff;
-            padding: 12px 10px;
-            border-bottom: 1px solid #d0d9e3;
-            margin: 0 0 4px 0;
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a5f9e;
-            display: block;
-        }
-        .stat-label {
-            font-size: 11px;
-            color: #4a5b6e;
-        }
+        .stats-banner { display: flex; justify-content: space-around; background: #ffffff; padding: 12px 10px; border-bottom: 1px solid #d0d9e3; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 18px; font-weight: 700; color: #1a5f9e; display: block; }
+        .stat-label { font-size: 11px; color: #4a5b6e; }
 
         /* CHAT */
-        .chat {
-            padding: 16px 14px 8px;
-            height: 380px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: #e9eef3;
-            scroll-behavior: smooth;
-        }
-        .message-wrapper {
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
-            max-width: 95%;
-            animation: fadeIn 0.25s ease;
-        }
-        .message-wrapper.user {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-        .message-wrapper.bot {
-            align-self: flex-start;
-        }
-        .avatar-bot {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1a5f9e, #6fc3ff);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .message {
-            padding: 12px 16px;
-            border-radius: 20px;
-            font-size: 15px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            flex: 1;
-        }
-        .message.bot {
-            background: #ffffff;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            color: #1a2634;
-        }
-        .message.user {
-            background: #1f5e9e;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        .message .small {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 6px;
-            display: block;
-        }
+        .chat { padding: 16px 14px 8px; height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #e9eef3; scroll-behavior: smooth; }
+        .message-wrapper { display: flex; align-items: flex-end; gap: 6px; max-width: 95%; animation: fadeIn 0.25s ease; }
+        .message-wrapper.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message-wrapper.bot { align-self: flex-start; }
+        .avatar-bot { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1a5f9e, #6fc3ff); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .message { padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; flex: 1; }
+        .message.bot { background: #ffffff; border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: #1a2634; }
+        .message.user { background: #1f5e9e; color: white; border-bottom-right-radius: 4px; }
 
         /* ACTION BUTTONS */
-        .action-buttons {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .btn-action {
-            background: transparent;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 30px;
-            transition: 0.2s;
-            color: #4a5b6e;
-            line-height: 1;
-        }
-        .btn-action:hover {
-            background: #d0d9e3;
-            transform: scale(1.1);
-        }
-        .btn-action.playing {
-            color: #1f5e9e;
-            animation: pulse-audio 0.8s infinite;
-        }
-        .btn-action.pausado {
-            color: #f5b042;
-            animation: none;
-        }
-        .btn-action.copiado {
-            color: #1f8b4c;
-        }
-        @keyframes pulse-audio {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.25); }
-        }
+        .action-buttons { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .btn-action { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 30px; transition: 0.2s; color: #4a5b6e; line-height: 1; }
+        .btn-action:hover { background: #d0d9e3; transform: scale(1.1); }
+        .btn-action.playing { color: #1f5e9e; animation: pulse-audio 0.8s infinite; }
+        .btn-action.pausado { color: #f5b042; animation: none; }
+        .btn-action.copiado { color: #1f8b4c; }
+        @keyframes pulse-audio { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
 
         /* AUDIO CONTROLS */
-        .audio-controls {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .btn-controle-audio {
-            background: transparent;
-            border: 1px solid #bcc9d9;
-            border-radius: 30px;
-            padding: 2px 12px;
-            font-size: 14px;
-            cursor: pointer;
-            background: #eef3f9;
-            transition: 0.2s;
-            color: #1a2634;
-            font-weight: 600;
-        }
-        .btn-controle-audio:hover {
-            background: #d0def0;
-        }
-        .btn-controle-audio:active {
-            transform: scale(0.95);
-        }
-        .btn-stop-global {
-            background: #e74c3c;
-            border: none;
-            border-radius: 30px;
-            padding: 4px 14px;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .btn-stop-global:active {
-            opacity: 0.7;
-        }
+        .audio-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .btn-controle-audio { background: transparent; border: 1px solid #bcc9d9; border-radius: 30px; padding: 2px 12px; font-size: 14px; cursor: pointer; background: #eef3f9; transition: 0.2s; color: #1a2634; font-weight: 600; }
+        .btn-controle-audio:hover { background: #d0def0; }
+        .btn-controle-audio:active { transform: scale(0.95); }
+        .btn-stop-global { background: #e74c3c; border: none; border-radius: 30px; padding: 4px 14px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; }
 
         /* SELECTORS */
-        .selector-group {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            background: #eef3f9;
-            border-radius: 30px;
-            padding: 2px 6px;
-            border: 1px solid #bcc9d9;
-        }
-        .selector-option {
-            background: transparent;
-            border: none;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #4a5b6e;
-            transition: 0.2s;
-        }
-        .selector-option.active {
-            background: #1a5f9e;
-            color: white;
-        }
-        .selector-option:active {
-            transform: scale(0.95);
-        }
+        .selector-group { display: flex; gap: 6px; align-items: center; background: #eef3f9; border-radius: 30px; padding: 2px 6px; border: 1px solid #bcc9d9; }
+        .selector-option { background: transparent; border: none; padding: 2px 10px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer; color: #4a5b6e; transition: 0.2s; }
+        .selector-option.active { background: #1a5f9e; color: white; }
+        .selector-option:active { transform: scale(0.95); }
 
         /* TYPING */
-        .typing {
-            align-self: flex-start;
-            background: #e4eaf1;
-            padding: 12px 18px;
-            border-radius: 24px;
-            font-size: 14px;
-            color: #4a5b6e;
-            display: flex;
-            gap: 6px;
-        }
-        .typing span {
-            animation: pulse 1.4s infinite;
-            display: inline-block;
-        }
+        .typing { align-self: flex-start; background: #e4eaf1; padding: 12px 18px; border-radius: 24px; font-size: 14px; color: #4a5b6e; display: flex; gap: 6px; }
+        .typing span { animation: pulse 1.4s infinite; display: inline-block; }
         .typing span:nth-child(2) { animation-delay: 0.2s; }
         .typing span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes pulse {
-            0%, 80%, 100% { opacity: 0.3; transform: scale(0.9); }
-            40% { opacity: 1; transform: scale(1.1); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.9); } 40% { opacity: 1; transform: scale(1.1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* INPUT */
-        .input-area {
-            display: flex;
-            gap: 8px;
-            padding: 10px 14px 16px;
-            background: #f0f4fa;
-            border-top: 1px solid #d0d9e3;
-            align-items: center;
-        }
-        .input-area input {
-            flex: 1;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 18px;
-            font-size: 15px;
-            background: white;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
-            outline: none;
-        }
-        .input-area .btn-microfone {
-            background: transparent;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 50%;
-            transition: 0.2s;
-            color: #1a5f9e;
-            line-height: 1;
-        }
+        /* INPUT (sempre visível) */
+        .input-area { display: flex; gap: 8px; padding: 10px 14px 16px; background: #f0f4fa; border-top: 1px solid #d0d9e3; align-items: center; }
+        .input-area input { flex: 1; border: none; border-radius: 30px; padding: 12px 18px; font-size: 15px; background: white; box-shadow: inset 0 2px 6px rgba(0,0,0,0.03); outline: none; min-width: 80px; }
+        .input-area .btn-microfone { background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 6px; border-radius: 50%; transition: 0.2s; color: #1a5f9e; line-height: 1; }
         .input-area .btn-microfone:active { transform: scale(0.9); }
-        .input-area .btn-microfone.gravando {
-            color: #e74c3c;
-            animation: pulse-microfone 1.2s infinite;
-        }
-        @keyframes pulse-microfone {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-        .input-area button.btn-enviar {
-            background: #1a5f9e;
-            border: none;
-            border-radius: 30px;
-            padding: 0 20px;
-            color: white;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3);
-        }
+        .input-area .btn-microfone.gravando { color: #e74c3c; animation: pulse-microfone 1.2s infinite; }
+        @keyframes pulse-microfone { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .input-area button.btn-enviar { background: #1a5f9e; border: none; border-radius: 30px; padding: 0 20px; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3); }
         .input-area button.btn-enviar:active { transform: scale(0.94); background: #0f3f6b; }
         .input-area button.btn-enviar:disabled { opacity: 0.5; pointer-events: none; }
 
         /* FOOTER */
-        .footer {
-            background: #dce3ec;
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: #2d4057;
-            border-top: 1px solid #c2cddb;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
+        .footer { background: #dce3ec; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #2d4057; border-top: 1px solid #c2cddb; flex-wrap: wrap; gap: 6px; }
         .footer span { font-weight: 600; color: #0f3f6b; }
-        .footer-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .btn-assinar {
-            background: #f5b042;
-            border: none;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 13px;
-            color: #1f2a38;
-            cursor: pointer;
-        }
-        .btn-assinar:active { opacity: 0.7; }
+        .footer-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .btn-assinar { background: #f5b042; border: none; padding: 4px 14px; border-radius: 30px; font-weight: 700; font-size: 13px; color: #1f2a38; cursor: pointer; }
 
-        .plano-box {
-            display: flex;
-            gap: 10px;
-            margin: 6px 0 4px;
-            flex-wrap: wrap;
-        }
-        .plano-btn {
-            background: #eef3f9;
-            border: 1px solid #bcc9d9;
-            border-radius: 40px;
-            padding: 6px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #1a2c42;
-            cursor: pointer;
-            transition: 0.15s;
-        }
+        .plano-box { display: flex; gap: 10px; margin: 6px 0 4px; flex-wrap: wrap; }
+        .plano-btn { background: #eef3f9; border: 1px solid #bcc9d9; border-radius: 40px; padding: 6px 16px; font-size: 13px; font-weight: 600; color: #1a2c42; cursor: pointer; transition: 0.15s; }
         .plano-btn:active { background: #d0def0; transform: scale(0.96); }
         .plano-btn.destaque { background: #1f8b4c; color: white; border-color: #1f8b4c; }
-        .message.bot .plano-btn { background: #eef3f9; border-color: #b0c2d6; }
-        .message.bot .plano-btn.destaque { background: #1f8b4c; border-color: #1f8b4c; color: white; }
 
         .chat::-webkit-scrollbar { width: 4px; }
         .chat::-webkit-scrollbar-thumb { background: #a0b7ce; border-radius: 10px; }
@@ -396,29 +118,22 @@
 </head>
 <body>
     <div class="app">
+
         <!-- HEADER -->
         <div class="header">
-            <div>
+            <div class="header-avatar" id="headerAvatar"></div>
+            <div class="header-info">
                 <h1>Vagas<span>Bot</span></h1>
-                <div class="subtitle">Encontre oportunidades em Moçambique 🇲🇿</div>
+                <div class="dono-nome" id="donoNome">Sebastião Benesson Janasse – Dono Supremo 👑</div>
             </div>
             <div class="badge" id="badgeStatus">🇲🇿</div>
         </div>
 
-        <!-- STATS BANNER -->
+        <!-- STATS -->
         <div class="stats-banner">
-            <div class="stat-item">
-                <span class="stat-number">+120</span>
-                <span class="stat-label">Pessoas ajudadas</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">30+</span>
-                <span class="stat-label">Vagas disponíveis</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">3</span>
-                <span class="stat-label">Cidades</span>
-            </div>
+            <div class="stat-item"><span class="stat-number">+120</span><span class="stat-label">Pessoas ajudadas</span></div>
+            <div class="stat-item"><span class="stat-number">30+</span><span class="stat-label">Vagas disponíveis</span></div>
+            <div class="stat-item"><span class="stat-number">3</span><span class="stat-label">Cidades</span></div>
         </div>
 
         <!-- CHAT -->
@@ -427,7 +142,7 @@
         <!-- INPUT -->
         <div class="input-area">
             <input type="text" id="msgInput" placeholder="Escreve ou fala a tua mensagem..." autocomplete="off">
-            <button class="btn-microfone" id="microfoneBtn" aria-label="Falar">🎤</button>
+            <button class="btn-microfone" id="microfoneBtn">🎤</button>
             <button class="btn-enviar" id="sendBtn">Enviar</button>
         </div>
 
@@ -435,18 +150,20 @@
         <div class="footer">
             <span id="footerStatus">🙌 +120 pessoas já encontraram</span>
             <div class="footer-actions">
-                <!-- Seletor de idioma -->
+                <div class="selector-group" id="iaSelector">
+                    <button class="selector-option active" data-ia="gemini">🧠 Gemini</button>
+                    <button class="selector-option" data-ia="deepseek">🧠 DeepSeek</button>
+                    <button class="selector-option" data-ia="claude">🧠 Claude</button>
+                </div>
                 <div class="selector-group" id="idiomaSelector">
                     <button class="selector-option active" data-idioma="pt">🇧🇷 PT</button>
                     <button class="selector-option" data-idioma="en">🇺🇸 EN</button>
                 </div>
-                <!-- Seletor de voz -->
                 <div class="selector-group" id="voiceSelector">
                     <button class="selector-option active" data-voz="feminina">👩</button>
                     <button class="selector-option" data-voz="masculina">👨</button>
                     <button class="selector-option" data-voz="crianca">🧒</button>
                 </div>
-                <!-- Controles de áudio -->
                 <div class="audio-controls" id="audioControls" style="display:none;">
                     <button class="btn-controle-audio" id="pausarBtn">⏸ Pausar</button>
                     <button class="btn-stop-global" id="stopAudioBtn">⏹ Parar</button>
@@ -465,7 +182,7 @@
         const API_BASE = 'https://vagasbot-web-api.onrender.com';
 
         // ============================================================
-        // DOM ELEMENTOS
+        // DOM
         // ============================================================
         const chat = document.getElementById('chatContainer');
         const input = document.getElementById('msgInput');
@@ -477,15 +194,12 @@
         const pausarBtn = document.getElementById('pausarBtn');
         const stopAudioBtn = document.getElementById('stopAudioBtn');
         const audioControls = document.getElementById('audioControls');
-        const idiomaSelector = document.getElementById('idiomaSelector');
-        const voiceSelector = document.getElementById('voiceSelector');
+        const donoNome = document.getElementById('donoNome');
 
-        // ============================================================
-        // ESTADO
-        // ============================================================
         let aguardandoPlano = false;
-        let idiomaAtual = 'pt'; // 'pt' ou 'en'
-        let vozSelecionada = 'feminina'; // 'feminina', 'masculina', 'crianca'
+        let idiomaAtual = 'pt';
+        let vozSelecionada = 'feminina';
+        let modeloIA = 'gemini';
         let audioAtual = null;
         let elementoAudioAtual = null;
         let audioPausado = false;
@@ -493,40 +207,61 @@
         let estaGravando = false;
 
         // ============================================================
-        // TRADUÇÃO (MyMemory – gratuita)
+        // UI
         // ============================================================
-        async function traduzirTexto(texto, idiomaDestino) {
-            if (idiomaDestino === 'pt') return texto;
-            try {
-                const resp = await fetch(
-                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=pt|en`
-                );
-                const data = await resp.json();
-                if (data.responseData && data.responseData.translatedText) {
-                    return data.responseData.translatedText;
-                }
-                return texto;
-            } catch (e) {
-                console.warn('Erro na tradução:', e);
-                return texto;
+        function isDono() { return usuarioTelefone === DONO_TELEFONE; }
+
+        function atualizarInterface() {
+            if (isDono()) {
+                badgeStatus.textContent = '👑 Dono';
+                badgeStatus.style.background = '#f5b042';
+                badgeStatus.style.color = '#1f2a38';
+                footerStatus.innerHTML = '👑 Dono Supremo – Acesso total';
+                donoNome.style.display = 'inline-block';
+            } else {
+                badgeStatus.textContent = '🇲🇿';
+                badgeStatus.style.background = '#1f8b4c';
+                badgeStatus.style.color = '#fff';
+                footerStatus.innerHTML = '🙌 +120 pessoas já encontraram';
+                donoNome.style.display = 'none';
             }
         }
 
         // ============================================================
-        // SELETORES (IDIOMA E VOZ)
+        // TRADUÇÃO
         // ============================================================
-        idiomaSelector.addEventListener('click', (e) => {
+        async function traduzirTexto(texto, idiomaDestino) {
+            if (idiomaDestino === 'pt') return texto;
+            try {
+                const resp = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=pt|en`);
+                const data = await resp.json();
+                return data.responseData?.translatedText || texto;
+            } catch (e) { return texto; }
+        }
+
+        // ============================================================
+        // SELETORES
+        // ============================================================
+        document.getElementById('iaSelector').addEventListener('click', (e) => {
+            const btn = e.target.closest('.selector-option');
+            if (!btn) return;
+            document.querySelectorAll('#iaSelector .selector-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            modeloIA = btn.dataset.ia;
+            addMessage(`Modelo de IA alterado para ${btn.textContent.trim()}`, 'bot');
+        });
+
+        document.getElementById('idiomaSelector').addEventListener('click', (e) => {
             const btn = e.target.closest('.selector-option');
             if (!btn) return;
             document.querySelectorAll('#idiomaSelector .selector-option').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             idiomaAtual = btn.dataset.idioma;
             pararLeitura();
-            const msg = idiomaAtual === 'pt' ? 'Idioma alterado para Português 🇧🇷' : 'Language changed to English 🇺🇸';
-            addMessage(msg, 'bot');
+            addMessage(idiomaAtual === 'pt' ? 'Idioma alterado para Português 🇧🇷' : 'Language changed to English 🇺🇸', 'bot');
         });
 
-        voiceSelector.addEventListener('click', (e) => {
+        document.getElementById('voiceSelector').addEventListener('click', (e) => {
             const btn = e.target.closest('.selector-option');
             if (!btn) return;
             document.querySelectorAll('#voiceSelector .selector-option').forEach(b => b.classList.remove('active'));
@@ -536,11 +271,11 @@
         });
 
         // ============================================================
-        // SPEECH-TO-TEXT (MICROFONE)
+        // MICROFONE
         // ============================================================
         function iniciarReconhecimento() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Seu navegador não suporta reconhecimento de voz. Use Chrome ou Edge.');
+                alert('Use Chrome/Edge para microfone.');
                 return;
             }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -550,74 +285,42 @@
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
-            recognition.onstart = function() {
+            recognition.onstart = () => {
                 estaGravando = true;
                 microfoneBtn.classList.add('gravando');
                 microfoneBtn.textContent = '⏺️';
                 input.placeholder = '🎤 Ouvindo...';
             };
-
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                input.value = transcript;
-                setTimeout(() => {
-                    if (input.value.trim()) enviarMensagem();
-                }, 600);
+            recognition.onresult = (event) => {
+                input.value = event.results[0][0].transcript;
+                setTimeout(() => { if (input.value.trim()) enviarMensagem(); }, 600);
             };
-
-            recognition.onerror = function(event) {
-                console.error('Erro no reconhecimento:', event.error);
-                if (event.error === 'not-allowed') {
-                    alert('Permissão de microfone negada. Ative-a nas configurações do navegador.');
-                }
+            recognition.onerror = (event) => {
+                if (event.error === 'not-allowed') alert('Permissão de microfone negada.');
                 pararReconhecimento();
             };
-
-            recognition.onend = function() {
-                pararReconhecimento();
-            };
-
+            recognition.onend = pararReconhecimento;
             recognition.start();
         }
 
         function pararReconhecimento() {
-            if (recognition) {
-                try { recognition.stop(); } catch (e) {}
-            }
+            if (recognition) try { recognition.stop(); } catch(e) {}
             estaGravando = false;
             microfoneBtn.classList.remove('gravando');
             microfoneBtn.textContent = '🎤';
             input.placeholder = 'Escreve ou fala a tua mensagem...';
         }
 
-        microfoneBtn.addEventListener('click', function(e) {
+        microfoneBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (estaGravando) pararReconhecimento();
-            else iniciarReconhecimento();
+            estaGravando ? pararReconhecimento() : iniciarReconhecimento();
         });
-
-        input.addEventListener('focus', function() {
-            if (estaGravando) pararReconhecimento();
-        });
+        input.addEventListener('focus', () => { if (estaGravando) pararReconhecimento(); });
 
         // ============================================================
-        // TEXT-TO-SPEECH (VOZ)
+        // TTS (via backend)
         // ============================================================
-        function obterVozPorTipo(tipo, idioma) {
-            const voices = window.speechSynthesis.getVoices();
-            const vozesIdioma = voices.filter(v => v.lang.startsWith(idioma));
-            const mapa = {
-                'feminina': ['Google', 'Microsoft', 'Samantha', 'Zira', 'female', 'Maria', 'Luciana'],
-                'masculina': ['Daniel', 'João', 'male', 'Microsoft', 'Google'],
-                'crianca': ['child', 'kid', 'criança', 'Google UK English Female']
-            };
-            const palavras = mapa[tipo] || mapa['feminina'];
-            let voz = vozesIdioma.find(v => palavras.some(p => v.name.toLowerCase().includes(p.toLowerCase())));
-            if (!voz && vozesIdioma.length > 0) voz = vozesIdioma[0];
-            return voz || null;
-        }
-
-        function falar(texto, elementoBotao, idiomaVoz = 'pt-BR') {
+        async function falar(texto, elementoBotao, idiomaVoz = 'pt-BR') {
             if (audioAtual) {
                 audioAtual.pause();
                 audioAtual.currentTime = 0;
@@ -628,63 +331,50 @@
                 }
                 audioControls.style.display = 'none';
             }
-
-            if (!('speechSynthesis' in window)) {
-                alert('Seu navegador não suporta leitura em voz alta.');
-                return;
-            }
-
             const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
             if (!textoLimpo) return;
-
-            const utterance = new SpeechSynthesisUtterance(textoLimpo);
-            utterance.lang = idiomaVoz;
-            utterance.rate = 0.9;
-            utterance.pitch = 1.0;
-            utterance.volume = 1;
-
-            const voz = obterVozPorTipo(vozSelecionada, idiomaVoz);
-            if (voz) utterance.voice = voz;
-
-            if (vozSelecionada === 'crianca') {
-                utterance.pitch = 1.4;
-                utterance.rate = 0.85;
-            } else if (vozSelecionada === 'masculina') {
-                utterance.pitch = 0.8;
-                utterance.rate = 0.9;
-            }
-
-            if (elementoBotao) {
-                elementoBotao.classList.add('playing');
-                elementoBotao.textContent = '🔊';
+            try {
+                const resp = await fetch(`${API_BASE}/sintetizar-voz`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: textoLimpo, idioma: idiomaVoz })
+                });
+                const data = await resp.json();
+                if (data.erro) throw new Error(data.erro);
+                const audioBlob = new Blob([Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioAtual = new Audio(audioUrl);
                 elementoAudioAtual = elementoBotao;
+                audioAtual.onplay = () => {
+                    if (elementoBotao) {
+                        elementoBotao.classList.add('playing');
+                        elementoBotao.textContent = '🔊';
+                    }
+                    audioControls.style.display = 'flex';
+                    pausarBtn.textContent = '⏸ Pausar';
+                    audioPausado = false;
+                };
+                audioAtual.onended = () => {
+                    if (elementoBotao) {
+                        elementoBotao.classList.remove('playing', 'pausado');
+                        elementoBotao.textContent = '🔊';
+                    }
+                    audioControls.style.display = 'none';
+                    audioAtual = null;
+                    elementoAudioAtual = null;
+                };
+                audioAtual.onerror = () => {
+                    alert('Erro ao reproduzir áudio.');
+                    if (elementoBotao) {
+                        elementoBotao.classList.remove('playing', 'pausado');
+                        elementoBotao.textContent = '🔊';
+                    }
+                };
+                audioAtual.play();
+            } catch (error) {
+                console.error('Erro no TTS:', error);
+                alert('Não foi possível gerar o áudio.');
             }
-            audioControls.style.display = 'flex';
-            pausarBtn.textContent = '⏸ Pausar';
-            audioPausado = false;
-
-            utterance.onend = function() {
-                if (elementoBotao) {
-                    elementoBotao.classList.remove('playing', 'pausado');
-                    elementoBotao.textContent = '🔊';
-                }
-                audioControls.style.display = 'none';
-                audioAtual = null;
-                elementoAudioAtual = null;
-            };
-
-            utterance.onerror = function(e) {
-                console.error('Erro na síntese:', e);
-                if (elementoBotao) {
-                    elementoBotao.classList.remove('playing', 'pausado');
-                    elementoBotao.textContent = '🔊';
-                }
-                audioControls.style.display = 'none';
-                alert('Não foi possível reproduzir o áudio.');
-            };
-
-            audioAtual = utterance;
-            window.speechSynthesis.speak(utterance);
         }
 
         // ============================================================
@@ -692,46 +382,40 @@
         // ============================================================
         function pausarOuRetomar() {
             if (!audioAtual) return;
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.pause();
-                audioPausado = true;
+            if (audioAtual.paused) {
+                audioAtual.play();
+                pausarBtn.textContent = '⏸ Pausar';
+                if (elementoAudioAtual) {
+                    elementoAudioAtual.classList.add('playing');
+                    elementoAudioAtual.classList.remove('pausado');
+                }
+            } else {
+                audioAtual.pause();
                 pausarBtn.textContent = '▶️ Retomar';
                 if (elementoAudioAtual) {
                     elementoAudioAtual.classList.remove('playing');
                     elementoAudioAtual.classList.add('pausado');
-                    elementoAudioAtual.textContent = '⏸';
                 }
-            } else if (audioPausado) {
-                window.speechSynthesis.resume();
-                audioPausado = false;
-                pausarBtn.textContent = '⏸ Pausar';
+            }
+        }
+        function pararLeitura() {
+            if (audioAtual) {
+                audioAtual.pause();
+                audioAtual.currentTime = 0;
+                audioAtual = null;
                 if (elementoAudioAtual) {
-                    elementoAudioAtual.classList.remove('pausado');
-                    elementoAudioAtual.classList.add('playing');
+                    elementoAudioAtual.classList.remove('playing', 'pausado');
                     elementoAudioAtual.textContent = '🔊';
                 }
+                audioControls.style.display = 'none';
+                pausarBtn.textContent = '⏸ Pausar';
             }
         }
-
-        function pararLeitura() {
-            if (window.speechSynthesis.speaking || window.speechSynthesis.paused) {
-                window.speechSynthesis.cancel();
-            }
-            if (elementoAudioAtual) {
-                elementoAudioAtual.classList.remove('playing', 'pausado');
-                elementoAudioAtual.textContent = '🔊';
-            }
-            audioControls.style.display = 'none';
-            audioAtual = null;
-            elementoAudioAtual = null;
-            audioPausado = false;
-        }
-
         pausarBtn.addEventListener('click', pausarOuRetomar);
         stopAudioBtn.addEventListener('click', pararLeitura);
 
         // ============================================================
-        // COPIAR TEXTO
+        // COPIAR
         // ============================================================
         async function copiarTexto(texto, elementoBotao) {
             try {
@@ -748,42 +432,19 @@
         }
 
         // ============================================================
-        // UI
-        // ============================================================
-        function isDono() {
-            return usuarioTelefone === DONO_TELEFONE;
-        }
-
-        function atualizarInterface() {
-            if (isDono()) {
-                badgeStatus.textContent = '👑 Dono';
-                badgeStatus.className = 'badge dono';
-                footerStatus.innerHTML = '👑 Dono Supremo – Acesso total';
-            } else {
-                badgeStatus.textContent = '🇲🇿 Moçambique';
-                badgeStatus.className = 'badge';
-                footerStatus.innerHTML = '🙌 +120 pessoas já encontraram';
-            }
-        }
-
-        // ============================================================
-        // ADICIONAR MENSAGEM (com áudio, copiar e tradução)
+        // ADICIONAR MENSAGEM
         // ============================================================
         async function addMessage(text, tipo = 'bot', extra = '') {
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${tipo}`;
-
             if (tipo === 'bot') {
                 const avatar = document.createElement('div');
                 avatar.className = 'avatar-bot';
                 avatar.textContent = 'V';
                 wrapper.appendChild(avatar);
             }
-
             const bubble = document.createElement('div');
             bubble.className = `message ${tipo}`;
-
-            // Traduz se for mensagem do bot e idioma for inglês
             let textoExibido = text;
             if (idiomaAtual === 'en' && tipo === 'bot') {
                 textoExibido = await traduzirTexto(text, 'en');
@@ -794,8 +455,6 @@
             if (tipo === 'bot') {
                 const actionDiv = document.createElement('div');
                 actionDiv.className = 'action-buttons';
-
-                // Botão ouvir
                 const audioBtn = document.createElement('button');
                 audioBtn.className = 'btn-action';
                 audioBtn.textContent = '🔊';
@@ -809,7 +468,6 @@
                 });
                 actionDiv.appendChild(audioBtn);
 
-                // Botão copiar
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'btn-action';
                 copyBtn.textContent = '📋';
@@ -819,16 +477,14 @@
                     copiarTexto(textoMsg, copyBtn);
                 });
                 actionDiv.appendChild(copyBtn);
-
                 wrapper.appendChild(actionDiv);
             }
-
             chat.appendChild(wrapper);
             chat.scrollTop = chat.scrollHeight;
         }
 
         // ============================================================
-        // INDICADOR DE DIGITAÇÃO
+        // DIGITAÇÃO
         // ============================================================
         function mostrarDigitando() {
             const div = document.createElement('div');
@@ -848,7 +504,7 @@
         // ============================================================
         async function chamarAPI(endpoint, dados) {
             try {
-                const payload = { ...dados, idioma: navigator.language.split('-')[0] || 'pt' };
+                const payload = { ...dados, idioma: idiomaAtual };
                 const resp = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -883,6 +539,7 @@
                 }
             }
 
+            // Comandos secretos (dono)
             if (lower.startsWith('!')) {
                 if (!isDono()) {
                     addMessage('⛔ Comando secreto apenas para o Dono Supremo.', 'bot');
@@ -890,17 +547,28 @@
                 }
                 const partes = lower.split(' ');
                 const cmd = partes[0];
-
                 if (cmd === '!ajuda' || cmd === '!help') {
-                    addMessage(`👑 *Comandos de Dono:*\n• \`!assinantes\` – lista todos os assinantes\n• \`!add vaga\` – adiciona uma vaga (formato: título|cidade|salário|área|benefício)\n• \`!remover vaga TÍTULO\` – remove pelo título exato\n• \`!vagas\` – ver todas as vagas (já é padrão para si)`, 'bot');
+                    addMessage(`👑 *Comandos de Dono:*\n• \`!assinantes\` – lista todos os assinantes\n• \`!ativar NUMERO [plano]\` – ativa manualmente (ex: !ativar 879306034 semanal)\n• \`!add vaga\` – adiciona uma vaga (formato: título|cidade|salário|área|benefício)\n• \`!remover vaga TÍTULO\` – remove pelo título exato`, 'bot');
                     return;
                 }
-
                 if (cmd === '!assinantes') {
                     await listarAssinantes();
                     return;
                 }
-
+                if (cmd === '!ativar') {
+                    const numero = partes[1];
+                    const plano = partes[2] || 'mensal';
+                    if (!numero) {
+                        addMessage('⚠️ Diga o número e o plano. Ex: `!ativar 879306034 semanal`', 'bot');
+                        return;
+                    }
+                    if (!['semanal', 'mensal'].includes(plano)) {
+                        addMessage('⚠️ Plano inválido. Use `semanal` ou `mensal`.', 'bot');
+                        return;
+                    }
+                    await ativarAssinante(numero, plano);
+                    return;
+                }
                 if (cmd === '!add') {
                     const resto = texto.substring(4).trim();
                     if (!resto.includes('|')) {
@@ -908,28 +576,23 @@
                         return;
                     }
                     const [titulo, cidade, salario, area, beneficio] = resto.split('|').map(s => s.trim());
-                    if (!titulo || !cidade || !salario || !area || !beneficio) {
-                        addMessage('⚠️ Todos os campos são obrigatórios.', 'bot');
-                        return;
-                    }
                     await adicionarVaga({ titulo, cidade, salario, area, beneficio });
                     return;
                 }
-
                 if (cmd === '!remover') {
                     const titulo = texto.substring(9).trim();
                     if (!titulo) {
-                        addMessage('⚠️ Diga o título da vaga a remover. Ex: `!remover Desenvolvedor Java Pleno`', 'bot');
+                        addMessage('⚠️ Diga o título da vaga a remover.', 'bot');
                         return;
                     }
                     await removerVaga(titulo);
                     return;
                 }
-
-                addMessage('Comando não reconhecido. Use `!ajuda` para ver a lista.', 'bot');
+                addMessage('Comando não reconhecido. Use `!ajuda`', 'bot');
                 return;
             }
 
+            // Comandos normais
             if (lower.startsWith('vagas')) {
                 const partes = lower.split(' ');
                 let cidade = null, area = null;
@@ -969,12 +632,24 @@
                 return;
             }
 
-            await buscarVagas();
+            // SE NÃO FOR COMANDO, USA IA
+            await responderComIA(texto);
         }
 
         // ============================================================
         // FUNÇÕES DA API
         // ============================================================
+        async function responderComIA(mensagem) {
+            mostrarDigitando();
+            const dados = await chamarAPI('/chat-ia', { mensagem, modelo: modeloIA });
+            removerDigitando();
+            if (dados && dados.resposta) {
+                addMessage(dados.resposta, 'bot');
+            } else {
+                addMessage('⚠️ Não consegui gerar uma resposta agora. Tenta novamente.', 'bot');
+            }
+        }
+
         async function buscarVagas(cidade = null, area = null) {
             mostrarDigitando();
             const payload = { telefone: usuarioTelefone };
@@ -982,12 +657,8 @@
             if (area) payload.area = area;
             const dados = await chamarAPI('/vagas', payload);
             removerDigitando();
-            if (!dados) {
-                addMessage('⚠️ Não consegui buscar vagas agora. Tenta novamente em instantes!', 'bot');
-                return;
-            }
-            if (dados.total === 0) {
-                addMessage('😕 Nenhuma vaga encontrada para esse filtro. Tenta outro.', 'bot');
+            if (!dados || dados.total === 0) {
+                addMessage('😕 Nenhuma vaga encontrada.', 'bot');
                 return;
             }
             let prefixo = '';
@@ -998,11 +669,9 @@
             addMessage(`📌 *Vagas${prefixo}* – ${dados.total} encontradas${donoTag}`, 'bot');
             dados.vagas.forEach(v => addMessage(`• ${v}`, 'bot'));
             if (dados.plano === 'gratuito') {
-                addMessage('🔒 *Assine Premium* para ver benefícios e detalhes completos! Envie "assinar".', 'bot');
+                addMessage('🔒 *Assine Premium* para ver benefícios!', 'bot');
             } else if (dados.plano === 'dono') {
-                addMessage('👑 Dono Supremo – todas as vagas com detalhes estão disponíveis!', 'bot');
-            } else {
-                addMessage('🔓 Detalhes completos disponíveis!', 'bot');
+                addMessage('👑 Dono Supremo – todas as vagas com detalhes!', 'bot');
             }
         }
 
@@ -1011,15 +680,20 @@
             const dados = await chamarAPI('/verificar-acesso', { telefone: usuarioTelefone });
             removerDigitando();
             if (!dados) {
-                addMessage('⚠️ Não foi possível verificar o seu acesso.', 'bot');
+                addMessage('⚠️ Não foi possível verificar.', 'bot');
                 return;
             }
             if (dados.dono) {
-                addMessage('👑 Você é o *Dono Supremo*! Acesso total a todas as funcionalidades.', 'bot');
+                addMessage('👑 Você é o *Dono Supremo*! Acesso total.', 'bot');
             } else if (dados.assinante) {
-                addMessage('✅ *Parabéns!* Tens acesso Premium ativo. 🎉', 'bot');
+                const dias = dados.diasRestantes;
+                if (dias > 0) {
+                    addMessage(`✅ *Premium ativo!* Faltam ${dias} dias para expirar. 🎉`, 'bot');
+                } else {
+                    addMessage('⏳ *Premium expirado!* Renove enviando "assinar".', 'bot');
+                }
             } else {
-                addMessage('🔒 Ainda não tens acesso Premium. Envia "assinar" para aderir.', 'bot');
+                addMessage('🔒 Ainda não tens acesso Premium. Envia "assinar".', 'bot');
             }
         }
 
@@ -1030,25 +704,33 @@
                 plano: plano
             });
             removerDigitando();
-            if (!dados) {
+            if (!dados || !dados.success) {
                 addMessage('⚠️ Erro ao iniciar pagamento. Tenta novamente.', 'bot');
                 return;
             }
-            if (dados.success && dados.payment_url) {
+            if (dados.payment_url) {
                 addMessage(`🔗 Redirecionando para pagamento (${plano})...`, 'bot');
                 window.location.href = dados.payment_url;
-            } else {
-                addMessage('❌ Falha ao criar pagamento. Detalhes: ' + (dados.erro || 'erro desconhecido'), 'bot');
             }
         }
 
-        // --- Admin ---
+        async function ativarAssinante(telefone, plano = 'mensal') {
+            mostrarDigitando();
+            const dados = await chamarAPI('/admin/ativar', { telefone, dono: usuarioTelefone, plano });
+            removerDigitando();
+            if (!dados || dados.erro) {
+                addMessage('⚠️ ' + (dados?.erro || 'Erro ao ativar.'), 'bot');
+                return;
+            }
+            addMessage(`✅ ${dados.mensagem}`, 'bot');
+        }
+
         async function listarAssinantes() {
             mostrarDigitando();
             const dados = await chamarAPI('/admin/assinantes', { telefone: usuarioTelefone });
             removerDigitando();
             if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao listar assinantes.'), 'bot');
+                addMessage('⚠️ ' + (dados?.erro || 'Erro ao listar.'), 'bot');
                 return;
             }
             if (dados.total === 0) {
@@ -1066,10 +748,10 @@
             });
             removerDigitando();
             if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao adicionar vaga.'), 'bot');
+                addMessage('⚠️ ' + (dados?.erro || 'Erro ao adicionar.'), 'bot');
                 return;
             }
-            addMessage(`✅ Vaga "${vaga.titulo}" adicionada com sucesso! Total: ${dados.total} vagas.`, 'bot');
+            addMessage(`✅ Vaga "${vaga.titulo}" adicionada! Total: ${dados.total}`, 'bot');
         }
 
         async function removerVaga(titulo) {
@@ -1080,14 +762,14 @@
             });
             removerDigitando();
             if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao remover vaga.'), 'bot');
+                addMessage('⚠️ ' + (dados?.erro || 'Erro ao remover.'), 'bot');
                 return;
             }
-            addMessage(`✅ Vaga "${titulo}" removida com sucesso! Total restante: ${dados.total}.`, 'bot');
+            addMessage(`✅ Vaga "${titulo}" removida! Total restante: ${dados.total}`, 'bot');
         }
 
         // ============================================================
-        // EVENTOS
+        // EVENTOS GLOBAIS
         // ============================================================
         window.escolherPlano = function(plano) {
             aguardandoPlano = false;
@@ -1095,9 +777,7 @@
         };
 
         sendBtn.addEventListener('click', enviarMensagem);
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') enviarMensagem();
-        });
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
 
         function enviarMensagem() {
             const texto = input.value.trim();
@@ -1122,13 +802,6 @@
         // INICIALIZAÇÃO
         // ============================================================
         atualizarInterface();
-
-        if (window.speechSynthesis) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
-        }
         audioControls.style.display = 'none';
 
         window.addEventListener('load', () => {
