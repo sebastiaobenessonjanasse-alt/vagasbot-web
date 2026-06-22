@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+// =============================================
 // CORS
+// =============================================
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -37,9 +39,22 @@ const deepseekClient = new OpenAI({
 const anthropic = process.env.CLAUDE_API_KEY ? new Anthropic({ apiKey: process.env.CLAUDE_API_KEY }) : null;
 
 // =============================================
-// ARMAZENAMENTO E VAGAS
+// ARMAZENAMENTO DE ASSINANTES (COM EXPIRAÇÃO)
 // =============================================
-const assinantes = new Set();
+const assinantes = new Map(); // chave: telefone, valor: { plano, dataAtivacao }
+
+function isAssinanteAtivo(telefone) {
+    if (!assinantes.has(telefone)) return false;
+    const { plano, dataAtivacao } = assinantes.get(telefone);
+    const duracaoDias = plano === 'semanal' ? 7 : 30;
+    const dataExpiracao = new Date(dataAtivacao);
+    dataExpiracao.setDate(dataExpiracao.getDate() + duracaoDias);
+    return new Date() < dataExpiracao;
+}
+
+// =============================================
+// BASE DE VAGAS (30+ oportunidades)
+// =============================================
 let todasVagas = [
     { titulo: 'Desenvolvedor Java Pleno', cidade: 'Maputo', salario: '65.000 MT', area: 'TI', beneficio: 'Seguro médico, vale alimentação, home office 2x/semana' },
     { titulo: 'Analista de Sistemas', cidade: 'Maputo', salario: '58.000 MT', area: 'TI', beneficio: 'Vale transporte, bônus anual' },
@@ -75,7 +90,7 @@ let todasVagas = [
 ];
 
 // =============================================
-// ENDPOINT: TTS (VoiceRSS gratuito)
+// ENDPOINT: TTS (VOICERSS – GRATUITO)
 // =============================================
 app.post('/sintetizar-voz', async (req, res) => {
     const { texto, idioma = 'pt-BR' } = req.body;
@@ -93,7 +108,7 @@ app.post('/sintetizar-voz', async (req, res) => {
 });
 
 // =============================================
-// ENDPOINT: IA (Gemini, DeepSeek, Claude)
+// ENDPOINT: IA (GEMINI, DEEPSEEK, CLAUDE)
 // =============================================
 app.post('/chat-ia', async (req, res) => {
     const { mensagem, idioma = 'pt', modelo = 'gemini' } = req.body;
@@ -140,11 +155,13 @@ app.post('/chat-ia', async (req, res) => {
 });
 
 // =============================================
-// ENDPOINT: VAGAS
+// ENDPOINT: VAGAS (COM EXPIRAÇÃO)
 // =============================================
 app.post('/vagas', async (req, res) => {
     const { telefone, cidade, area } = req.body;
     const isDono = (telefone === DONO_TELEFONE);
+    const isPremium = isDono || isAssinanteAtivo(telefone);
+
     let vagasFiltradas = todasVagas;
     if (cidade) {
         const cid = cidade.trim().toLowerCase();
@@ -156,7 +173,6 @@ app.post('/vagas', async (req, res) => {
     }
     if (!cidade && !area) vagasFiltradas = todasVagas;
 
-    const isPremium = assinantes.has(telefone) || isDono;
     const resumo = vagasFiltradas.map(v => `${v.titulo} – ${v.cidade} – ${v.salario}`);
     const completo = vagasFiltradas.map(v => `${v.titulo} – ${v.cidade} – ${v.salario}\n   • Benefícios: ${v.beneficio}`);
 
@@ -169,25 +185,63 @@ app.post('/vagas', async (req, res) => {
 });
 
 // =============================================
-// ENDPOINT: VERIFICAR ACESSO
+// ENDPOINT: VERIFICAR ACESSO (COM DIAS RESTANTES)
 // =============================================
 app.post('/verificar-acesso', (req, res) => {
     const { telefone } = req.body;
+    const isDono = (telefone === DONO_TELEFONE);
+    const ativo = isDono || isAssinanteAtivo(telefone);
+    let diasRestantes = 0;
+    if (ativo && !isDono) {
+        const { plano, dataAtivacao } = assinantes.get(telefone);
+        const duracaoDias = plano === 'semanal' ? 7 : 30;
+        const dataExpiracao = new Date(dataAtivacao);
+        dataExpiracao.setDate(dataExpiracao.getDate() + duracaoDias);
+        diasRestantes = Math.ceil((dataExpiracao - new Date()) / (1000 * 60 * 60 * 24));
+    }
     res.json({
-        assinante: assinantes.has(telefone) || telefone === DONO_TELEFONE,
-        dono: telefone === DONO_TELEFONE
+        assinante: ativo,
+        dono: isDono,
+        diasRestantes: isDono ? -1 : diasRestantes
     });
 });
 
 // =============================================
-// ADMIN (apenas dono)
+// ADMIN: ATIVAR MANUALMENTE (COM PLANO)
+// =============================================
+app.post('/admin/ativar', (req, res) => {
+    const { telefone, dono, plano = 'mensal' } = req.body;
+    if (dono !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
+    if (!telefone) return res.status(400).json({ erro: 'Telefone é obrigatório' });
+    if (!['semanal', 'mensal'].includes(plano)) {
+        return res.status(400).json({ erro: 'Plano inválido. Use semanal ou mensal' });
+    }
+    assinantes.set(telefone, {
+        plano: plano,
+        dataAtivacao: new Date()
+    });
+    console.log(`✅ Assinante ativado manualmente: ${telefone} - plano ${plano}`);
+    res.json({ success: true, mensagem: `Assinante ${telefone} ativado com plano ${plano} por ${plano === 'semanal' ? '7' : '30'} dias!` });
+});
+
+// =============================================
+// ADMIN: LISTAR ASSINANTES (COM EXPIRAÇÃO)
 // =============================================
 app.post('/admin/assinantes', (req, res) => {
     const { telefone } = req.body;
     if (telefone !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
-    res.json({ assinantes: Array.from(assinantes), total: assinantes.size });
+    const lista = Array.from(assinantes.entries()).map(([tel, dados]) => {
+        const dataExpiracao = new Date(dados.dataAtivacao);
+        dataExpiracao.setDate(dataExpiracao.getDate() + (dados.plano === 'semanal' ? 7 : 30));
+        const diasRestantes = Math.ceil((dataExpiracao - new Date()) / (1000 * 60 * 60 * 24));
+        return `${tel} - ${dados.plano} - ${diasRestantes > 0 ? diasRestantes + ' dias restantes' : 'expirado'}`;
+    });
+    res.json({ assinantes: lista, total: lista.length });
 });
 
+// =============================================
+// ADMIN: ADICIONAR VAGA
+// =============================================
 app.post('/admin/add-vaga', (req, res) => {
     const { telefone, vaga } = req.body;
     if (telefone !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
@@ -198,6 +252,9 @@ app.post('/admin/add-vaga', (req, res) => {
     res.json({ success: true, mensagem: 'Vaga adicionada!', total: todasVagas.length });
 });
 
+// =============================================
+// ADMIN: REMOVER VAGA
+// =============================================
 app.post('/admin/remover-vaga', (req, res) => {
     const { telefone, titulo } = req.body;
     if (telefone !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
@@ -206,6 +263,104 @@ app.post('/admin/remover-vaga', (req, res) => {
     todasVagas.splice(index, 1);
     res.json({ success: true, mensagem: 'Vaga removida!', total: todasVagas.length });
 });
+
+// =============================================
+// PAYSUITE (WEBHOOK – COM EXPIRAÇÃO)
+// =============================================
+app.post('/webhook-paysuite', (req, res) => {
+    const { reference, status, customer_phone, plano = 'mensal' } = req.body;
+    console.log('Webhook PaySuite:', { reference, status, customer_phone, plano });
+    if (status === 'completed' && customer_phone) {
+        assinantes.set(customer_phone, {
+            plano: plano,
+            dataAtivacao: new Date()
+        });
+        console.log(`✅ Assinante ativado (PaySuite): ${customer_phone}`);
+    }
+    res.sendStatus(200);
+});
+
+// =============================================
+// CLICPAY (WEBHOOK)
+// =============================================
+app.post('/webhook-clicpay', (req, res) => {
+    const { transaction_id, status, customer_msisdn, plano = 'mensal' } = req.body;
+    console.log('Webhook ClicPay:', { transaction_id, status, customer_msisdn, plano });
+    if ((status === 'completed' || status === 'success') && customer_msisdn) {
+        assinantes.set(customer_msisdn, {
+            plano: plano,
+            dataAtivacao: new Date()
+        });
+        console.log(`✅ Assinante ativado (ClicPay): ${customer_msisdn}`);
+    }
+    res.sendStatus(200);
+});
+
+// =============================================
+// PAYSUITE: CRIAR PAGAMENTO
+// =============================================
+app.post('/criar-pagamento', async (req, res) => {
+    const { telefone, plano } = req.body;
+    if (!telefone || !plano) return res.status(400).json({ erro: 'Telefone e plano são obrigatórios' });
+    const valor = plano === 'semanal' ? 50 : 150;
+    try {
+        const response = await fetch(`${PAYSUITE_BASE_URL}/transactions`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${PAYSUITE_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount: valor,
+                currency: 'MZN',
+                description: `Assinatura ${plano} - VagasBot`,
+                customer: { phone: telefone },
+                callback_url: 'https://vagasbot-web-api.onrender.com/webhook-paysuite'
+            })
+        });
+        const data = await response.json();
+        res.json({ success: true, payment_url: data.payment_url, reference: data.reference });
+    } catch (error) {
+        res.status(500).json({ success: false, erro: error.message });
+    }
+});
+
+// =============================================
+// CLICPAY: CRIAR PAGAMENTO
+// =============================================
+app.post('/criar-pagamento-clicpay', async (req, res) => {
+    const { telefone, plano } = req.body;
+    if (!telefone || !plano) return res.status(400).json({ erro: 'Telefone e plano são obrigatórios' });
+    const valor = plano === 'semanal' ? 50 : 150;
+    try {
+        const response = await fetch(
+            `${CLICPAY_BASE_URL}/wallets/${CLICPAY_WALLET_ID}/c2b/mpesa`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${CLICPAY_API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    msisdn: telefone,
+                    amount: valor,
+                    reference_description: `Assinatura ${plano} - VagasBot`,
+                    internal_notes: `Pedido ${Date.now()}`
+                })
+            }
+        );
+        const data = await response.json();
+        res.json({ success: true, transaction_id: data.transaction_id, status: data.status, payment_url: data.payment_url || null });
+    } catch (error) {
+        res.status(500).json({ success: false, erro: error.message });
+    }
+});
+
+// =============================================
+// ENDPOINT DE TESTE
+// =============================================
+app.get('/', (req, res) => res.send('Servidor online!'));
 
 // =============================================
 // INICIAR SERVIDOR
