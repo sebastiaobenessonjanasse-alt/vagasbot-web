@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VagasBot Moçambique</title>
-    <!-- Font Awesome para ícones -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* ===== RESET E BASE ===== */
@@ -60,7 +60,7 @@
         .content-header h2 { font-size: 18px; color: #1a2634; display: flex; align-items: center; gap: 8px; }
         .content-header .badge { background: #1f8b4c; color: #fff; padding: 4px 14px; border-radius: 30px; font-size: 12px; font-weight: 600; }
 
-        /* ===== PÁGINAS (conteúdo dinâmico) ===== */
+        /* ===== PÁGINAS ===== */
         .page {
             grid-column: 2; grid-row: 2; padding: 16px 20px; overflow-y: auto; background: #e9eef3; display: none; flex-direction: column; gap: 12px;
         }
@@ -88,22 +88,14 @@
         .input-area button { background: #1a5f9e; border: none; border-radius: 30px; padding: 0 24px; color: #fff; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 15px; }
         .input-area button:hover { background: #0f3f6b; transform: scale(0.97); }
         .input-area button:disabled { opacity: 0.5; pointer-events: none; }
+        .input-area .btn-microfone { background: transparent; border: none; font-size: 24px; cursor: pointer; color: #1a5f9e; padding: 0 8px; }
+        .input-area .btn-microfone.gravando { color: #e74c3c; animation: pulse 0.8s infinite; }
 
-        /* ===== HISTÓRICO ===== */
-        .historico-item { background: #fff; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 4px; border-left: 4px solid #1f5e9e; }
-        .historico-item .meta { font-size: 12px; color: #4a5b6e; display: flex; justify-content: space-between; }
-        .historico-item .pergunta { font-weight: 600; color: #1a2634; }
-        .historico-item .resposta { color: #2d4057; margin-top: 2px; }
-
-        /* ===== MEMÓRIA ===== */
-        .memoria-item { background: #fff; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #f5b042; }
-        .memoria-item .texto { flex: 1; }
-        .memoria-item .data { font-size: 12px; color: #4a5b6e; margin-right: 12px; }
-        .memoria-item .btn-delete { background: #e74c3c; border: none; color: #fff; padding: 4px 12px; border-radius: 30px; cursor: pointer; font-size: 12px; }
-        .memoria-item .btn-delete:hover { background: #c0392b; }
-        .form-memoria { display: flex; gap: 8px; margin-top: 12px; }
-        .form-memoria input { flex: 1; padding: 10px 16px; border: 1px solid #d0d9e3; border-radius: 30px; outline: none; }
-        .form-memoria button { background: #f5b042; border: none; padding: 10px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+        /* ===== COMO FUNCIONA ===== */
+        .passo { display: flex; gap: 16px; align-items: flex-start; background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .passo .numero { background: #1a5f9e; color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .passo .texto { flex: 1; }
+        .passo .texto strong { color: #1a2634; }
 
         /* ===== DÚVIDAS (FAQ) ===== */
         .faq-item { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
@@ -140,7 +132,7 @@
         /* ===== RESPONSIVIDADE ===== */
         @media (max-width: 768px) {
             .app { grid-template-columns: 1fr; height: 100vh; border-radius: 0; }
-            .sidebar { display: none; } /* Será substituído por menu hamburguer (não implementado aqui) */
+            .sidebar { display: none; }
             .content-header, .page, .input-area, .footer { grid-column: 1; }
             .whatsapp-float { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 26px; }
         }
@@ -148,7 +140,7 @@
 </head>
 <body>
 
-    <!-- BOTÃO WHATSAPP FLUTUANTE -->
+    <!-- WHATSAPP FLOATING -->
     <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
@@ -165,14 +157,13 @@
             </div>
             <nav>
                 <a href="#" class="active" data-pagina="chat"><i class="fas fa-comment-dots"></i> Chat</a>
-                <a href="#" data-pagina="historico"><i class="fas fa-history"></i> Histórico</a>
-                <a href="#" data-pagina="memoria"><i class="fas fa-brain"></i> Memória</a>
+                <a href="#" data-pagina="como-funciona"><i class="fas fa-info-circle"></i> Como funciona</a>
                 <a href="#" data-pagina="duvidas"><i class="fas fa-question-circle"></i> Dúvidas</a>
                 <a href="#" data-pagina="estatisticas"><i class="fas fa-chart-bar"></i> Estatísticas</a>
             </nav>
         </aside>
 
-        <!-- HEADER DO CONTEÚDO -->
+        <!-- HEADER -->
         <header class="content-header">
             <h2 id="pageTitle"><i class="fas fa-comment-dots"></i> Chat</h2>
             <span class="badge">🇲🇿 Moçambique</span>
@@ -185,19 +176,31 @@
             </div>
         </div>
 
-        <!-- PÁGINA: HISTÓRICO -->
-        <div class="page" id="page-historico">
-            <h3 style="margin-bottom: 8px;">📜 Últimas conversas</h3>
-            <div id="historicoLista"></div>
-        </div>
-
-        <!-- PÁGINA: MEMÓRIA -->
-        <div class="page" id="page-memoria">
-            <h3>🧠 Notas rápidas (apenas dono)</h3>
-            <div id="memoriaLista"></div>
-            <div class="form-memoria">
-                <input type="text" id="memoriaInput" placeholder="Escreve uma nota...">
-                <button id="memoriaBtn">Salvar</button>
+        <!-- PÁGINA: COMO FUNCIONA -->
+        <div class="page" id="page-como-funciona">
+            <h3>🚀 Como o VagasBot funciona?</h3>
+            <div class="passo">
+                <div class="numero">1</div>
+                <div class="texto"><strong>Fala com a Vaga</strong> – Escreve ou fala a tua pergunta no chat. O bot usa inteligência artificial (Gemini, DeepSeek ou Claude) para te responder.</div>
+            </div>
+            <div class="passo">
+                <div class="numero">2</div>
+                <div class="texto"><strong>Recebe vagas personalizadas</strong> – Envia "vagas" para ver oportunidades. Podes filtrar por cidade (ex: "vagas Maputo") ou por área (ex: "vagas TI").</div>
+            </div>
+            <div class="passo">
+                <div class="numero">3</div>
+                <div class="texto"><strong>Ouve as respostas</strong> – Clica no 🔊 ao lado de cada mensagem para ouvir a leitura em voz alta (português ou inglês).</div>
+            </div>
+            <div class="passo">
+                <div class="numero">4</div>
+                <div class="texto"><strong>Assina o Premium</strong> – Envia "assinar" para ter acesso a vagas com detalhes completos (benefícios, salários, etc.).</div>
+            </div>
+            <div class="passo">
+                <div class="numero">5</div>
+                <div class="texto"><strong>Compra PDFs exclusivos</strong> – Na loja de PDFs (em breve), podes comprar guias e manuais com pagamento via e-Mola/M-Pesa.</div>
+            </div>
+            <div style="background: #fff; padding: 16px; border-radius: 12px; text-align: center; margin-top: 8px;">
+                <p>💡 <strong>Dica:</strong> Usa os comandos "ajuda" ou "!" para ver a lista completa de comandos.</p>
             </div>
         </div>
 
@@ -206,15 +209,19 @@
             <h3>❓ Perguntas Frequentes</h3>
             <div class="faq-item">
                 <div class="pergunta" onclick="toggleFAQ(this)">🤔 Como posso assinar o Premium? <i class="fas fa-chevron-down"></i></div>
-                <div class="resposta">Envia "assinar" no chat, escolhe o plano (semanal ou mensal) e faz o pagamento para o e-Mola 879306034. Depois, envia o comprovativo e aguarda a ativação.</div>
+                <div class="resposta">Envia "assinar" no chat, escolhe o plano (semanal – 50 MT ou mensal – 150 MT) e faz o pagamento para o e-Mola 879306034. Depois, envia o comprovativo e aguarda a ativação.</div>
             </div>
             <div class="faq-item">
                 <div class="pergunta" onclick="toggleFAQ(this)">📄 Como faço para comprar um PDF? <i class="fas fa-chevron-down"></i></div>
-                <div class="resposta">Clica no botão "Comprar" ao lado do PDF desejado. Serás redirecionado para a página de pagamento. Após a confirmação, o download será libertado.</div>
+                <div class="resposta">Clica no botão "Comprar" ao lado do PDF desejado (na loja de PDFs). Serás redirecionado para a página de pagamento. Após a confirmação, o download será libertado.</div>
             </div>
             <div class="faq-item">
                 <div class="pergunta" onclick="toggleFAQ(this)">🌍 O VagasBot funciona em todo o Moçambique? <i class="fas fa-chevron-down"></i></div>
                 <div class="resposta">Sim! As vagas são listadas para todo o país, com destaque para Maputo, Beira e Nampula. Podes filtrar por cidade usando "vagas [cidade]".</div>
+            </div>
+            <div class="faq-item">
+                <div class="pergunta" onclick="toggleFAQ(this)">🎤 Posso falar em vez de escrever? <i class="fas fa-chevron-down"></i></div>
+                <div class="resposta">Sim! Clica no botão 🎤 ao lado do campo de texto e fala a tua pergunta. O bot reconhece a voz e envia automaticamente.</div>
             </div>
             <div style="margin-top: 16px; padding: 16px; background: #fff; border-radius: 12px; text-align: center;">
                 <p>💬 Ainda tens dúvidas? Fala connosco directamente no WhatsApp!</p>
@@ -235,9 +242,10 @@
             </div>
         </div>
 
-        <!-- INPUT (apenas na página de chat) -->
+        <!-- INPUT (apenas chat) -->
         <div class="input-area" id="inputArea">
             <input type="text" id="msgInput" placeholder="Escreve a tua mensagem..." autocomplete="off">
+            <button class="btn-microfone" id="microfoneBtn" aria-label="Falar">🎤</button>
             <button id="sendBtn">Enviar</button>
         </div>
 
@@ -279,20 +287,16 @@
         const sendBtn = document.getElementById('sendBtn');
         const footerStatus = document.getElementById('footerStatus');
         const pageTitle = document.getElementById('pageTitle');
-
-        // Elementos das outras páginas
-        const historicoLista = document.getElementById('historicoLista');
-        const memoriaLista = document.getElementById('memoriaLista');
-        const memoriaInput = document.getElementById('memoriaInput');
-        const memoriaBtn = document.getElementById('memoriaBtn');
-        const statAssinantes = document.getElementById('statAssinantes');
-        const statVagas = document.getElementById('statVagas');
-        const statConversas = document.getElementById('statConversas');
+        const microfoneBtn = document.getElementById('microfoneBtn');
 
         // Estado
         let idiomaAtual = 'pt';
         let modeloIA = 'gemini';
         let paginaAtual = 'chat';
+        let audioAtual = null;
+        let elementoAudioAtual = null;
+        let recognition = null;
+        let estaGravando = false;
 
         // ============================================================
         // FUNÇÕES DE UI
@@ -306,33 +310,25 @@
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const pagina = this.dataset.pagina;
-                // Atualiza a sidebar
                 document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
                 this.classList.add('active');
-                // Mostra a página correta
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.getElementById(`page-${pagina}`).classList.add('active');
-                // Atualiza o título
                 const nomes = {
                     chat: '💬 Chat',
-                    historico: '📜 Histórico',
-                    memoria: '🧠 Memória',
+                    'como-funciona': '🚀 Como funciona',
                     duvidas: '❓ Dúvidas',
                     estatisticas: '📊 Estatísticas'
                 };
-                pageTitle.innerHTML = `<i class="fas fa-${pagina === 'chat' ? 'comment-dots' : pagina === 'historico' ? 'history' : pagina === 'memoria' ? 'brain' : pagina === 'duvidas' ? 'question-circle' : 'chart-bar'}"></i> ${nomes[pagina]}`;
-                // Esconde/mostra input (só no chat)
+                pageTitle.innerHTML = `<i class="fas fa-${pagina === 'chat' ? 'comment-dots' : pagina === 'como-funciona' ? 'info-circle' : pagina === 'duvidas' ? 'question-circle' : 'chart-bar'}"></i> ${nomes[pagina]}`;
                 document.getElementById('inputArea').style.display = pagina === 'chat' ? 'flex' : 'none';
                 paginaAtual = pagina;
-                // Carrega conteúdo da página
-                if (pagina === 'historico') carregarHistorico();
-                if (pagina === 'memoria') carregarMemoria();
                 if (pagina === 'estatisticas') carregarEstatisticas();
             });
         });
 
         // ============================================================
-        // CHAT (já existente)
+        // CHAT (com áudio e microfone)
         // ============================================================
         function addMessage(text, tipo = 'bot', extra = '') {
             const wrapper = document.createElement('div');
@@ -347,10 +343,135 @@
             bubble.className = `message ${tipo}`;
             bubble.innerHTML = text + extra;
             wrapper.appendChild(bubble);
+
+            if (tipo === 'bot') {
+                const actionDiv = document.createElement('div');
+                actionDiv.className = 'action-buttons';
+                // Botão ouvir
+                const audioBtn = document.createElement('button');
+                audioBtn.className = 'btn-action';
+                audioBtn.textContent = '🔊';
+                audioBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const textoMsg = bubble.innerText || bubble.textContent;
+                    const textoLimpo = textoMsg.replace(/Semanal|Mensal|50 MT|150 MT/g, '').trim();
+                    const idiomaVoz = idiomaAtual === 'pt' ? 'pt-BR' : 'en-US';
+                    if (textoLimpo) falar(textoLimpo, audioBtn, idiomaVoz);
+                    else falar('Escolha uma opção de plano.', audioBtn, idiomaVoz);
+                });
+                actionDiv.appendChild(audioBtn);
+                wrapper.appendChild(actionDiv);
+            }
+
             chatContainer.appendChild(wrapper);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+        // ============================================================
+        // TTS (via backend)
+        // ============================================================
+        async function falar(texto, elementoBotao, idiomaVoz = 'pt-BR') {
+            if (audioAtual) {
+                audioAtual.pause();
+                audioAtual.currentTime = 0;
+                audioAtual = null;
+                if (elementoAudioAtual) {
+                    elementoAudioAtual.classList.remove('playing');
+                    elementoAudioAtual.textContent = '🔊';
+                }
+            }
+            const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
+            if (!textoLimpo) return;
+            try {
+                const resp = await fetch(`${API_BASE}/sintetizar-voz`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: textoLimpo, idioma: idiomaVoz })
+                });
+                const data = await resp.json();
+                if (data.erro) throw new Error(data.erro);
+                const audioBlob = new Blob([Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioAtual = new Audio(audioUrl);
+                elementoAudioAtual = elementoBotao;
+                audioAtual.onplay = () => {
+                    if (elementoBotao) {
+                        elementoBotao.classList.add('playing');
+                        elementoBotao.textContent = '🔊';
+                    }
+                };
+                audioAtual.onended = () => {
+                    if (elementoBotao) {
+                        elementoBotao.classList.remove('playing');
+                        elementoBotao.textContent = '🔊';
+                    }
+                    audioAtual = null;
+                    elementoAudioAtual = null;
+                };
+                audioAtual.onerror = () => {
+                    alert('Erro ao reproduzir áudio.');
+                    if (elementoBotao) {
+                        elementoBotao.classList.remove('playing');
+                        elementoBotao.textContent = '🔊';
+                    }
+                };
+                audioAtual.play();
+            } catch (error) {
+                console.error('Erro no TTS:', error);
+                alert('Não foi possível gerar o áudio.');
+            }
+        }
+
+        // ============================================================
+        // MICROFONE
+        // ============================================================
+        function iniciarReconhecimento() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Use Chrome/Edge para microfone.');
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = idiomaAtual === 'pt' ? 'pt-BR' : 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                estaGravando = true;
+                microfoneBtn.classList.add('gravando');
+                microfoneBtn.textContent = '⏺️';
+                input.placeholder = '🎤 Ouvindo...';
+            };
+            recognition.onresult = (event) => {
+                input.value = event.results[0][0].transcript;
+                setTimeout(() => { if (input.value.trim()) enviarMensagem(); }, 600);
+            };
+            recognition.onerror = (event) => {
+                if (event.error === 'not-allowed') alert('Permissão de microfone negada.');
+                pararReconhecimento();
+            };
+            recognition.onend = pararReconhecimento;
+            recognition.start();
+        }
+
+        function pararReconhecimento() {
+            if (recognition) try { recognition.stop(); } catch(e) {}
+            estaGravando = false;
+            microfoneBtn.classList.remove('gravando');
+            microfoneBtn.textContent = '🎤';
+            input.placeholder = 'Escreve a tua mensagem...';
+        }
+
+        microfoneBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            estaGravando ? pararReconhecimento() : iniciarReconhecimento();
+        });
+        input.addEventListener('focus', () => { if (estaGravando) pararReconhecimento(); });
+
+        // ============================================================
+        // CHAMAR API
+        // ============================================================
         async function chamarAPI(endpoint, dados) {
             try {
                 const payload = { ...dados, idioma: idiomaAtual };
@@ -367,110 +488,28 @@
             }
         }
 
+        // ============================================================
+        // ENVIAR MENSAGEM
+        // ============================================================
         async function enviarMensagem() {
             const texto = input.value.trim();
             if (!texto) return;
             addMessage(texto, 'user');
             input.value = '';
+            // Indicador de digitação
             addMessage('⏳ A pensar...', 'bot');
-            const dados = await chamarAPI('/chat-ia', { mensagem: texto, modelo: modeloIA });
+            const dados = await chamarAPI('/chat-ia', { mensagem: texto, modelo: modeloIA, telefone: usuarioTelefone });
             const ultima = chatContainer.lastElementChild;
             if (ultima && ultima.textContent.includes('A pensar')) ultima.remove();
             if (dados && dados.resposta) {
                 addMessage(dados.resposta, 'bot');
             } else {
-                addMessage('⚠️ Erro ao gerar resposta.', 'bot');
+                addMessage('⚠️ Erro ao gerar resposta. Verifica a tua conexão ou tenta novamente.', 'bot');
             }
         }
 
         sendBtn.addEventListener('click', enviarMensagem);
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
-
-        // ============================================================
-        // HISTÓRICO
-        // ============================================================
-        async function carregarHistorico() {
-            historicoLista.innerHTML = '⏳ Carregando...';
-            try {
-                const resp = await fetch(`${API_BASE}/historico?limite=20`);
-                const dados = await resp.json();
-                if (dados.length === 0) {
-                    historicoLista.innerHTML = '📭 Nenhuma conversa registada ainda.';
-                    return;
-                }
-                historicoLista.innerHTML = '';
-                dados.slice().reverse().forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'historico-item';
-                    div.innerHTML = `
-                        <div class="meta">
-                            <span>👤 ${item.usuario}</span>
-                            <span>${new Date(item.timestamp).toLocaleString()}</span>
-                        </div>
-                        <div class="pergunta">💬 ${item.mensagem}</div>
-                        <div class="resposta">🤖 ${item.resposta}</div>
-                    `;
-                    historicoLista.appendChild(div);
-                });
-            } catch (e) {
-                historicoLista.innerHTML = '⚠️ Erro ao carregar histórico.';
-            }
-        }
-
-        // ============================================================
-        // MEMÓRIA (apenas dono)
-        // ============================================================
-        async function carregarMemoria() {
-            memoriaLista.innerHTML = '⏳ Carregando...';
-            try {
-                const resp = await fetch(`${API_BASE}/memoria`);
-                const dados = await resp.json();
-                if (dados.length === 0) {
-                    memoriaLista.innerHTML = '📭 Nenhuma nota guardada.';
-                    return;
-                }
-                memoriaLista.innerHTML = '';
-                dados.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'memoria-item';
-                    div.innerHTML = `
-                        <div class="texto">${item.texto}</div>
-                        <div class="data">${new Date(item.data).toLocaleDateString()}</div>
-                        ${isDono() ? `<button class="btn-delete" data-id="${item.id}">🗑️</button>` : ''}
-                    `;
-                    if (isDono()) {
-                        div.querySelector('.btn-delete').addEventListener('click', async function() {
-                            const id = this.dataset.id;
-                            const resp = await fetch(`${API_BASE}/memoria/${id}`, {
-                                method: 'DELETE',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ dono: usuarioTelefone })
-                            });
-                            if (resp.ok) carregarMemoria();
-                        });
-                    }
-                    memoriaLista.appendChild(div);
-                });
-            } catch (e) {
-                memoriaLista.innerHTML = '⚠️ Erro ao carregar memória.';
-            }
-        }
-
-        memoriaBtn.addEventListener('click', async function() {
-            const texto = memoriaInput.value.trim();
-            if (!texto) return;
-            const resp = await fetch(`${API_BASE}/memoria`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ texto, dono: usuarioTelefone })
-            });
-            if (resp.ok) {
-                memoriaInput.value = '';
-                carregarMemoria();
-            } else {
-                alert('Erro ao salvar nota.');
-            }
-        });
 
         // ============================================================
         // ESTATÍSTICAS
@@ -481,23 +520,17 @@
                 return;
             }
             try {
-                // Assinantes
                 const respAssin = await fetch(`${API_BASE}/admin/assinantes`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ dono: usuarioTelefone })
                 });
                 const assinData = await respAssin.json();
-                statAssinantes.textContent = assinData.total || 0;
-
-                // Vagas (número de vagas - simulado, pois não temos endpoint de contagem)
-                statVagas.textContent = '30+'; // ou pode chamar /vagas e contar
-
-                // Conversas (do histórico)
+                document.getElementById('statAssinantes').textContent = assinData.total || 0;
+                document.getElementById('statVagas').textContent = '30+';
                 const respHist = await fetch(`${API_BASE}/historico?limite=100`);
                 const histData = await respHist.json();
-                statConversas.textContent = histData.length || 0;
-
+                document.getElementById('statConversas').textContent = histData.length || 0;
             } catch (e) {
                 console.error('Erro nas estatísticas:', e);
             }
@@ -534,7 +567,7 @@
                     idiomaAtual = btn.dataset.idioma;
                     addMessage(idiomaAtual === 'pt' ? 'Idioma: Português 🇧🇷' : 'Language: English 🇺🇸', 'bot');
                 } else if (group.id === 'voiceSelector') {
-                    // Apenas feedback (a voz é gerida no backend)
+                    // Apenas feedback visual – a voz é gerada no backend
                     addMessage(`Voz alterada para ${btn.textContent.trim()}`, 'bot');
                 }
             });
@@ -543,13 +576,11 @@
         // ============================================================
         // INICIALIZAÇÃO
         // ============================================================
-        // Mensagens de boas-vindas
         addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos em Moçambique.', 'bot');
         addMessage('🔧 Modelo atual: Gemini | Idioma: PT', 'bot');
         addMessage('📌 Envia "vagas", "assinar", "verificar" ou faz uma pergunta qualquer.', 'bot');
-
-        // Carregar histórico e memória em background (quando a página for acedida)
-        // já serão carregados via navegação.
+        addMessage('🎤 Podes também usar o microfone para falar em vez de escrever.', 'bot');
+        addMessage('🔊 Clica no 🔊 para ouvir qualquer resposta.', 'bot');
 
         console.log('✅ VagasBot carregado com sucesso!');
     </script>
