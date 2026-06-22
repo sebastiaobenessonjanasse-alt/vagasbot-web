@@ -4,152 +4,247 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VagasBot Moçambique</title>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        /* ===== RESET E BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
         body { background: #0b1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 12px; }
-        .app { max-width: 480px; width: 100%; background: #f0f4fa; border-radius: 32px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+        .app { max-width: 1200px; width: 100%; background: #f4f7fc; border-radius: 32px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); display: grid; grid-template-columns: 250px 1fr; grid-template-rows: auto 1fr auto; height: 90vh; }
 
-        /* HEADER com foto e nome do dono */
-        .header {
-            background: linear-gradient(145deg, #0d2844, #1a3a5c);
-            padding: 20px 20px 14px;
-            color: white;
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            background: linear-gradient(180deg, #0d2844, #1a3a5c);
+            color: #fff;
+            padding: 20px 16px;
+            grid-row: 1 / 4;
             display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-right: 2px solid #2e5a7a;
+        }
+        .sidebar .logo { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+        .sidebar .logo span { color: #6fc3ff; }
+        .sidebar .user-info {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 14px;
-            border-bottom: 2px solid #2e5a7a;
+            background: rgba(255,255,255,0.05);
+            padding: 16px 10px;
+            border-radius: 16px;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .header-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: 3px solid #6fc3ff;
-            flex-shrink: 0;
-            background-image: url('foto.jpg');
-            background-size: cover;
-            background-position: center;
+        .sidebar .user-info .avatar {
+            width: 70px; height: 70px; border-radius: 50%; border: 3px solid #6fc3ff;
+            background-image: url('sua-foto.jpg');
+            background-size: cover; background-position: center;
         }
-        .header-info h1 { font-size: 20px; font-weight: 700; }
-        .header-info h1 span { color: #6fc3ff; }
-        .header-info .dono-nome {
-            font-size: 12px;
-            opacity: 0.9;
-            background: #f5b042;
-            color: #1f2a38;
-            padding: 2px 12px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-top: 2px;
-            font-weight: 600;
-        }
-        .badge { background: #1f8b4c; padding: 4px 12px; border-radius: 30px; font-size: 12px; font-weight: 600; color: #fff; margin-left: auto; }
+        .sidebar .user-info .nome { font-weight: 600; font-size: 14px; text-align: center; margin-top: 4px; }
+        .sidebar .user-info .dono-tag { background: #f5b042; color: #1f2a38; font-size: 11px; padding: 2px 12px; border-radius: 30px; font-weight: 700; }
 
-        /* STATS BANNER */
-        .stats-banner { display: flex; justify-content: space-around; background: #ffffff; padding: 12px 10px; border-bottom: 1px solid #d0d9e3; }
-        .stat-item { text-align: center; }
-        .stat-number { font-size: 18px; font-weight: 700; color: #1a5f9e; display: block; }
-        .stat-label { font-size: 11px; color: #4a5b6e; }
+        .sidebar nav {
+            display: flex; flex-direction: column; gap: 4px; margin-top: 8px;
+        }
+        .sidebar nav a {
+            color: #b0c9e0; text-decoration: none; padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; gap: 12px; transition: 0.3s; font-size: 14px; cursor: pointer;
+        }
+        .sidebar nav a i { width: 20px; text-align: center; }
+        .sidebar nav a:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(4px); }
+        .sidebar nav a.active { background: #1f5e9e; color: #fff; box-shadow: 0 4px 12px rgba(31, 94, 158, 0.4); }
 
-        /* CHAT */
-        .chat { padding: 16px 14px 8px; height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #e9eef3; scroll-behavior: smooth; }
-        .message-wrapper { display: flex; align-items: flex-end; gap: 6px; max-width: 95%; animation: fadeIn 0.25s ease; }
+        /* ===== HEADER DO CONTEÚDO ===== */
+        .content-header {
+            background: #ffffff; padding: 16px 24px; border-bottom: 1px solid #d0d9e3; display: flex; justify-content: space-between; align-items: center; grid-column: 2;
+        }
+        .content-header h2 { font-size: 18px; color: #1a2634; display: flex; align-items: center; gap: 8px; }
+        .content-header .badge { background: #1f8b4c; color: #fff; padding: 4px 14px; border-radius: 30px; font-size: 12px; font-weight: 600; }
+
+        /* ===== PÁGINAS (conteúdo dinâmico) ===== */
+        .page {
+            grid-column: 2; grid-row: 2; padding: 16px 20px; overflow-y: auto; background: #e9eef3; display: none; flex-direction: column; gap: 12px;
+        }
+        .page.active { display: flex; }
+
+        /* ===== CHAT ===== */
+        .chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+        .message-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.3s ease; }
         .message-wrapper.user { align-self: flex-end; flex-direction: row-reverse; }
         .message-wrapper.bot { align-self: flex-start; }
-        .avatar-bot { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1a5f9e, #6fc3ff); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        .message { padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; flex: 1; }
-        .message.bot { background: #ffffff; border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: #1a2634; }
-        .message.user { background: #1f5e9e; color: white; border-bottom-right-radius: 4px; }
-
-        /* ACTION BUTTONS */
-        .action-buttons { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-        .btn-action { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 30px; transition: 0.2s; color: #4a5b6e; line-height: 1; }
+        .avatar-bot { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1a5f9e, #6fc3ff); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .message { padding: 12px 18px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; max-width: 100%; }
+        .message.bot { background: #fff; border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: #1a2634; }
+        .message.user { background: #1f5e9e; color: #fff; border-bottom-right-radius: 4px; }
+        .action-buttons { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+        .btn-action { background: transparent; border: none; font-size: 18px; cursor: pointer; color: #4a5b6e; padding: 2px 6px; border-radius: 30px; transition: 0.2s; }
         .btn-action:hover { background: #d0d9e3; transform: scale(1.1); }
-        .btn-action.playing { color: #1f5e9e; animation: pulse-audio 0.8s infinite; }
-        .btn-action.pausado { color: #f5b042; animation: none; }
-        .btn-action.copiado { color: #1f8b4c; }
-        @keyframes pulse-audio { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+        .btn-action.playing { color: #1f5e9e; animation: pulse 0.8s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        /* AUDIO CONTROLS */
-        .audio-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .btn-controle-audio { background: transparent; border: 1px solid #bcc9d9; border-radius: 30px; padding: 2px 12px; font-size: 14px; cursor: pointer; background: #eef3f9; transition: 0.2s; color: #1a2634; font-weight: 600; }
-        .btn-controle-audio:hover { background: #d0def0; }
-        .btn-controle-audio:active { transform: scale(0.95); }
-        .btn-stop-global { background: #e74c3c; border: none; border-radius: 30px; padding: 4px 14px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; }
+        .input-area {
+            grid-column: 2; grid-row: 3; background: #f0f4fa; padding: 12px 20px; display: flex; gap: 10px; border-top: 1px solid #d0d9e3; align-items: center;
+        }
+        .input-area input { flex: 1; padding: 12px 18px; border: none; border-radius: 30px; background: #fff; outline: none; font-size: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .input-area button { background: #1a5f9e; border: none; border-radius: 30px; padding: 0 24px; color: #fff; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 15px; }
+        .input-area button:hover { background: #0f3f6b; transform: scale(0.97); }
+        .input-area button:disabled { opacity: 0.5; pointer-events: none; }
 
-        /* SELECTORS */
-        .selector-group { display: flex; gap: 6px; align-items: center; background: #eef3f9; border-radius: 30px; padding: 2px 6px; border: 1px solid #bcc9d9; }
-        .selector-option { background: transparent; border: none; padding: 2px 10px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer; color: #4a5b6e; transition: 0.2s; }
-        .selector-option.active { background: #1a5f9e; color: white; }
-        .selector-option:active { transform: scale(0.95); }
+        /* ===== HISTÓRICO ===== */
+        .historico-item { background: #fff; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 4px; border-left: 4px solid #1f5e9e; }
+        .historico-item .meta { font-size: 12px; color: #4a5b6e; display: flex; justify-content: space-between; }
+        .historico-item .pergunta { font-weight: 600; color: #1a2634; }
+        .historico-item .resposta { color: #2d4057; margin-top: 2px; }
 
-        /* TYPING */
-        .typing { align-self: flex-start; background: #e4eaf1; padding: 12px 18px; border-radius: 24px; font-size: 14px; color: #4a5b6e; display: flex; gap: 6px; }
-        .typing span { animation: pulse 1.4s infinite; display: inline-block; }
-        .typing span:nth-child(2) { animation-delay: 0.2s; }
-        .typing span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes pulse { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.9); } 40% { opacity: 1; transform: scale(1.1); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        /* ===== MEMÓRIA ===== */
+        .memoria-item { background: #fff; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #f5b042; }
+        .memoria-item .texto { flex: 1; }
+        .memoria-item .data { font-size: 12px; color: #4a5b6e; margin-right: 12px; }
+        .memoria-item .btn-delete { background: #e74c3c; border: none; color: #fff; padding: 4px 12px; border-radius: 30px; cursor: pointer; font-size: 12px; }
+        .memoria-item .btn-delete:hover { background: #c0392b; }
+        .form-memoria { display: flex; gap: 8px; margin-top: 12px; }
+        .form-memoria input { flex: 1; padding: 10px 16px; border: 1px solid #d0d9e3; border-radius: 30px; outline: none; }
+        .form-memoria button { background: #f5b042; border: none; padding: 10px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; }
 
-        /* INPUT (sempre visível) */
-        .input-area { display: flex; gap: 8px; padding: 10px 14px 16px; background: #f0f4fa; border-top: 1px solid #d0d9e3; align-items: center; }
-        .input-area input { flex: 1; border: none; border-radius: 30px; padding: 12px 18px; font-size: 15px; background: white; box-shadow: inset 0 2px 6px rgba(0,0,0,0.03); outline: none; min-width: 80px; }
-        .input-area .btn-microfone { background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 6px; border-radius: 50%; transition: 0.2s; color: #1a5f9e; line-height: 1; }
-        .input-area .btn-microfone:active { transform: scale(0.9); }
-        .input-area .btn-microfone.gravando { color: #e74c3c; animation: pulse-microfone 1.2s infinite; }
-        @keyframes pulse-microfone { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-        .input-area button.btn-enviar { background: #1a5f9e; border: none; border-radius: 30px; padding: 0 20px; color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(26, 95, 158, 0.3); }
-        .input-area button.btn-enviar:active { transform: scale(0.94); background: #0f3f6b; }
-        .input-area button.btn-enviar:disabled { opacity: 0.5; pointer-events: none; }
+        /* ===== DÚVIDAS (FAQ) ===== */
+        .faq-item { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .faq-item .pergunta { font-weight: 600; color: #1a2634; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-item .resposta { display: none; color: #2d4057; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9eef3; }
+        .faq-item .resposta.aberta { display: block; }
 
-        /* FOOTER */
-        .footer { background: #dce3ec; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #2d4057; border-top: 1px solid #c2cddb; flex-wrap: wrap; gap: 6px; }
-        .footer span { font-weight: 600; color: #0f3f6b; }
-        .footer-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .btn-assinar { background: #f5b042; border: none; padding: 4px 14px; border-radius: 30px; font-weight: 700; font-size: 13px; color: #1f2a38; cursor: pointer; }
+        /* ===== ESTATÍSTICAS ===== */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+        .stat-card { background: #fff; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .stat-card .numero { font-size: 32px; font-weight: 700; color: #1a5f9e; }
+        .stat-card .label { font-size: 14px; color: #4a5b6e; margin-top: 4px; }
 
-        .plano-box { display: flex; gap: 10px; margin: 6px 0 4px; flex-wrap: wrap; }
-        .plano-btn { background: #eef3f9; border: 1px solid #bcc9d9; border-radius: 40px; padding: 6px 16px; font-size: 13px; font-weight: 600; color: #1a2c42; cursor: pointer; transition: 0.15s; }
-        .plano-btn:active { background: #d0def0; transform: scale(0.96); }
-        .plano-btn.destaque { background: #1f8b4c; color: white; border-color: #1f8b4c; }
+        /* ===== FOOTER ===== */
+        .footer {
+            grid-column: 2; background: #dce3ec; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #2d4057; border-top: 1px solid #c2cddb; flex-wrap: wrap; gap: 6px;
+        }
+        .footer .selectors { display: flex; gap: 8px; flex-wrap: wrap; }
+        .selector-group { display: flex; gap: 4px; background: #eef3f9; border-radius: 30px; padding: 2px 6px; border: 1px solid #bcc9d9; }
+        .selector-option { background: transparent; border: none; padding: 2px 12px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer; color: #4a5b6e; transition: 0.2s; }
+        .selector-option.active { background: #1a5f9e; color: #fff; }
+        .selector-option:hover { background: #d0def0; }
 
-        .chat::-webkit-scrollbar { width: 4px; }
-        .chat::-webkit-scrollbar-thumb { background: #a0b7ce; border-radius: 10px; }
+        /* ===== WHATSAPP FLOATING ===== */
+        .whatsapp-float {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #25d366; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none; transition: 0.3s;
+        }
+        .whatsapp-float:hover { transform: scale(1.1); background: #128C7E; }
+
+        /* ===== ANIMAÇÕES ===== */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { animation: fadeIn 0.3s ease; }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .app { grid-template-columns: 1fr; height: 100vh; border-radius: 0; }
+            .sidebar { display: none; } /* Será substituído por menu hamburguer (não implementado aqui) */
+            .content-header, .page, .input-area, .footer { grid-column: 1; }
+            .whatsapp-float { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 26px; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- BOTÃO WHATSAPP FLUTUANTE -->
+    <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <div class="app">
 
-        <!-- HEADER -->
-        <div class="header">
-            <div class="header-avatar" id="headerAvatar"></div>
-            <div class="header-info">
-                <h1>Vagas<span>Bot</span></h1>
-                <div class="dono-nome" id="donoNome">Sebastião Benesson Janasse – Dono Supremo 👑</div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">Vagas<span>Bot</span></div>
+            <div class="user-info">
+                <div class="avatar" id="avatarDono"></div>
+                <div class="nome">Sebastião Janasse</div>
+                <div class="dono-tag">👑 Dono Supremo</div>
             </div>
-            <div class="badge" id="badgeStatus">🇲🇿</div>
+            <nav>
+                <a href="#" class="active" data-pagina="chat"><i class="fas fa-comment-dots"></i> Chat</a>
+                <a href="#" data-pagina="historico"><i class="fas fa-history"></i> Histórico</a>
+                <a href="#" data-pagina="memoria"><i class="fas fa-brain"></i> Memória</a>
+                <a href="#" data-pagina="duvidas"><i class="fas fa-question-circle"></i> Dúvidas</a>
+                <a href="#" data-pagina="estatisticas"><i class="fas fa-chart-bar"></i> Estatísticas</a>
+            </nav>
+        </aside>
+
+        <!-- HEADER DO CONTEÚDO -->
+        <header class="content-header">
+            <h2 id="pageTitle"><i class="fas fa-comment-dots"></i> Chat</h2>
+            <span class="badge">🇲🇿 Moçambique</span>
+        </header>
+
+        <!-- PÁGINA: CHAT -->
+        <div class="page active" id="page-chat">
+            <div class="chat-container" id="chatContainer">
+                <!-- Mensagens serão inseridas aqui -->
+            </div>
         </div>
 
-        <!-- STATS -->
-        <div class="stats-banner">
-            <div class="stat-item"><span class="stat-number">+120</span><span class="stat-label">Pessoas ajudadas</span></div>
-            <div class="stat-item"><span class="stat-number">30+</span><span class="stat-label">Vagas disponíveis</span></div>
-            <div class="stat-item"><span class="stat-number">3</span><span class="stat-label">Cidades</span></div>
+        <!-- PÁGINA: HISTÓRICO -->
+        <div class="page" id="page-historico">
+            <h3 style="margin-bottom: 8px;">📜 Últimas conversas</h3>
+            <div id="historicoLista"></div>
         </div>
 
-        <!-- CHAT -->
-        <div class="chat" id="chatContainer"></div>
+        <!-- PÁGINA: MEMÓRIA -->
+        <div class="page" id="page-memoria">
+            <h3>🧠 Notas rápidas (apenas dono)</h3>
+            <div id="memoriaLista"></div>
+            <div class="form-memoria">
+                <input type="text" id="memoriaInput" placeholder="Escreve uma nota...">
+                <button id="memoriaBtn">Salvar</button>
+            </div>
+        </div>
 
-        <!-- INPUT -->
-        <div class="input-area">
-            <input type="text" id="msgInput" placeholder="Escreve ou fala a tua mensagem..." autocomplete="off">
-            <button class="btn-microfone" id="microfoneBtn">🎤</button>
-            <button class="btn-enviar" id="sendBtn">Enviar</button>
+        <!-- PÁGINA: DÚVIDAS (FAQ) -->
+        <div class="page" id="page-duvidas">
+            <h3>❓ Perguntas Frequentes</h3>
+            <div class="faq-item">
+                <div class="pergunta" onclick="toggleFAQ(this)">🤔 Como posso assinar o Premium? <i class="fas fa-chevron-down"></i></div>
+                <div class="resposta">Envia "assinar" no chat, escolhe o plano (semanal ou mensal) e faz o pagamento para o e-Mola 879306034. Depois, envia o comprovativo e aguarda a ativação.</div>
+            </div>
+            <div class="faq-item">
+                <div class="pergunta" onclick="toggleFAQ(this)">📄 Como faço para comprar um PDF? <i class="fas fa-chevron-down"></i></div>
+                <div class="resposta">Clica no botão "Comprar" ao lado do PDF desejado. Serás redirecionado para a página de pagamento. Após a confirmação, o download será libertado.</div>
+            </div>
+            <div class="faq-item">
+                <div class="pergunta" onclick="toggleFAQ(this)">🌍 O VagasBot funciona em todo o Moçambique? <i class="fas fa-chevron-down"></i></div>
+                <div class="resposta">Sim! As vagas são listadas para todo o país, com destaque para Maputo, Beira e Nampula. Podes filtrar por cidade usando "vagas [cidade]".</div>
+            </div>
+            <div style="margin-top: 16px; padding: 16px; background: #fff; border-radius: 12px; text-align: center;">
+                <p>💬 Ainda tens dúvidas? Fala connosco directamente no WhatsApp!</p>
+                <a href="https://wa.me/258879306034?text=Olá!%20Tenho%20uma%20dúvida%20sobre%20o%20VagasBot." target="_blank" style="display: inline-block; background: #25d366; color: #fff; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; margin-top: 8px;">
+                    <i class="fab fa-whatsapp"></i> Falar no WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <!-- PÁGINA: ESTATÍSTICAS -->
+        <div class="page" id="page-estatisticas">
+            <h3>📊 Estatísticas</h3>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card"><div class="numero" id="statAssinantes">0</div><div class="label">Assinantes</div></div>
+                <div class="stat-card"><div class="numero" id="statVagas">0</div><div class="label">Vagas cadastradas</div></div>
+                <div class="stat-card"><div class="numero" id="statConversas">0</div><div class="label">Conversas</div></div>
+                <div class="stat-card"><div class="numero" id="statCidades">3</div><div class="label">Cidades activas</div></div>
+            </div>
+        </div>
+
+        <!-- INPUT (apenas na página de chat) -->
+        <div class="input-area" id="inputArea">
+            <input type="text" id="msgInput" placeholder="Escreve a tua mensagem..." autocomplete="off">
+            <button id="sendBtn">Enviar</button>
         </div>
 
         <!-- FOOTER -->
-        <div class="footer">
-            <span id="footerStatus">🙌 +120 pessoas já encontraram</span>
-            <div class="footer-actions">
+        <footer class="footer">
+            <span id="footerStatus">👑 Dono Supremo – Acesso total</span>
+            <div class="selectors">
                 <div class="selector-group" id="iaSelector">
                     <button class="selector-option active" data-ia="gemini">🧠 Gemini</button>
                     <button class="selector-option" data-ia="deepseek">🧠 DeepSeek</button>
@@ -164,13 +259,8 @@
                     <button class="selector-option" data-voz="masculina">👨</button>
                     <button class="selector-option" data-voz="crianca">🧒</button>
                 </div>
-                <div class="audio-controls" id="audioControls" style="display:none;">
-                    <button class="btn-controle-audio" id="pausarBtn">⏸ Pausar</button>
-                    <button class="btn-stop-global" id="stopAudioBtn">⏹ Parar</button>
-                </div>
-                <button class="btn-assinar" id="assinarBtn">✨ Assinar</button>
             </div>
-        </div>
+        </footer>
     </div>
 
     <script>
@@ -182,259 +272,69 @@
         const API_BASE = 'https://vagasbot-web-api.onrender.com';
 
         // ============================================================
-        // DOM
+        // DOM ELEMENTOS
         // ============================================================
-        const chat = document.getElementById('chatContainer');
+        const chatContainer = document.getElementById('chatContainer');
         const input = document.getElementById('msgInput');
         const sendBtn = document.getElementById('sendBtn');
-        const assinarBtn = document.getElementById('assinarBtn');
-        const badgeStatus = document.getElementById('badgeStatus');
         const footerStatus = document.getElementById('footerStatus');
-        const microfoneBtn = document.getElementById('microfoneBtn');
-        const pausarBtn = document.getElementById('pausarBtn');
-        const stopAudioBtn = document.getElementById('stopAudioBtn');
-        const audioControls = document.getElementById('audioControls');
-        const donoNome = document.getElementById('donoNome');
+        const pageTitle = document.getElementById('pageTitle');
 
-        let aguardandoPlano = false;
+        // Elementos das outras páginas
+        const historicoLista = document.getElementById('historicoLista');
+        const memoriaLista = document.getElementById('memoriaLista');
+        const memoriaInput = document.getElementById('memoriaInput');
+        const memoriaBtn = document.getElementById('memoriaBtn');
+        const statAssinantes = document.getElementById('statAssinantes');
+        const statVagas = document.getElementById('statVagas');
+        const statConversas = document.getElementById('statConversas');
+
+        // Estado
         let idiomaAtual = 'pt';
-        let vozSelecionada = 'feminina';
         let modeloIA = 'gemini';
-        let audioAtual = null;
-        let elementoAudioAtual = null;
-        let audioPausado = false;
-        let recognition = null;
-        let estaGravando = false;
+        let paginaAtual = 'chat';
 
         // ============================================================
-        // UI
+        // FUNÇÕES DE UI
         // ============================================================
         function isDono() { return usuarioTelefone === DONO_TELEFONE; }
 
-        function atualizarInterface() {
-            if (isDono()) {
-                badgeStatus.textContent = '👑 Dono';
-                badgeStatus.style.background = '#f5b042';
-                badgeStatus.style.color = '#1f2a38';
-                footerStatus.innerHTML = '👑 Dono Supremo – Acesso total';
-                donoNome.style.display = 'inline-block';
-            } else {
-                badgeStatus.textContent = '🇲🇿';
-                badgeStatus.style.background = '#1f8b4c';
-                badgeStatus.style.color = '#fff';
-                footerStatus.innerHTML = '🙌 +120 pessoas já encontraram';
-                donoNome.style.display = 'none';
-            }
-        }
-
         // ============================================================
-        // TRADUÇÃO
+        // NAVEGAÇÃO POR ABAS
         // ============================================================
-        async function traduzirTexto(texto, idiomaDestino) {
-            if (idiomaDestino === 'pt') return texto;
-            try {
-                const resp = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=pt|en`);
-                const data = await resp.json();
-                return data.responseData?.translatedText || texto;
-            } catch (e) { return texto; }
-        }
-
-        // ============================================================
-        // SELETORES
-        // ============================================================
-        document.getElementById('iaSelector').addEventListener('click', (e) => {
-            const btn = e.target.closest('.selector-option');
-            if (!btn) return;
-            document.querySelectorAll('#iaSelector .selector-option').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            modeloIA = btn.dataset.ia;
-            addMessage(`Modelo de IA alterado para ${btn.textContent.trim()}`, 'bot');
-        });
-
-        document.getElementById('idiomaSelector').addEventListener('click', (e) => {
-            const btn = e.target.closest('.selector-option');
-            if (!btn) return;
-            document.querySelectorAll('#idiomaSelector .selector-option').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            idiomaAtual = btn.dataset.idioma;
-            pararLeitura();
-            addMessage(idiomaAtual === 'pt' ? 'Idioma alterado para Português 🇧🇷' : 'Language changed to English 🇺🇸', 'bot');
-        });
-
-        document.getElementById('voiceSelector').addEventListener('click', (e) => {
-            const btn = e.target.closest('.selector-option');
-            if (!btn) return;
-            document.querySelectorAll('#voiceSelector .selector-option').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            vozSelecionada = btn.dataset.voz;
-            pararLeitura();
-        });
-
-        // ============================================================
-        // MICROFONE
-        // ============================================================
-        function iniciarReconhecimento() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Use Chrome/Edge para microfone.');
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.lang = idiomaAtual === 'pt' ? 'pt-BR' : 'en-US';
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            recognition.onstart = () => {
-                estaGravando = true;
-                microfoneBtn.classList.add('gravando');
-                microfoneBtn.textContent = '⏺️';
-                input.placeholder = '🎤 Ouvindo...';
-            };
-            recognition.onresult = (event) => {
-                input.value = event.results[0][0].transcript;
-                setTimeout(() => { if (input.value.trim()) enviarMensagem(); }, 600);
-            };
-            recognition.onerror = (event) => {
-                if (event.error === 'not-allowed') alert('Permissão de microfone negada.');
-                pararReconhecimento();
-            };
-            recognition.onend = pararReconhecimento;
-            recognition.start();
-        }
-
-        function pararReconhecimento() {
-            if (recognition) try { recognition.stop(); } catch(e) {}
-            estaGravando = false;
-            microfoneBtn.classList.remove('gravando');
-            microfoneBtn.textContent = '🎤';
-            input.placeholder = 'Escreve ou fala a tua mensagem...';
-        }
-
-        microfoneBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            estaGravando ? pararReconhecimento() : iniciarReconhecimento();
-        });
-        input.addEventListener('focus', () => { if (estaGravando) pararReconhecimento(); });
-
-        // ============================================================
-        // TTS (via backend)
-        // ============================================================
-        async function falar(texto, elementoBotao, idiomaVoz = 'pt-BR') {
-            if (audioAtual) {
-                audioAtual.pause();
-                audioAtual.currentTime = 0;
-                audioAtual = null;
-                if (elementoAudioAtual) {
-                    elementoAudioAtual.classList.remove('playing', 'pausado');
-                    elementoAudioAtual.textContent = '🔊';
-                }
-                audioControls.style.display = 'none';
-            }
-            const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
-            if (!textoLimpo) return;
-            try {
-                const resp = await fetch(`${API_BASE}/sintetizar-voz`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ texto: textoLimpo, idioma: idiomaVoz })
-                });
-                const data = await resp.json();
-                if (data.erro) throw new Error(data.erro);
-                const audioBlob = new Blob([Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                audioAtual = new Audio(audioUrl);
-                elementoAudioAtual = elementoBotao;
-                audioAtual.onplay = () => {
-                    if (elementoBotao) {
-                        elementoBotao.classList.add('playing');
-                        elementoBotao.textContent = '🔊';
-                    }
-                    audioControls.style.display = 'flex';
-                    pausarBtn.textContent = '⏸ Pausar';
-                    audioPausado = false;
+        document.querySelectorAll('.sidebar nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pagina = this.dataset.pagina;
+                // Atualiza a sidebar
+                document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                // Mostra a página correta
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(`page-${pagina}`).classList.add('active');
+                // Atualiza o título
+                const nomes = {
+                    chat: '💬 Chat',
+                    historico: '📜 Histórico',
+                    memoria: '🧠 Memória',
+                    duvidas: '❓ Dúvidas',
+                    estatisticas: '📊 Estatísticas'
                 };
-                audioAtual.onended = () => {
-                    if (elementoBotao) {
-                        elementoBotao.classList.remove('playing', 'pausado');
-                        elementoBotao.textContent = '🔊';
-                    }
-                    audioControls.style.display = 'none';
-                    audioAtual = null;
-                    elementoAudioAtual = null;
-                };
-                audioAtual.onerror = () => {
-                    alert('Erro ao reproduzir áudio.');
-                    if (elementoBotao) {
-                        elementoBotao.classList.remove('playing', 'pausado');
-                        elementoBotao.textContent = '🔊';
-                    }
-                };
-                audioAtual.play();
-            } catch (error) {
-                console.error('Erro no TTS:', error);
-                alert('Não foi possível gerar o áudio.');
-            }
-        }
+                pageTitle.innerHTML = `<i class="fas fa-${pagina === 'chat' ? 'comment-dots' : pagina === 'historico' ? 'history' : pagina === 'memoria' ? 'brain' : pagina === 'duvidas' ? 'question-circle' : 'chart-bar'}"></i> ${nomes[pagina]}`;
+                // Esconde/mostra input (só no chat)
+                document.getElementById('inputArea').style.display = pagina === 'chat' ? 'flex' : 'none';
+                paginaAtual = pagina;
+                // Carrega conteúdo da página
+                if (pagina === 'historico') carregarHistorico();
+                if (pagina === 'memoria') carregarMemoria();
+                if (pagina === 'estatisticas') carregarEstatisticas();
+            });
+        });
 
         // ============================================================
-        // CONTROLES DE ÁUDIO
+        // CHAT (já existente)
         // ============================================================
-        function pausarOuRetomar() {
-            if (!audioAtual) return;
-            if (audioAtual.paused) {
-                audioAtual.play();
-                pausarBtn.textContent = '⏸ Pausar';
-                if (elementoAudioAtual) {
-                    elementoAudioAtual.classList.add('playing');
-                    elementoAudioAtual.classList.remove('pausado');
-                }
-            } else {
-                audioAtual.pause();
-                pausarBtn.textContent = '▶️ Retomar';
-                if (elementoAudioAtual) {
-                    elementoAudioAtual.classList.remove('playing');
-                    elementoAudioAtual.classList.add('pausado');
-                }
-            }
-        }
-        function pararLeitura() {
-            if (audioAtual) {
-                audioAtual.pause();
-                audioAtual.currentTime = 0;
-                audioAtual = null;
-                if (elementoAudioAtual) {
-                    elementoAudioAtual.classList.remove('playing', 'pausado');
-                    elementoAudioAtual.textContent = '🔊';
-                }
-                audioControls.style.display = 'none';
-                pausarBtn.textContent = '⏸ Pausar';
-            }
-        }
-        pausarBtn.addEventListener('click', pausarOuRetomar);
-        stopAudioBtn.addEventListener('click', pararLeitura);
-
-        // ============================================================
-        // COPIAR
-        // ============================================================
-        async function copiarTexto(texto, elementoBotao) {
-            try {
-                await navigator.clipboard.writeText(texto);
-                elementoBotao.textContent = '✅';
-                elementoBotao.classList.add('copiado');
-                setTimeout(() => {
-                    elementoBotao.textContent = '📋';
-                    elementoBotao.classList.remove('copiado');
-                }, 2000);
-            } catch (err) {
-                alert('Não foi possível copiar.');
-            }
-        }
-
-        // ============================================================
-        // ADICIONAR MENSAGEM
-        // ============================================================
-        async function addMessage(text, tipo = 'bot', extra = '') {
+        function addMessage(text, tipo = 'bot', extra = '') {
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${tipo}`;
             if (tipo === 'bot') {
@@ -445,63 +345,12 @@
             }
             const bubble = document.createElement('div');
             bubble.className = `message ${tipo}`;
-            let textoExibido = text;
-            if (idiomaAtual === 'en' && tipo === 'bot') {
-                textoExibido = await traduzirTexto(text, 'en');
-            }
-            bubble.innerHTML = textoExibido + extra;
+            bubble.innerHTML = text + extra;
             wrapper.appendChild(bubble);
-
-            if (tipo === 'bot') {
-                const actionDiv = document.createElement('div');
-                actionDiv.className = 'action-buttons';
-                const audioBtn = document.createElement('button');
-                audioBtn.className = 'btn-action';
-                audioBtn.textContent = '🔊';
-                audioBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const textoMsg = bubble.innerText || bubble.textContent;
-                    const textoLimpo = textoMsg.replace(/Semanal|Mensal|50 MT|150 MT/g, '').trim();
-                    const idiomaVoz = idiomaAtual === 'pt' ? 'pt-BR' : 'en-US';
-                    if (textoLimpo) falar(textoLimpo, audioBtn, idiomaVoz);
-                    else falar('Escolha uma opção de plano.', audioBtn, idiomaVoz);
-                });
-                actionDiv.appendChild(audioBtn);
-
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'btn-action';
-                copyBtn.textContent = '📋';
-                copyBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const textoMsg = bubble.innerText || bubble.textContent;
-                    copiarTexto(textoMsg, copyBtn);
-                });
-                actionDiv.appendChild(copyBtn);
-                wrapper.appendChild(actionDiv);
-            }
-            chat.appendChild(wrapper);
-            chat.scrollTop = chat.scrollHeight;
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // ============================================================
-        // DIGITAÇÃO
-        // ============================================================
-        function mostrarDigitando() {
-            const div = document.createElement('div');
-            div.className = 'typing';
-            div.id = 'typingIndicator';
-            div.innerHTML = '<span>●</span><span>●</span><span>●</span>';
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
-        }
-        function removerDigitando() {
-            const el = document.getElementById('typingIndicator');
-            if (el) el.remove();
-        }
-
-        // ============================================================
-        // CHAMADAS À API
-        // ============================================================
         async function chamarAPI(endpoint, dados) {
             try {
                 const payload = { ...dados, idioma: idiomaAtual };
@@ -518,302 +367,191 @@
             }
         }
 
-        // ============================================================
-        // PROCESSAR MENSAGEM
-        // ============================================================
-        async function processarMensagem(texto) {
-            const lower = texto.trim().toLowerCase();
-
-            if (aguardandoPlano) {
-                if (lower.includes('semanal') || lower.includes('50')) {
-                    aguardandoPlano = false;
-                    await criarPagamento('semanal');
-                    return;
-                } else if (lower.includes('mensal') || lower.includes('150')) {
-                    aguardandoPlano = false;
-                    await criarPagamento('mensal');
-                    return;
-                } else {
-                    addMessage('Escolhe uma opção: <strong>semanal</strong> (50 MT) ou <strong>mensal</strong> (150 MT).', 'bot');
-                    return;
-                }
-            }
-
-            // Comandos secretos (dono)
-            if (lower.startsWith('!')) {
-                if (!isDono()) {
-                    addMessage('⛔ Comando secreto apenas para o Dono Supremo.', 'bot');
-                    return;
-                }
-                const partes = lower.split(' ');
-                const cmd = partes[0];
-                if (cmd === '!ajuda' || cmd === '!help') {
-                    addMessage(`👑 *Comandos de Dono:*\n• \`!assinantes\` – lista todos os assinantes\n• \`!ativar NUMERO [plano]\` – ativa manualmente (ex: !ativar 879306034 semanal)\n• \`!add vaga\` – adiciona uma vaga (formato: título|cidade|salário|área|benefício)\n• \`!remover vaga TÍTULO\` – remove pelo título exato`, 'bot');
-                    return;
-                }
-                if (cmd === '!assinantes') {
-                    await listarAssinantes();
-                    return;
-                }
-                if (cmd === '!ativar') {
-                    const numero = partes[1];
-                    const plano = partes[2] || 'mensal';
-                    if (!numero) {
-                        addMessage('⚠️ Diga o número e o plano. Ex: `!ativar 879306034 semanal`', 'bot');
-                        return;
-                    }
-                    if (!['semanal', 'mensal'].includes(plano)) {
-                        addMessage('⚠️ Plano inválido. Use `semanal` ou `mensal`.', 'bot');
-                        return;
-                    }
-                    await ativarAssinante(numero, plano);
-                    return;
-                }
-                if (cmd === '!add') {
-                    const resto = texto.substring(4).trim();
-                    if (!resto.includes('|')) {
-                        addMessage('⚠️ Formato inválido. Use: `!add título|cidade|salário|área|benefício`', 'bot');
-                        return;
-                    }
-                    const [titulo, cidade, salario, area, beneficio] = resto.split('|').map(s => s.trim());
-                    await adicionarVaga({ titulo, cidade, salario, area, beneficio });
-                    return;
-                }
-                if (cmd === '!remover') {
-                    const titulo = texto.substring(9).trim();
-                    if (!titulo) {
-                        addMessage('⚠️ Diga o título da vaga a remover.', 'bot');
-                        return;
-                    }
-                    await removerVaga(titulo);
-                    return;
-                }
-                addMessage('Comando não reconhecido. Use `!ajuda`', 'bot');
-                return;
-            }
-
-            // Comandos normais
-            if (lower.startsWith('vagas')) {
-                const partes = lower.split(' ');
-                let cidade = null, area = null;
-                if (partes.length > 1) {
-                    const filtro = partes.slice(1).join(' ');
-                    const cidades = ['maputo', 'beira', 'nampula', 'pemba', 'tete', 'quelimane'];
-                    if (cidades.some(c => filtro.includes(c))) {
-                        cidade = filtro;
-                    } else {
-                        area = filtro;
-                    }
-                }
-                await buscarVagas(cidade, area);
-                return;
-            }
-
-            if (lower.includes('ajuda') || lower === '?') {
-                let msg = `📋 *Comandos:*\n• "vagas" – ver todas as oportunidades\n• "vagas Maputo" – filtrar por cidade\n• "vagas TI" – filtrar por área\n• "assinar" – plano Premium\n• "verificar" – estado da conta\n• "ajuda" – esta mensagem`;
-                if (isDono()) msg += `\n\n👑 *Comandos de Dono:* use "!ajuda" para lista secreta.`;
-                addMessage(msg, 'bot');
-                return;
-            }
-
-            if (lower.includes('verificar') || lower.includes('status')) {
-                await verificarAcesso();
-                return;
-            }
-
-            if (lower.includes('assinar') || lower.includes('premium')) {
-                aguardandoPlano = true;
-                addMessage('📦 Escolhe o plano:', 'bot', `
-                    <div class="plano-box">
-                        <button class="plano-btn" onclick="escolherPlano('semanal')">🗓️ Semanal – 50 MT</button>
-                        <button class="plano-btn destaque" onclick="escolherPlano('mensal')">📆 Mensal – 150 MT</button>
-                    </div>
-                `);
-                return;
-            }
-
-            // SE NÃO FOR COMANDO, USA IA
-            await responderComIA(texto);
-        }
-
-        // ============================================================
-        // FUNÇÕES DA API
-        // ============================================================
-        async function responderComIA(mensagem) {
-            mostrarDigitando();
-            const dados = await chamarAPI('/chat-ia', { mensagem, modelo: modeloIA });
-            removerDigitando();
-            if (dados && dados.resposta) {
-                addMessage(dados.resposta, 'bot');
-            } else {
-                addMessage('⚠️ Não consegui gerar uma resposta agora. Tenta novamente.', 'bot');
-            }
-        }
-
-        async function buscarVagas(cidade = null, area = null) {
-            mostrarDigitando();
-            const payload = { telefone: usuarioTelefone };
-            if (cidade) payload.cidade = cidade;
-            if (area) payload.area = area;
-            const dados = await chamarAPI('/vagas', payload);
-            removerDigitando();
-            if (!dados || dados.total === 0) {
-                addMessage('😕 Nenhuma vaga encontrada.', 'bot');
-                return;
-            }
-            let prefixo = '';
-            if (cidade) prefixo = ` em ${cidade}`;
-            if (area) prefixo += ` (${area})`;
-            if (!cidade && !area) prefixo = ' (todas)';
-            const donoTag = isDono() ? ' 👑' : '';
-            addMessage(`📌 *Vagas${prefixo}* – ${dados.total} encontradas${donoTag}`, 'bot');
-            dados.vagas.forEach(v => addMessage(`• ${v}`, 'bot'));
-            if (dados.plano === 'gratuito') {
-                addMessage('🔒 *Assine Premium* para ver benefícios!', 'bot');
-            } else if (dados.plano === 'dono') {
-                addMessage('👑 Dono Supremo – todas as vagas com detalhes!', 'bot');
-            }
-        }
-
-        async function verificarAcesso() {
-            mostrarDigitando();
-            const dados = await chamarAPI('/verificar-acesso', { telefone: usuarioTelefone });
-            removerDigitando();
-            if (!dados) {
-                addMessage('⚠️ Não foi possível verificar.', 'bot');
-                return;
-            }
-            if (dados.dono) {
-                addMessage('👑 Você é o *Dono Supremo*! Acesso total.', 'bot');
-            } else if (dados.assinante) {
-                const dias = dados.diasRestantes;
-                if (dias > 0) {
-                    addMessage(`✅ *Premium ativo!* Faltam ${dias} dias para expirar. 🎉`, 'bot');
-                } else {
-                    addMessage('⏳ *Premium expirado!* Renove enviando "assinar".', 'bot');
-                }
-            } else {
-                addMessage('🔒 Ainda não tens acesso Premium. Envia "assinar".', 'bot');
-            }
-        }
-
-        async function criarPagamento(plano) {
-            mostrarDigitando();
-            const dados = await chamarAPI('/criar-pagamento', {
-                telefone: usuarioTelefone,
-                plano: plano
-            });
-            removerDigitando();
-            if (!dados || !dados.success) {
-                addMessage('⚠️ Erro ao iniciar pagamento. Tenta novamente.', 'bot');
-                return;
-            }
-            if (dados.payment_url) {
-                addMessage(`🔗 Redirecionando para pagamento (${plano})...`, 'bot');
-                window.location.href = dados.payment_url;
-            }
-        }
-
-        async function ativarAssinante(telefone, plano = 'mensal') {
-            mostrarDigitando();
-            const dados = await chamarAPI('/admin/ativar', { telefone, dono: usuarioTelefone, plano });
-            removerDigitando();
-            if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao ativar.'), 'bot');
-                return;
-            }
-            addMessage(`✅ ${dados.mensagem}`, 'bot');
-        }
-
-        async function listarAssinantes() {
-            mostrarDigitando();
-            const dados = await chamarAPI('/admin/assinantes', { telefone: usuarioTelefone });
-            removerDigitando();
-            if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao listar.'), 'bot');
-                return;
-            }
-            if (dados.total === 0) {
-                addMessage('📭 Nenhum assinante ainda.', 'bot');
-            } else {
-                addMessage(`📋 *Assinantes (${dados.total})*:\n${dados.assinantes.join('\n')}`, 'bot');
-            }
-        }
-
-        async function adicionarVaga(vaga) {
-            mostrarDigitando();
-            const dados = await chamarAPI('/admin/add-vaga', {
-                telefone: usuarioTelefone,
-                vaga: vaga
-            });
-            removerDigitando();
-            if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao adicionar.'), 'bot');
-                return;
-            }
-            addMessage(`✅ Vaga "${vaga.titulo}" adicionada! Total: ${dados.total}`, 'bot');
-        }
-
-        async function removerVaga(titulo) {
-            mostrarDigitando();
-            const dados = await chamarAPI('/admin/remover-vaga', {
-                telefone: usuarioTelefone,
-                titulo: titulo
-            });
-            removerDigitando();
-            if (!dados || dados.erro) {
-                addMessage('⚠️ ' + (dados?.erro || 'Erro ao remover.'), 'bot');
-                return;
-            }
-            addMessage(`✅ Vaga "${titulo}" removida! Total restante: ${dados.total}`, 'bot');
-        }
-
-        // ============================================================
-        // EVENTOS GLOBAIS
-        // ============================================================
-        window.escolherPlano = function(plano) {
-            aguardandoPlano = false;
-            criarPagamento(plano);
-        };
-
-        sendBtn.addEventListener('click', enviarMensagem);
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
-
-        function enviarMensagem() {
+        async function enviarMensagem() {
             const texto = input.value.trim();
             if (!texto) return;
             addMessage(texto, 'user');
             input.value = '';
-            input.disabled = true;
-            sendBtn.disabled = true;
-            processarMensagem(texto).finally(() => {
-                input.disabled = false;
-                sendBtn.disabled = false;
-                input.focus();
-            });
+            addMessage('⏳ A pensar...', 'bot');
+            const dados = await chamarAPI('/chat-ia', { mensagem: texto, modelo: modeloIA });
+            const ultima = chatContainer.lastElementChild;
+            if (ultima && ultima.textContent.includes('A pensar')) ultima.remove();
+            if (dados && dados.resposta) {
+                addMessage(dados.resposta, 'bot');
+            } else {
+                addMessage('⚠️ Erro ao gerar resposta.', 'bot');
+            }
         }
 
-        assinarBtn.addEventListener('click', () => {
-            addMessage('assinar', 'user');
-            processarMensagem('assinar');
+        sendBtn.addEventListener('click', enviarMensagem);
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
+
+        // ============================================================
+        // HISTÓRICO
+        // ============================================================
+        async function carregarHistorico() {
+            historicoLista.innerHTML = '⏳ Carregando...';
+            try {
+                const resp = await fetch(`${API_BASE}/historico?limite=20`);
+                const dados = await resp.json();
+                if (dados.length === 0) {
+                    historicoLista.innerHTML = '📭 Nenhuma conversa registada ainda.';
+                    return;
+                }
+                historicoLista.innerHTML = '';
+                dados.slice().reverse().forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'historico-item';
+                    div.innerHTML = `
+                        <div class="meta">
+                            <span>👤 ${item.usuario}</span>
+                            <span>${new Date(item.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="pergunta">💬 ${item.mensagem}</div>
+                        <div class="resposta">🤖 ${item.resposta}</div>
+                    `;
+                    historicoLista.appendChild(div);
+                });
+            } catch (e) {
+                historicoLista.innerHTML = '⚠️ Erro ao carregar histórico.';
+            }
+        }
+
+        // ============================================================
+        // MEMÓRIA (apenas dono)
+        // ============================================================
+        async function carregarMemoria() {
+            memoriaLista.innerHTML = '⏳ Carregando...';
+            try {
+                const resp = await fetch(`${API_BASE}/memoria`);
+                const dados = await resp.json();
+                if (dados.length === 0) {
+                    memoriaLista.innerHTML = '📭 Nenhuma nota guardada.';
+                    return;
+                }
+                memoriaLista.innerHTML = '';
+                dados.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'memoria-item';
+                    div.innerHTML = `
+                        <div class="texto">${item.texto}</div>
+                        <div class="data">${new Date(item.data).toLocaleDateString()}</div>
+                        ${isDono() ? `<button class="btn-delete" data-id="${item.id}">🗑️</button>` : ''}
+                    `;
+                    if (isDono()) {
+                        div.querySelector('.btn-delete').addEventListener('click', async function() {
+                            const id = this.dataset.id;
+                            const resp = await fetch(`${API_BASE}/memoria/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ dono: usuarioTelefone })
+                            });
+                            if (resp.ok) carregarMemoria();
+                        });
+                    }
+                    memoriaLista.appendChild(div);
+                });
+            } catch (e) {
+                memoriaLista.innerHTML = '⚠️ Erro ao carregar memória.';
+            }
+        }
+
+        memoriaBtn.addEventListener('click', async function() {
+            const texto = memoriaInput.value.trim();
+            if (!texto) return;
+            const resp = await fetch(`${API_BASE}/memoria`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ texto, dono: usuarioTelefone })
+            });
+            if (resp.ok) {
+                memoriaInput.value = '';
+                carregarMemoria();
+            } else {
+                alert('Erro ao salvar nota.');
+            }
+        });
+
+        // ============================================================
+        // ESTATÍSTICAS
+        // ============================================================
+        async function carregarEstatisticas() {
+            if (!isDono()) {
+                document.querySelector('.stats-grid').innerHTML = '<p style="grid-column:1/-1; text-align:center;">🔒 Apenas o dono pode ver estas estatísticas.</p>';
+                return;
+            }
+            try {
+                // Assinantes
+                const respAssin = await fetch(`${API_BASE}/admin/assinantes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dono: usuarioTelefone })
+                });
+                const assinData = await respAssin.json();
+                statAssinantes.textContent = assinData.total || 0;
+
+                // Vagas (número de vagas - simulado, pois não temos endpoint de contagem)
+                statVagas.textContent = '30+'; // ou pode chamar /vagas e contar
+
+                // Conversas (do histórico)
+                const respHist = await fetch(`${API_BASE}/historico?limite=100`);
+                const histData = await respHist.json();
+                statConversas.textContent = histData.length || 0;
+
+            } catch (e) {
+                console.error('Erro nas estatísticas:', e);
+            }
+        }
+
+        // ============================================================
+        // FAQ (toggle)
+        // ============================================================
+        function toggleFAQ(el) {
+            const resposta = el.nextElementSibling;
+            const icon = el.querySelector('i');
+            if (resposta.classList.contains('aberta')) {
+                resposta.classList.remove('aberta');
+                icon.className = 'fas fa-chevron-down';
+            } else {
+                resposta.classList.add('aberta');
+                icon.className = 'fas fa-chevron-up';
+            }
+        }
+
+        // ============================================================
+        // SELETORES (IA, IDIOMA, VOZ)
+        // ============================================================
+        document.querySelectorAll('.selector-group').forEach(group => {
+            group.addEventListener('click', (e) => {
+                const btn = e.target.closest('.selector-option');
+                if (!btn) return;
+                group.querySelectorAll('.selector-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (group.id === 'iaSelector') {
+                    modeloIA = btn.dataset.ia;
+                    addMessage(`Modelo IA alterado para ${btn.textContent.trim()}`, 'bot');
+                } else if (group.id === 'idiomaSelector') {
+                    idiomaAtual = btn.dataset.idioma;
+                    addMessage(idiomaAtual === 'pt' ? 'Idioma: Português 🇧🇷' : 'Language: English 🇺🇸', 'bot');
+                } else if (group.id === 'voiceSelector') {
+                    // Apenas feedback (a voz é gerida no backend)
+                    addMessage(`Voz alterada para ${btn.textContent.trim()}`, 'bot');
+                }
+            });
         });
 
         // ============================================================
         // INICIALIZAÇÃO
         // ============================================================
-        atualizarInterface();
-        audioControls.style.display = 'none';
+        // Mensagens de boas-vindas
+        addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos em Moçambique.', 'bot');
+        addMessage('🔧 Modelo atual: Gemini | Idioma: PT', 'bot');
+        addMessage('📌 Envia "vagas", "assinar", "verificar" ou faz uma pergunta qualquer.', 'bot');
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                let extra = '';
-                if (isDono()) extra = ' 👑 Tens acesso total a todas as vagas.';
-                addMessage(`💬 Podes enviar "vagas", "vagas Maputo", "vagas TI", "assinar" ou "ajuda".${extra}`, 'bot');
-                if (isDono()) {
-                    addMessage('🔐 *Comandos secretos:* digita "!ajuda" para ver a lista de comandos de dono.', 'bot');
-                }
-            }, 600);
-        });
+        // Carregar histórico e memória em background (quando a página for acedida)
+        // já serão carregados via navegação.
+
+        console.log('✅ VagasBot carregado com sucesso!');
     </script>
 </body>
 </html>
