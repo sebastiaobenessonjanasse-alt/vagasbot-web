@@ -1,7 +1,7 @@
 {
   "name": "vagasbot-backend",
   "version": "2.0.0",
-  "description": "Backend do VagasBot com IA Gemini, DeepSeek, Claude e TTS",
+  "description": "Backend do VagasBot com IA Gemini, DeepSeek, Claude, TTS e expiração de assinaturas",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
