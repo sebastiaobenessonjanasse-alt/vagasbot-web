@@ -1,4 +1,6 @@
-const express = require('express');
+console.log('GROQ_API_KEY:', process.env.GROQ_API_KEY ? '✅ definida' : '❌ não definida');
+console.log('MISTRAL_API_KEY:', process.env.MISTRAL_API_KEY ? '✅ definida' : '❌ não definida');
+console.log('OPENROUTER_API_KEY:', process.env.OPENROUTER_API_KEY ? '✅ definida' : '❌ não definida');consttexpress = require('express');
 const app = express();
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
