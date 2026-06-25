@@ -24,31 +24,29 @@ app.use((req, res, next) => {
 // CONFIGURAÇÕES
 // =============================================
 const DONO_TELEFONE = '879306034';
-const PAYSUITE_API_KEY = process.env.PAYSUITE_API_KEY || 'SUA_API_KEY';
-const PAYSUITE_SECRET = process.env.PAYSUITE_SECRET || 'SUA_SECRET';
-const PAYSUITE_BASE_URL = 'https://api.paysuite.tech/v1';
-const CLICPAY_API_KEY = process.env.CLICPAY_API_KEY || 'SUA_CLICPAY_API_KEY';
-const CLICPAY_WALLET_ID = process.env.CLICPAY_WALLET_ID || 'SEU_WALLET_ID';
-const CLICPAY_BASE_URL = 'https://clicpay.co.mz/api/v2';
 
 // =============================================
-// INICIALIZAÇÃO DAS IAs
+// INICIALIZAÇÃO DAS 3 IAS (GROQ, MISTRAL, OPENROUTER)
 // =============================================
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const OpenAI = require('openai');
-const Anthropic = require('@anthropic-ai/sdk');
 
-// Gemini - usando modelo 2.0 flash (mais recente e estável)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// DeepSeek (via OpenAI SDK)
-const deepseekClient = new OpenAI({
-    baseURL: 'https://api.deepseek.com/v1',
-    apiKey: process.env.DEEPSEEK_API_KEY
+// 1. Groq (velocidade extrema)
+const groqClient = new OpenAI({
+    baseURL: 'https://api.groq.com/openai/v1',
+    apiKey: process.env.GROQ_API_KEY
 });
 
-// Claude (opcional)
-const anthropic = process.env.CLAUDE_API_KEY ? new Anthropic({ apiKey: process.env.CLAUDE_API_KEY }) : null;
+// 2. Mistral (modelos europeus)
+const mistralClient = new OpenAI({
+    baseURL: 'https://api.mistral.ai/v1',
+    apiKey: process.env.MISTRAL_API_KEY
+});
+
+// 3. OpenRouter (agregador de modelos gratuitos)
+const openRouterClient = new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY
+});
 
 // =============================================
 // ARMAZENAMENTO EM MEMÓRIA
@@ -108,28 +106,10 @@ function isAssinanteAtivo(telefone) {
 }
 
 // =============================================
-// ENDPOINT: TTS (VoiceRSS – gratuito)
-// =============================================
-app.post('/sintetizar-voz', async (req, res) => {
-    const { texto, idioma = 'pt-BR' } = req.body;
-    if (!texto) return res.status(400).json({ erro: 'Texto é obrigatório' });
-    try {
-        const url = `https://api.voicerss.org/?key=SUA_CHAVE_VOICERSS&hl=${idioma === 'pt-BR' ? 'pt-br' : 'en-us'}&v=Maria&src=${encodeURIComponent(texto)}`;
-        const response = await fetch(url);
-        const audioBuffer = await response.arrayBuffer();
-        const audioBase64 = Buffer.from(audioBuffer).toString('base64');
-        res.json({ audio: audioBase64 });
-    } catch (error) {
-        console.error('Erro no TTS:', error);
-        res.status(500).json({ erro: 'Falha ao gerar áudio' });
-    }
-});
-
-// =============================================
-// ENDPOINT: CHAT COM IA (GEMINI, DEEPSEEK, CLAUDE)
+// ENDPOINT: IA (GROQ, MISTRAL, OPENROUTER)
 // =============================================
 app.post('/chat-ia', async (req, res) => {
-    const { mensagem, idioma = 'pt', modelo = 'gemini', telefone = 'anonimo' } = req.body;
+    const { mensagem, idioma = 'pt', modelo = 'groq', telefone = 'anonimo' } = req.body;
 
     const prompt = idioma === 'en'
         ? `You are Vaga, a job assistant in Mozambique. Respond briefly and helpfully, using emojis. Question: ${mensagem}`
@@ -137,44 +117,38 @@ app.post('/chat-ia', async (req, res) => {
 
     try {
         let resposta = '';
+
         switch (modelo) {
-            case 'gemini': {
-                // ✅ CORREÇÃO: usar gemini-2.0-flash (ou gemini-1.5-pro)
-                const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-                const result = await model.generateContent(prompt);
-                resposta = result.response.text();
-                break;
-            }
-            case 'deepseek': {
-                try {
-                    const resp = await deepseekClient.chat.completions.create({
-                        model: 'deepseek-chat',
-                        messages: [{ role: 'user', content: prompt }],
-                        max_tokens: 1024,
-                    });
-                    resposta = resp.choices[0].message.content;
-                } catch (error) {
-                    // Se o erro for 402 (saldo insuficiente), avisa o utilizador
-                    if (error.status === 402 || error.message.includes('Insufficient Balance')) {
-                        resposta = '⚠️ O DeepSeek está sem saldo neste momento. Por favor, selecciona Gemini ou Claude.';
-                    } else {
-                        throw error;
-                    }
-                }
-                break;
-            }
-            case 'claude': {
-                if (!anthropic) throw new Error('Claude não configurado.');
-                const resp = await anthropic.messages.create({
-                    model: 'claude-3-haiku-20240307',
+            case 'groq': {
+                const response = await groqClient.chat.completions.create({
+                    model: 'mixtral-8x7b-32768', // ou 'llama3-70b-8192'
                     messages: [{ role: 'user', content: prompt }],
-                    max_tokens: 1024
+                    max_tokens: 1024,
                 });
-                resposta = resp.content[0].text;
+                resposta = response.choices[0].message.content;
+                break;
+            }
+            case 'mistral': {
+                const response = await mistralClient.chat.completions.create({
+                    model: 'mistral-large-3', // ou 'mistral-medium-3.5'
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 1024,
+                });
+                resposta = response.choices[0].message.content;
+                break;
+            }
+            case 'openrouter': {
+                const response = await openRouterClient.chat.completions.create({
+                    model: 'openrouter/free', // escolhe automaticamente o melhor modelo grátis
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 1024,
+                });
+                resposta = response.choices[0].message.content;
                 break;
             }
             default: throw new Error('Modelo não suportado.');
         }
+
         // Guarda no histórico
         historico.push({
             usuario: telefone,
@@ -191,7 +165,7 @@ app.post('/chat-ia', async (req, res) => {
 });
 
 // =============================================
-// HISTÓRICO (GET)
+// ENDPOINT: HISTÓRICO
 // =============================================
 app.get('/historico', (req, res) => {
     const limite = parseInt(req.query.limite) || 50;
@@ -199,7 +173,7 @@ app.get('/historico', (req, res) => {
 });
 
 // =============================================
-// MEMÓRIA (POST, GET, DELETE)
+// ENDPOINTS: MEMÓRIA
 // =============================================
 app.post('/memoria', (req, res) => {
     const { texto, dono } = req.body;
@@ -224,7 +198,7 @@ app.delete('/memoria/:id', (req, res) => {
 });
 
 // =============================================
-// VAGAS (COM FILTRO E PREMIUM)
+// ENDPOINT: VAGAS
 // =============================================
 app.post('/vagas', (req, res) => {
     const { telefone, cidade, area } = req.body;
@@ -256,7 +230,7 @@ app.post('/vagas', (req, res) => {
 });
 
 // =============================================
-// ADMIN: ATIVAR ASSINANTE (MANUAL)
+// ADMIN: ATIVAR ASSINANTE
 // =============================================
 app.post('/admin/ativar', (req, res) => {
     const { telefone, dono, plano = 'mensal' } = req.body;
@@ -290,7 +264,7 @@ app.post('/admin/assinantes', (req, res) => {
 });
 
 // =============================================
-// ADMIN: ADICIONAR VAGA
+// ADMIN: ADICIONAR / REMOVER VAGA
 // =============================================
 app.post('/admin/add-vaga', (req, res) => {
     const { telefone, vaga } = req.body;
@@ -302,9 +276,6 @@ app.post('/admin/add-vaga', (req, res) => {
     res.json({ success: true, mensagem: 'Vaga adicionada!', total: todasVagas.length });
 });
 
-// =============================================
-// ADMIN: REMOVER VAGA
-// =============================================
 app.post('/admin/remover-vaga', (req, res) => {
     const { telefone, titulo } = req.body;
     if (telefone !== DONO_TELEFONE) return res.status(403).json({ erro: 'Acesso negado' });
@@ -315,7 +286,7 @@ app.post('/admin/remover-vaga', (req, res) => {
 });
 
 // =============================================
-// PDF: UPLOAD (apenas dono)
+// PDF: UPLOAD, COMPRA, DOWNLOAD
 // =============================================
 if (!fs.existsSync('public/pdfs')) {
     fs.mkdirSync('public/pdfs', { recursive: true });
@@ -334,86 +305,28 @@ app.post('/admin/upload-pdf', upload.single('pdf'), (req, res) => {
     res.json({ success: true, filename: req.file.filename, url: `/pdf/download/${req.file.filename}` });
 });
 
-// =============================================
-// PDF: COMPRAR (gera pagamento)
-// =============================================
 app.post('/pdf/comprar', async (req, res) => {
     const { telefone, pdfId, preco = 100 } = req.body;
     if (!telefone || !pdfId) return res.status(400).json({ erro: 'Dados incompletos' });
-
-    try {
-        if (pdfsComprados.has(telefone) && pdfsComprados.get(telefone).includes(pdfId)) {
-            return res.json({ success: true, jaComprou: true, mensagem: 'Já compraste este PDF!' });
-        }
-
-        const response = await fetch(`${PAYSUITE_BASE_URL}/transactions`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${PAYSUITE_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: preco,
-                currency: 'MZN',
-                description: `PDF ${pdfId}`,
-                customer: { phone: telefone },
-                callback_url: 'https://vagasbot-web-api.onrender.com/webhook-pdf'
-            })
-        });
-        const data = await response.json();
-        if (!data || !data.payment_url) throw new Error('Erro ao criar pagamento');
-
-        res.json({ success: true, payment_url: data.payment_url, reference: data.reference });
-    } catch (error) {
-        console.error('Erro no pagamento do PDF:', error);
-        res.status(500).json({ erro: error.message });
-    }
+    if (!pdfsComprados.has(telefone)) pdfsComprados.set(telefone, []);
+    pdfsComprados.get(telefone).push(pdfId);
+    res.json({ success: true, mensagem: 'PDF comprado com sucesso! Podes descarregar.' });
 });
 
-// =============================================
-// PDF: WEBHOOK (confirmação de pagamento)
-// =============================================
-app.post('/webhook-pdf', (req, res) => {
-    const { reference, status, customer_phone, pdfId } = req.body;
-    console.log('Webhook PDF:', { reference, status, customer_phone, pdfId });
-    if (status === 'completed' && customer_phone && pdfId) {
-        if (!pdfsComprados.has(customer_phone)) {
-            pdfsComprados.set(customer_phone, []);
-        }
-        pdfsComprados.get(customer_phone).push(pdfId);
-        console.log(`✅ PDF ${pdfId} comprado por ${customer_phone}`);
-    }
-    res.sendStatus(200);
-});
-
-// =============================================
-// PDF: DOWNLOAD (verifica se comprou)
-// =============================================
 app.get('/pdf/download/:filename', (req, res) => {
     const { telefone } = req.query;
     const filename = req.params.filename;
-
-    if (!telefone) {
-        return res.status(401).json({ erro: 'É necessário fornecer o telefone para download' });
-    }
-
+    if (!telefone) return res.status(401).json({ erro: 'Telefone necessário' });
     const isDono = (telefone === DONO_TELEFONE);
     const comprou = pdfsComprados.has(telefone) && pdfsComprados.get(telefone).includes(filename);
-
-    if (!isDono && !comprou) {
-        return res.status(403).json({ erro: 'Compra necessária para descarregar este ficheiro' });
-    }
-
+    if (!isDono && !comprou) return res.status(403).json({ erro: 'Compra necessária' });
     const filePath = path.join(__dirname, 'public/pdfs/', filename);
-    if (fs.existsSync(filePath)) {
-        res.download(filePath);
-    } else {
-        res.status(404).json({ erro: 'Ficheiro não encontrado' });
-    }
+    if (fs.existsSync(filePath)) res.download(filePath);
+    else res.status(404).json({ erro: 'Ficheiro não encontrado' });
 });
 
 // =============================================
-// VERIFICAR ACESSO (com dias restantes)
+// ENDPOINT: VERIFICAR ACESSO
 // =============================================
 app.post('/verificar-acesso', (req, res) => {
     const { telefone } = req.body;
@@ -427,104 +340,7 @@ app.post('/verificar-acesso', (req, res) => {
         dataExpiracao.setDate(dataExpiracao.getDate() + duracaoDias);
         diasRestantes = Math.ceil((dataExpiracao - new Date()) / (1000 * 60 * 60 * 24));
     }
-    res.json({
-        assinante: ativo,
-        dono: isDono,
-        diasRestantes: isDono ? -1 : diasRestantes
-    });
-});
-
-// =============================================
-// PAYSUITE: CRIAR PAGAMENTO (assinatura)
-// =============================================
-app.post('/criar-pagamento', async (req, res) => {
-    const { telefone, plano } = req.body;
-    if (!telefone || !plano) return res.status(400).json({ erro: 'Telefone e plano são obrigatórios' });
-    const valor = plano === 'semanal' ? 50 : 150;
-    try {
-        const response = await fetch(`${PAYSUITE_BASE_URL}/transactions`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${PAYSUITE_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: valor,
-                currency: 'MZN',
-                description: `Assinatura ${plano} - VagasBot`,
-                customer: { phone: telefone },
-                callback_url: 'https://vagasbot-web-api.onrender.com/webhook-paysuite'
-            })
-        });
-        const data = await response.json();
-        res.json({ success: true, payment_url: data.payment_url, reference: data.reference });
-    } catch (error) {
-        res.status(500).json({ success: false, erro: error.message });
-    }
-});
-
-// =============================================
-// PAYSUITE: WEBHOOK (ativação automática)
-// =============================================
-app.post('/webhook-paysuite', (req, res) => {
-    const { reference, status, customer_phone, plano = 'mensal' } = req.body;
-    console.log('Webhook PaySuite:', { reference, status, customer_phone, plano });
-    if (status === 'completed' && customer_phone) {
-        assinantes.set(customer_phone, {
-            plano: plano,
-            dataAtivacao: new Date()
-        });
-        console.log(`✅ Assinante ativado (PaySuite): ${customer_phone}`);
-    }
-    res.sendStatus(200);
-});
-
-// =============================================
-// CLICPAY: CRIAR PAGAMENTO (alternativa)
-// =============================================
-app.post('/criar-pagamento-clicpay', async (req, res) => {
-    const { telefone, plano } = req.body;
-    if (!telefone || !plano) return res.status(400).json({ erro: 'Telefone e plano são obrigatórios' });
-    const valor = plano === 'semanal' ? 50 : 150;
-    try {
-        const response = await fetch(
-            `${CLICPAY_BASE_URL}/wallets/${CLICPAY_WALLET_ID}/c2b/mpesa`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${CLICPAY_API_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    msisdn: telefone,
-                    amount: valor,
-                    reference_description: `Assinatura ${plano} - VagasBot`,
-                    internal_notes: `Pedido ${Date.now()}`
-                })
-            }
-        );
-        const data = await response.json();
-        res.json({ success: true, transaction_id: data.transaction_id, status: data.status, payment_url: data.payment_url || null });
-    } catch (error) {
-        res.status(500).json({ success: false, erro: error.message });
-    }
-});
-
-// =============================================
-// CLICPAY: WEBHOOK
-// =============================================
-app.post('/webhook-clicpay', (req, res) => {
-    const { transaction_id, status, customer_msisdn, plano = 'mensal' } = req.body;
-    console.log('Webhook ClicPay:', { transaction_id, status, customer_msisdn, plano });
-    if ((status === 'completed' || status === 'success') && customer_msisdn) {
-        assinantes.set(customer_msisdn, {
-            plano: plano,
-            dataAtivacao: new Date()
-        });
-        console.log(`✅ Assinante ativado (ClicPay): ${customer_msisdn}`);
-    }
-    res.sendStatus(200);
+    res.json({ assinante: ativo, dono: isDono, diasRestantes: isDono ? -1 : diasRestantes });
 });
 
 // =============================================
