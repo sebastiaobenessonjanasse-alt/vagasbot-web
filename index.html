@@ -36,7 +36,7 @@
         }
         .sidebar .user-info .avatar {
             width: 70px; height: 70px; border-radius: 50%; border: 3px solid #6fc3ff;
-            background-image: url('sua-foto.jpg');
+            background-image: url('sbj-bot.png');
             background-size: cover; background-position: center;
         }
         .sidebar .user-info .nome { font-weight: 600; font-size: 14px; text-align: center; }
@@ -80,6 +80,7 @@
         .btn-action.playing { color: #1f5e9e; animation: pulse 0.8s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
+        /* ===== INPUT ===== */
         .input-area {
             grid-column: 2; grid-row: 3; background: #f0f4fa; padding: 12px 20px; display: flex; gap: 10px; border-top: 1px solid #d0d9e3; align-items: center;
         }
@@ -178,53 +179,27 @@
         <!-- PÁGINA: COMO FUNCIONA -->
         <div class="page" id="page-como-funciona">
             <h3>🚀 Como o VagasBot funciona?</h3>
-            <div class="passo">
-                <div class="numero">1</div>
-                <div class="texto"><strong>Fala com a Vaga</strong> – Escreve ou fala a tua pergunta no chat. O bot usa inteligência artificial (Gemini, DeepSeek ou Claude) para te responder.</div>
-            </div>
-            <div class="passo">
-                <div class="numero">2</div>
-                <div class="texto"><strong>Recebe vagas personalizadas</strong> – Envia "vagas" para ver oportunidades. Podes filtrar por cidade (ex: "vagas Maputo") ou por área (ex: "vagas TI").</div>
-            </div>
-            <div class="passo">
-                <div class="numero">3</div>
-                <div class="texto"><strong>Ouve as respostas</strong> – Clica no 🔊 ao lado de cada mensagem para ouvir a leitura em voz alta (português ou inglês).</div>
-            </div>
-            <div class="passo">
-                <div class="numero">4</div>
-                <div class="texto"><strong>Assina o Premium</strong> – Envia "assinar" para ter acesso a vagas com detalhes completos (benefícios, salários, etc.).</div>
-            </div>
-            <div class="passo">
-                <div class="numero">5</div>
-                <div class="texto"><strong>Compra PDFs exclusivos</strong> – Na loja de PDFs (em breve), podes comprar guias e manuais com pagamento via e-Mola/M-Pesa.</div>
-            </div>
-            <div style="background: #fff; padding: 16px; border-radius: 12px; text-align: center; margin-top: 8px;">
-                <p>💡 <strong>Dica:</strong> Usa os comandos "ajuda" ou "!" para ver a lista completa de comandos.</p>
-            </div>
+            <div class="passo"><div class="numero">1</div><div class="texto"><strong>Fala com a Vaga</strong> – Escreve ou fala a tua pergunta no chat.</div></div>
+            <div class="passo"><div class="numero">2</div><div class="texto"><strong>Recebe vagas</strong> – Envia "vagas" para ver oportunidades. Filtra por cidade ou área.</div></div>
+            <div class="passo"><div class="numero">3</div><div class="texto"><strong>Ouve as respostas</strong> – Clica no 🔊 para ouvir em voz alta.</div></div>
+            <div class="passo"><div class="numero">4</div><div class="texto"><strong>Assina Premium</strong> – Envia "assinar" para aceder a vagas completas.</div></div>
+            <div class="passo"><div class="numero">5</div><div class="texto"><strong>Compra PDFs</strong> – Adquire guias exclusivos (em breve).</div></div>
         </div>
 
         <!-- PÁGINA: DÚVIDAS (FAQ) -->
         <div class="page" id="page-duvidas">
             <h3>❓ Perguntas Frequentes</h3>
             <div class="faq-item">
-                <div class="pergunta" onclick="toggleFAQ(this)">🤔 Como posso assinar o Premium? <i class="fas fa-chevron-down"></i></div>
-                <div class="resposta">Envia "assinar" no chat, escolhe o plano (semanal – 50 MT ou mensal – 150 MT) e faz o pagamento para o e-Mola 879306034. Depois, envia o comprovativo e aguarda a ativação.</div>
-            </div>
-            <div class="faq-item">
-                <div class="pergunta" onclick="toggleFAQ(this)">📄 Como faço para comprar um PDF? <i class="fas fa-chevron-down"></i></div>
-                <div class="resposta">Clica no botão "Comprar" ao lado do PDF desejado (na loja de PDFs). Serás redirecionado para a página de pagamento. Após a confirmação, o download será libertado.</div>
-            </div>
-            <div class="faq-item">
-                <div class="pergunta" onclick="toggleFAQ(this)">🌍 O VagasBot funciona em todo o Moçambique? <i class="fas fa-chevron-down"></i></div>
-                <div class="resposta">Sim! As vagas são listadas para todo o país, com destaque para Maputo, Beira e Nampula. Podes filtrar por cidade usando "vagas [cidade]".</div>
+                <div class="pergunta" onclick="toggleFAQ(this)">🤔 Como assinar o Premium? <i class="fas fa-chevron-down"></i></div>
+                <div class="resposta">Envia "assinar" no chat, escolhe o plano (semanal – 50 MT ou mensal – 150 MT) e paga para o e-Mola 879306034. Depois, envia o comprovativo.</div>
             </div>
             <div class="faq-item">
                 <div class="pergunta" onclick="toggleFAQ(this)">🎤 Posso falar em vez de escrever? <i class="fas fa-chevron-down"></i></div>
-                <div class="resposta">Sim! Clica no botão 🎤 ao lado do campo de texto e fala a tua pergunta. O bot reconhece a voz e envia automaticamente.</div>
+                <div class="resposta">Sim! Clica no 🎤 ao lado do campo de texto e fala a tua pergunta.</div>
             </div>
             <div style="margin-top: 16px; padding: 16px; background: #fff; border-radius: 12px; text-align: center;">
-                <p>💬 Ainda tens dúvidas? Fala connosco directamente no WhatsApp!</p>
-                <a href="https://wa.me/258879306034?text=Olá!%20Tenho%20uma%20dúvida%20sobre%20o%20VagasBot." target="_blank" style="display: inline-block; background: #25d366; color: #fff; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; margin-top: 8px;">
+                <p>💬 Dúvidas? Fala connosco no WhatsApp!</p>
+                <a href="https://wa.me/258879306034?text=Olá!%20Tenho%20uma%20dúvida." target="_blank" style="display: inline-block; background: #25d366; color: #fff; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; margin-top: 8px;">
                     <i class="fab fa-whatsapp"></i> Falar no WhatsApp
                 </a>
             </div>
@@ -235,16 +210,16 @@
             <h3>📊 Estatísticas</h3>
             <div class="stats-grid" id="statsGrid">
                 <div class="stat-card"><div class="numero" id="statAssinantes">0</div><div class="label">Assinantes</div></div>
-                <div class="stat-card"><div class="numero" id="statVagas">0</div><div class="label">Vagas cadastradas</div></div>
+                <div class="stat-card"><div class="numero" id="statVagas">0</div><div class="label">Vagas</div></div>
                 <div class="stat-card"><div class="numero" id="statConversas">0</div><div class="label">Conversas</div></div>
-                <div class="stat-card"><div class="numero" id="statCidades">3</div><div class="label">Cidades activas</div></div>
+                <div class="stat-card"><div class="numero" id="statCidades">3</div><div class="label">Cidades</div></div>
             </div>
         </div>
 
-        <!-- INPUT (apenas chat) -->
+        <!-- INPUT -->
         <div class="input-area" id="inputArea">
             <input type="text" id="msgInput" placeholder="Escreve a tua mensagem..." autocomplete="off">
-            <button class="btn-microfone" id="microfoneBtn" aria-label="Falar">🎤</button>
+            <button class="btn-microfone" id="microfoneBtn">🎤</button>
             <button id="sendBtn">Enviar</button>
         </div>
 
@@ -253,18 +228,13 @@
             <span id="footerStatus">👑 Dono Supremo – Acesso total</span>
             <div class="selectors">
                 <div class="selector-group" id="iaSelector">
-                    <button class="selector-option active" data-ia="gemini">🧠 Gemini</button>
-                    <button class="selector-option" data-ia="deepseek">🧠 DeepSeek</button>
-                    <button class="selector-option" data-ia="claude">🧠 Claude</button>
+                    <button class="selector-option active" data-ia="groq">🧠 Groq</button>
+                    <button class="selector-option" data-ia="mistral">🧠 Mistral</button>
+                    <button class="selector-option" data-ia="openrouter">🧠 OpenRouter</button>
                 </div>
                 <div class="selector-group" id="idiomaSelector">
                     <button class="selector-option active" data-idioma="pt">🇧🇷 PT</button>
                     <button class="selector-option" data-idioma="en">🇺🇸 EN</button>
-                </div>
-                <div class="selector-group" id="voiceSelector">
-                    <button class="selector-option active" data-voz="feminina">👩</button>
-                    <button class="selector-option" data-voz="masculina">👨</button>
-                    <button class="selector-option" data-voz="crianca">🧒</button>
                 </div>
             </div>
         </footer>
@@ -276,10 +246,10 @@
         // ============================================================
         const DONO_TELEFONE = '879306034';
         let usuarioTelefone = '879306034';
-        const API_BASE = 'https://vagasbot-web-api.onrender.com'; // URL correta
+        const API_BASE = 'https://vagasbot-web-api.onrender.com';
 
         // ============================================================
-        // DOM ELEMENTOS
+        // DOM
         // ============================================================
         const chatContainer = document.getElementById('chatContainer');
         const input = document.getElementById('msgInput');
@@ -289,7 +259,7 @@
         const microfoneBtn = document.getElementById('microfoneBtn');
 
         let idiomaAtual = 'pt';
-        let modeloIA = 'gemini';
+        let modeloIA = 'groq';
         let paginaAtual = 'chat';
         let audioAtual = null;
         let elementoAudioAtual = null;
@@ -309,12 +279,7 @@
                 this.classList.add('active');
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.getElementById(`page-${pagina}`).classList.add('active');
-                const nomes = {
-                    chat: '💬 Chat',
-                    'como-funciona': '🚀 Como funciona',
-                    duvidas: '❓ Dúvidas',
-                    estatisticas: '📊 Estatísticas'
-                };
+                const nomes = { chat: '💬 Chat', 'como-funciona': '🚀 Como funciona', duvidas: '❓ Dúvidas', estatisticas: '📊 Estatísticas' };
                 pageTitle.innerHTML = `<i class="fas fa-${pagina === 'chat' ? 'comment-dots' : pagina === 'como-funciona' ? 'info-circle' : pagina === 'duvidas' ? 'question-circle' : 'chart-bar'}"></i> ${nomes[pagina]}`;
                 document.getElementById('inputArea').style.display = pagina === 'chat' ? 'flex' : 'none';
                 paginaAtual = pagina;
@@ -362,58 +327,45 @@
         }
 
         // ============================================================
-        // TTS
+        // VOZ (Web Speech API)
         // ============================================================
-        async function falar(texto, elementoBotao, idiomaVoz = 'pt-BR') {
-            if (audioAtual) {
-                audioAtual.pause();
-                audioAtual.currentTime = 0;
-                audioAtual = null;
-                if (elementoAudioAtual) {
-                    elementoAudioAtual.classList.remove('playing');
-                    elementoAudioAtual.textContent = '🔊';
-                }
+        function falar(texto, elementoBotao, idiomaVoz = 'pt-BR') {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+            if (!('speechSynthesis' in window)) {
+                alert('Seu navegador não suporta leitura em voz alta.');
+                return;
             }
             const textoLimpo = texto.replace(/<[^>]*>/g, '').replace(/[^\w\s,.!?çãõáéíóúâêîôûàèìòùäëïöü]/g, ' ').trim();
             if (!textoLimpo) return;
-            try {
-                const resp = await fetch(`${API_BASE}/sintetizar-voz`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ texto: textoLimpo, idioma: idiomaVoz })
-                });
-                const data = await resp.json();
-                if (data.erro) throw new Error(data.erro);
-                const audioBlob = new Blob([Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                audioAtual = new Audio(audioUrl);
-                elementoAudioAtual = elementoBotao;
-                audioAtual.onplay = () => {
-                    if (elementoBotao) {
-                        elementoBotao.classList.add('playing');
-                        elementoBotao.textContent = '🔊';
-                    }
-                };
-                audioAtual.onended = () => {
-                    if (elementoBotao) {
-                        elementoBotao.classList.remove('playing');
-                        elementoBotao.textContent = '🔊';
-                    }
-                    audioAtual = null;
-                    elementoAudioAtual = null;
-                };
-                audioAtual.onerror = () => {
-                    alert('Erro ao reproduzir áudio.');
-                    if (elementoBotao) {
-                        elementoBotao.classList.remove('playing');
-                        elementoBotao.textContent = '🔊';
-                    }
-                };
-                audioAtual.play();
-            } catch (error) {
-                console.error('Erro no TTS:', error);
-                alert('Não foi possível gerar o áudio.');
+            const utterance = new SpeechSynthesisUtterance(textoLimpo);
+            utterance.lang = idiomaVoz;
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1;
+            const voices = window.speechSynthesis.getVoices();
+            const vozFeminina = voices.find(v => v.lang.startsWith(idiomaVoz) &&
+                (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
+            if (vozFeminina) utterance.voice = vozFeminina;
+            if (elementoBotao) {
+                elementoBotao.classList.add('playing');
+                elementoBotao.textContent = '🔊';
             }
+            utterance.onend = () => {
+                if (elementoBotao) {
+                    elementoBotao.classList.remove('playing');
+                    elementoBotao.textContent = '🔊';
+                }
+            };
+            utterance.onerror = () => {
+                if (elementoBotao) {
+                    elementoBotao.classList.remove('playing');
+                    elementoBotao.textContent = '🔊';
+                }
+                alert('Não foi possível reproduzir o áudio.');
+            };
+            window.speechSynthesis.speak(utterance);
         }
 
         // ============================================================
@@ -497,7 +449,7 @@
             if (dados && dados.resposta) {
                 addMessage(dados.resposta, 'bot');
             } else {
-                addMessage('⚠️ Erro ao gerar resposta. Verifica a tua conexão ou tenta outro modelo.', 'bot');
+                addMessage('⚠️ Erro ao gerar resposta. Verifica a tua conexão.', 'bot');
             }
         }
 
@@ -559,8 +511,6 @@
                 } else if (group.id === 'idiomaSelector') {
                     idiomaAtual = btn.dataset.idioma;
                     addMessage(idiomaAtual === 'pt' ? 'Idioma: Português 🇧🇷' : 'Language: English 🇺🇸', 'bot');
-                } else if (group.id === 'voiceSelector') {
-                    addMessage(`Voz alterada para ${btn.textContent.trim()}`, 'bot');
                 }
             });
         });
@@ -569,12 +519,12 @@
         // INICIALIZAÇÃO
         // ============================================================
         addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos em Moçambique.', 'bot');
-        addMessage('🔧 Modelo atual: Gemini (2.0 flash) | Idioma: PT', 'bot');
+        addMessage('🧠 Modelo atual: Groq (Mixtral) | Idioma: PT', 'bot');
         addMessage('📌 Envia "vagas", "assinar", "verificar" ou faz uma pergunta.', 'bot');
-        addMessage('🎤 Usa o microfone para falar em vez de escrever.', 'bot');
-        addMessage('🔊 Clica no 🔊 para ouvir qualquer resposta.', 'bot');
+        addMessage('🎤 Usa o microfone para falar.', 'bot');
+        addMessage('🔊 Clica no 🔊 para ouvir.', 'bot');
 
-        console.log('✅ VagasBot carregado!');
+        console.log('✅ VagasBot carregado com Groq, Mistral e OpenRouter!');
     </script>
 </body>
 </html>
