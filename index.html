@@ -67,4 +67,19 @@
   <!-- Fotos -->
   <div id="photo" class="tab">
     <h2>Upload de Foto (Grátis)</h2>
-    <input type="file" id="
+    <input type="file" id="photoInput">
+    <button onclick="uploadPhoto()">Enviar Foto</button>
+    <div id="photoBox"></div>
+  </div>
+
+  <!-- Imagens -->
+  <div id="image" class="tab">
+    <h2>Gerar Imagem (Pago)</h2>
+    <input id="imageDesc" type="text" placeholder="Descrição da imagem">
+    <button onclick="generateImage()">Gerar Imagem</button>
+    <div id="imageBox"></div>
+  </div>
+
+  <!-- Informações -->
+  <div id="info" class="tab">
+    <
