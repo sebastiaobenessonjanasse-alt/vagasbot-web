@@ -1,8 +1,4 @@
-```javascript
-app.get('/', (req, res) => {
-  res.send('🚀 VagasBot API está online!');
-});
-```const express = require("express");
+const express = require("express");
 const cors = require("cors");
 const sqlite3 = const("sqlite3").verbose();
 const multer = require("multer");
@@ -11,7 +7,10 @@ const fs = require("fs");
 // ============================================================
 // CONFIGURAÇÃO DO EXPRESS
 // ============================================================
-const app = express();
+const ```javascript
+app.get('/', (req, res) => {
+  res.send('🚀 VagasBot API está online!');
+});app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public")); // Para servir ficheiros estáticos (ex: fotos)
