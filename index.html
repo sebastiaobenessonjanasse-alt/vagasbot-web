@@ -2,87 +2,592 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VagasBot Neon</title>
   <style>
-    body { background:#0d0d0d; color:#fff; font-family:Segoe UI; margin:0; }
-    header { text-align:center; padding:20px; font-size:28px; color:#0ff; text-shadow:0 0 10px #0ff; }
-    nav { display:flex; justify-content:center; background:#222; }
-    nav button { flex:1; padding:15px; border:none; background:#222; color:#0ff; cursor:pointer; }
-    nav button:hover { background:#0ff; color:#000; }
-    .tab { display:none; padding:20px; }
-    .active { display:block; }
-    #chatBox,#historyBox,#memoryBox,#paymentBox,#pdfBox,#photoBox,#imageBox,#infoBox { background:#111; border-radius:10px; padding:20px; height:300px; overflow-y:auto; box-shadow:0 0 15px #0ff; }
-    #ownerPhoto { width:120px; border-radius:50%; border:3px solid #0ff; margin-bottom:15px; }
-    #whatsappBtn { position:fixed; bottom:20px; right:20px; background:#25D366; color:#fff; border:none; border-radius:50%; width:60px; height:60px; font-size:28px; cursor:pointer; box-shadow:0 0 10px #000; }
+    /* ===== BASE ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+      padding: 24px 20px 16px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #0ff, #a855f7, #0ff);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradiente 4s ease infinite;
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    }
+    @keyframes gradiente {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    header small {
+      display: block;
+      font-size: 14px;
+      font-weight: 400;
+      -webkit-text-fill-color: #aaa;
+      letter-spacing: 1px;
+    }
+
+    /* ===== NAVEGAÇÃO ===== */
+    nav {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      background: #141414;
+      padding: 8px;
+      border-radius: 16px;
+      margin: 12px 0 20px;
+      border: 1px solid #2a2a2a;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+    }
+    nav button {
+      flex: 1 0 auto;
+      min-width: 70px;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      color: #aaa;
+      font-weight: 600;
+      font-size: 13px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    nav button:hover {
+      background: #1f1f1f;
+      color: #0ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+    }
+    nav button.active {
+      background: #0ff;
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+    }
+
+    /* ===== CONTEÚDO ===== */
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+      background: #101010;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid #222;
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.03);
+      min-height: 60vh;
+    }
+    .tab {
+      display: none;
+      animation: fade 0.3s ease;
+    }
+    .tab.active { display: block; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== CAMPOS E BOTÕES ===== */
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 16px;
+      margin: 8px 0 12px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #0ff;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 12px;
+      background: #0ff;
+      color: #000;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+    }
+    button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 35px rgba(0, 255, 255, 0.25);
+    }
+    button:active { transform: scale(0.97); }
+    button.secondary {
+      background: #2a2a2a;
+      color: #aaa;
+      box-shadow: none;
+    }
+    button.secondary:hover {
+      background: #3a3a3a;
+      color: #fff;
+    }
+
+    /* ===== CAIXAS DE CONTEÚDO ===== */
+    .box {
+      background: #141414;
+      border-radius: 14px;
+      padding: 16px;
+      margin: 12px 0;
+      border: 1px solid #222;
+      min-height: 120px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .box p { margin: 6px 0; color: #ccc; line-height: 1.5; }
+    .box .meta { font-size: 12px; color: #666; }
+
+    /* ===== WHATSAPP BOTÃO FLUTUANTE ===== */
+    #whatsappBtn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 64px;
+      height: 64px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 32px;
+      cursor: pointer;
+      box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+      transition: 0.3s;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    #whatsappBtn:hover {
+      transform: scale(1.12);
+      box-shadow: 0 8px 40px rgba(37, 211, 102, 0.6);
+    }
+    #whatsappBtn:active { transform: scale(0.92); }
+
+    /* ===== RESPONSIVO ===== */
+    @media (max-width: 600px) {
+      header { font-size: 22px; padding: 16px; }
+      nav button { font-size: 11px; padding: 8px 6px; min-width: 50px; }
+      .app-container { padding: 12px; }
+      #whatsappBtn { width: 54px; height: 54px; font-size: 26px; bottom: 18px; right: 18px; }
+    }
   </style>
 </head>
 <body>
-  <header>⚡ VagasBot Neon ⚡</header>
-  <nav>
-    <button onclick="showTab('chat')">💬 Chat</button>
-    <button onclick="showTab('history')">📜 Histórico</button>
-    <button onclick="showTab('memory')">🧠 Memória</button>
-    <button onclick="showTab('payment')">💳 Pagamento</button>
-    <button onclick="showTab('pdf')">📄 PDF</button>
-    <button onclick="showTab('photo')">🖼️ Fotos</button>
-    <button onclick="showTab('image')">🎨 Imagens</button>
-    <button onclick="showTab('info')">ℹ️ Como Funciona</button>
+
+  <!-- HEADER -->
+  <header>
+    ⚡ VagasBot Neon
+    <small>Inteligência, vagas e muito mais</small>
+  </header>
+
+  <!-- NAVEGAÇÃO -->
+  <nav id="navTabs">
+    <button class="active" data-tab="chat">💬 Chat</button>
+    <button data-tab="history">📜 Histórico</button>
+    <button data-tab="memory">🧠 Memória</button>
+    <button data-tab="payment">💳 Pagamento</button>
+    <button data-tab="pdf">📄 PDF</button>
+    <button data-tab="photo">🖼️ Fotos</button>
+    <button data-tab="image">🎨 Imagens</button>
+    <button data-tab="info">ℹ️ Como Funciona</button>
   </nav>
 
-  <!-- Chat -->
-  <div id="chat" class="tab active">
-    <div id="chatBox"></div>
-    <input id="prompt" type="text" placeholder="Mensagem...">
-    <button onclick="sendMessage()">Enviar</button>
+  <!-- CONTEÚDO -->
+  <div class="app-container">
+
+    <!-- CHAT -->
+    <div id="chat" class="tab active">
+      <div id="chatBox" class="box"></div>
+      <div style="display:flex; gap:10px;">
+        <input id="prompt" type="text" placeholder="Digite a sua mensagem..." style="flex:1;">
+        <button onclick="sendMessage()">Enviar</button>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="history" class="tab">
+      <div id="historyBox" class="box"></div>
+      <button onclick="loadHistory()" class="secondary">🔄 Atualizar Histórico</button>
+    </div>
+
+    <!-- MEMÓRIA -->
+    <div id="memory" class="tab">
+      <div id="memoryBox" class="box"></div>
+      <div style="display:flex; gap:10px;">
+        <input id="memoryKey" type="text" placeholder="Chave" style="flex:1;">
+        <input id="memoryValue" type="text" placeholder="Valor" style="flex:2;">
+        <button onclick="saveMemory()">Salvar</button>
+      </div>
+      <button onclick="loadMemory()" class="secondary" style="margin-top:8px;">📋 Ver Memória</button>
+    </div>
+
+    <!-- PAGAMENTO -->
+    <div id="payment" class="tab">
+      <h3 style="color:#0ff; margin-bottom:8px;">💳 Assinatura Premium</h3>
+      <input id="phone" type="text" placeholder="Número Movitel (ex: 879306034)">
+      <button onclick="startPayment()">💳 Pagar 150 MT</button>
+      <div id="paymentBox" class="box"></div>
+    </div>
+
+    <!-- PDF -->
+    <div id="pdf" class="tab">
+      <h3 style="color:#0ff;">📄 Gerar PDF (Pago)</h3>
+      <textarea id="pdfContent" placeholder="Escreva o conteúdo do PDF..."></textarea>
+      <button onclick="generatePDF()">Gerar PDF</button>
+      <div id="pdfBox" class="box"></div>
+    </div>
+
+    <!-- FOTOS -->
+    <div id="photo" class="tab">
+      <h3 style="color:#0ff;">🖼️ Upload de Foto (Grátis)</h3>
+      <input type="file" id="photoInput" accept="image/*">
+      <button onclick="uploadPhoto()">Enviar Foto</button>
+      <div id="photoBox" class="box"></div>
+    </div>
+
+    <!-- IMAGENS -->
+    <div id="image" class="tab">
+      <h3 style="color:#0ff;">🎨 Gerar Imagem (Pago)</h3>
+      <input id="imageDesc" type="text" placeholder="Descreva a imagem que deseja...">
+      <button onclick="generateImage()">Gerar Imagem</button>
+      <div id="imageBox" class="box"></div>
+    </div>
+
+    <!-- INFO -->
+    <div id="info" class="tab">
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+        <img id="ownerPhoto" src="sbj-bot.png" alt="Foto do Dono" style="width:120px; border-radius:50%; border:4px solid #0ff; box-shadow:0 0 30px rgba(0,255,255,0.3); margin-bottom:16px;">
+        <h2 style="color:#fff;">👑 Sebastião Benesson Janasse</h2>
+        <p style="color:#aaa; max-width:400px; margin:8px auto;">
+          Dono Supremo do VagasBot. Esta ferramenta ajuda moçambicanos a encontrar emprego, gerir documentos e muito mais.
+        </p>
+        <p style="color:#0ff; font-size:14px; margin-top:12px;">
+          📞 Dúvidas? Fale connosco no WhatsApp!
+        </p>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Histórico -->
-  <div id="history" class="tab">
-    <div id="historyBox"></div>
-    <button onclick="loadHistory()">Atualizar Histórico</button>
-  </div>
+  <!-- WHATSAPP BOTÃO FLUTUANTE -->
+  <a id="whatsappBtn" href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank">
+    💬
+  </a>
 
-  <!-- Memória -->
-  <div id="memory" class="tab">
-    <div id="memoryBox"></div>
-    <button onclick="loadMemory()">Ver Memória</button>
-  </div>
+  <!-- SCRIPTS -->
+  <script>
+    // ============================================================
+    // NAVEGAÇÃO POR TABS
+    // ============================================================
+    const navButtons = document.querySelectorAll('#navTabs button');
+    const tabs = {
+      chat: document.getElementById('chat'),
+      history: document.getElementById('history'),
+      memory: document.getElementById('memory'),
+      payment: document.getElementById('payment'),
+      pdf: document.getElementById('pdf'),
+      photo: document.getElementById('photo'),
+      image: document.getElementById('image'),
+      info: document.getElementById('info')
+    };
 
-  <!-- Pagamento -->
-  <div id="payment" class="tab">
-    <h2>Assinatura Premium</h2>
-    <input id="phone" type="text" placeholder="Número Movitel">
-    <button onclick="startPayment()">💳 Pagar</button>
-    <div id="paymentBox"></div>
-  </div>
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tabName = btn.dataset.tab;
+        Object.keys(tabs).forEach(key => {
+          tabs[key].classList.toggle('active', key === tabName);
+        });
+      });
+    });
 
-  <!-- PDF -->
-  <div id="pdf" class="tab">
-    <h2>Gerar PDF (Pago)</h2>
-    <textarea id="pdfContent" placeholder="Conteúdo do PDF"></textarea>
-    <button onclick="generatePDF()">Gerar PDF</button>
-    <div id="pdfBox"></div>
-  </div>
+    // ============================================================
+    // VARIÁVEIS GLOBAIS
+    // ============================================================
+    const API_URL = 'https://vagasbot-web-api.onrender.com'; // Substitua pela URL do seu backend
+    let user = 'Sebastião';
 
-  <!-- Fotos -->
-  <div id="photo" class="tab">
-    <h2>Upload de Foto (Grátis)</h2>
-    <input type="file" id="photoInput">
-    <button onclick="uploadPhoto()">Enviar Foto</button>
-    <div id="photoBox"></div>
-  </div>
+    // ============================================================
+    // CHAT
+    // ============================================================
+    function addMessage(text, isUser = false) {
+      const box = document.getElementById('chatBox');
+      const p = document.createElement('p');
+      p.innerHTML = `<strong>${isUser ? '👤 Você' : '🤖 Vaga'}:</strong> ${text}`;
+      p.style.color = isUser ? '#0ff' : '#ccc';
+      p.style.borderBottom = '1px solid #1a1a1a';
+      p.style.padding = '6px 0';
+      box.appendChild(p);
+      box.scrollTop = box.scrollHeight;
+    }
 
-  <!-- Imagens -->
-  <div id="image" class="tab">
-    <h2>Gerar Imagem (Pago)</h2>
-    <input id="imageDesc" type="text" placeholder="Descrição da imagem">
-    <button onclick="generateImage()">Gerar Imagem</button>
-    <div id="imageBox"></div>
-  </div>
+    async function sendMessage() {
+      const input = document.getElementById('prompt');
+      const msg = input.value.trim();
+      if (!msg) return;
+      input.value = '';
+      addMessage(msg, true);
+      addMessage('⏳ A pensar...', false);
 
-  <!-- Informações -->
-  <div id="info" class="tab">
-    <img id="ownerPhoto" src="sbj-bot.png" alt="Foto do Dono Supremo">
-    <h2>Bem-vindo, Sebastião 👑</h2>
-    <div id="infoBox">
-      <p>Este
+      try {
+        const resp = await fetch(`${API_URL}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: msg, user })
+        });
+        const data = await resp.json();
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A pensar')) last.remove();
+        if (data.success) {
+          addMessage(data.reply || '🤖 Resposta gerada com sucesso!', false);
+        } else {
+          addMessage('⚠️ Erro ao processar a mensagem.', false);
+        }
+      } catch (error) {
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A pensar')) last.remove();
+        addMessage('⚠️ Falha ao contactar o servidor.', false);
+        console.error(error);
+      }
+    }
+
+    document.getElementById('prompt').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // ============================================================
+    // HISTÓRICO
+    // ============================================================
+    async function loadHistory() {
+      const box = document.getElementById('historyBox');
+      box.innerHTML = '⏳ Carregando...';
+      try {
+        const resp = await fetch(`${API_URL}/history`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error);
+        box.innerHTML = '';
+        if (data.history.length === 0) {
+          box.innerHTML = '<p>📭 Nenhum histórico ainda.</p>';
+          return;
+        }
+        data.history.forEach(item => {
+          const p = document.createElement('p');
+          p.innerHTML = `<strong>👤 ${item.user}</strong> <span style="color:#0ff;">${item.message}</span><br>
+                         <span style="color:#aaa;">🤖 ${item.reply}</span><br>
+                         <span class="meta">${new Date(item.timestamp).toLocaleString()}</span>`;
+          p.style.borderBottom = '1px solid #1a1a1a';
+          p.style.padding = '8px 0';
+          box.appendChild(p);
+        });
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro ao carregar histórico.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // MEMÓRIA
+    // ============================================================
+    async function saveMemory() {
+      const key = document.getElementById('memoryKey').value.trim();
+      const value = document.getElementById('memoryValue').value.trim();
+      if (!key || !value) return alert('Preencha chave e valor.');
+      try {
+        const resp = await fetch(`${API_URL}/memory`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key, value })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          alert('✅ Memória salva!');
+          document.getElementById('memoryKey').value = '';
+          document.getElementById('memoryValue').value = '';
+          loadMemory();
+        } else {
+          alert('❌ Erro ao salvar.');
+        }
+      } catch (e) {
+        alert('❌ Erro de rede.');
+        console.error(e);
+      }
+    }
+
+    async function loadMemory() {
+      const box = document.getElementById('memoryBox');
+      box.innerHTML = '⏳ Carregando...';
+      try {
+        const resp = await fetch(`${API_URL}/memory`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error);
+        box.innerHTML = '';
+        if (data.memory.length === 0) {
+          box.innerHTML = '<p>🧠 Nenhuma memória guardada.</p>';
+          return;
+        }
+        data.memory.forEach(item => {
+          const p = document.createElement('p');
+          p.innerHTML = `<strong>${item.key}</strong>: ${item.value}`;
+          p.style.borderBottom = '1px solid #1a1a1a';
+          p.style.padding = '4px 0';
+          box.appendChild(p);
+        });
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro ao carregar memória.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // PAGAMENTO
+    // ============================================================
+    async function startPayment() {
+      const phone = document.getElementById('phone').value.trim();
+      if (!phone) return alert('Digite o número Movitel.');
+      const box = document.getElementById('paymentBox');
+      box.innerHTML = '⏳ Processando...';
+      try {
+        const resp = await fetch(`${API_URL}/payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, amount: 150, phone })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          box.innerHTML = `<p style="color:#0f0;">✅ ${data.message}</p><p>Transacção: ${data.transactionId || 'N/A'}</p>`;
+        } else {
+          box.innerHTML = `<p style="color:#f44;">❌ ${data.message || 'Erro no pagamento.'}</p>`;
+        }
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro de rede.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // PDF
+    // ============================================================
+    async function generatePDF() {
+      const content = document.getElementById('pdfContent').value.trim();
+      if (!content) return alert('Escreva o conteúdo do PDF.');
+      const box = document.getElementById('pdfBox');
+      box.innerHTML = '⏳ A gerar...';
+      try {
+        const resp = await fetch(`${API_URL}/generate-pdf`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, content })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          box.innerHTML = `<p style="color:#0f0;">✅ ${data.message}</p><p>📄 Ficheiro: ${data.file}</p>`;
+        } else {
+          box.innerHTML = `<p style="color:#f44;">❌ ${data.message}</p>`;
+        }
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro de rede.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // FOTOS (UPLOAD)
+    // ============================================================
+    async function uploadPhoto() {
+      const input = document.getElementById('photoInput');
+      if (!input.files || !input.files[0]) return alert('Seleccione uma foto.');
+      const formData = new FormData();
+      formData.append('photo', input.files[0]);
+      const box = document.getElementById('photoBox');
+      box.innerHTML = '⏳ A enviar...';
+      try {
+        const resp = await fetch(`${API_URL}/upload-photo`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await resp.json();
+        if (data.success) {
+          box.innerHTML = `<p style="color:#0f0;">✅ ${data.message}</p><p>🖼️ Ficheiro: ${data.file}</p>`;
+        } else {
+          box.innerHTML = `<p style="color:#f44;">❌ ${data.message || 'Erro no upload.'}</p>`;
+        }
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro de rede.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // IMAGENS (GERAR - PAGO)
+    // ============================================================
+    async function generateImage() {
+      const description = document.getElementById('imageDesc').value.trim();
+      if (!description) return alert('Descreva a imagem.');
+      const box = document.getElementById('imageBox');
+      box.innerHTML = '⏳ A gerar...';
+      try {
+        const resp = await fetch(`${API_URL}/generate-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, description })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          box.innerHTML = `<p style="color:#0f0;">✅ ${data.message}</p><p>🎨 Descrição: ${data.description}</p>`;
+        } else {
+          box.innerHTML = `<p style="color:#f44;">❌ ${data.message}</p>`;
+        }
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro de rede.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+    addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos.', false);
+    addMessage('⚡ Envia uma mensagem para começar.', false);
+  </script>
+
+</body>
+</html>
