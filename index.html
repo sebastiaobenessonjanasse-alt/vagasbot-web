@@ -171,6 +171,8 @@
     }
     .box p { margin: 6px 0; color: #ccc; line-height: 1.5; }
     .box .meta { font-size: 12px; color: #666; }
+    .box .user-msg { color: #0ff; }
+    .box .bot-msg { color: #ccc; }
 
     /* ===== WHATSAPP BOTÃO FLUTUANTE ===== */
     #whatsappBtn {
@@ -313,6 +315,13 @@
   <!-- SCRIPTS -->
   <script>
     // ============================================================
+    // CONFIGURAÇÕES
+    // ============================================================
+    // 🔴 IMPORTANTE: Substitua pela URL real do seu backend
+    const API_URL = 'https://vagasbot-web-api.onrender.com';
+    const USER = 'Sebastião';
+
+    // ============================================================
     // NAVEGAÇÃO POR TABS
     // ============================================================
     const navButtons = document.querySelectorAll('#navTabs button');
@@ -337,12 +346,6 @@
         });
       });
     });
-
-    // ============================================================
-    // VARIÁVEIS GLOBAIS
-    // ============================================================
-    const API_URL = 'https://vagasbot-web-api.onrender.com'; // Substitua pela URL do seu backend
-    let user = 'Sebastião';
 
     // ============================================================
     // CHAT
@@ -370,7 +373,7 @@
         const resp = await fetch(`${API_URL}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: msg, user })
+          body: JSON.stringify({ prompt: msg, user: USER })
         });
         const data = await resp.json();
         const box = document.getElementById('chatBox');
@@ -489,7 +492,7 @@
         const resp = await fetch(`${API_URL}/payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user, amount: 150, phone })
+          body: JSON.stringify({ user: USER, amount: 150, phone })
         });
         const data = await resp.json();
         if (data.success) {
@@ -515,7 +518,7 @@
         const resp = await fetch(`${API_URL}/generate-pdf`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user, content })
+          body: JSON.stringify({ user: USER, content })
         });
         const data = await resp.json();
         if (data.success) {
@@ -568,7 +571,7 @@
         const resp = await fetch(`${API_URL}/generate-image`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user, description })
+          body: JSON.stringify({ user: USER, description })
         });
         const data = await resp.json();
         if (data.success) {
