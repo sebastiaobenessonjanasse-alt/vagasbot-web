@@ -1,19 +1,16 @@
 const express = require("express");
 const cors = require("cors");
-const sqlite3 = const("sqlite3").verbose();
+const sqlite3 = require("sqlite3").verbose(); // ✅ CORREÇÃO AQUI
 const multer = require("multer");
 const fs = require("fs");
 
 // ============================================================
 // CONFIGURAÇÃO DO EXPRESS
 // ============================================================
-const ```javascript
-app.get('/', (req, res) => {
-  res.send('🚀 VagasBot API está online!');
-});app = express();
+const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // Para servir ficheiros estáticos (ex: fotos)
+app.use(express.static("public"));
 
 // ============================================================
 // CONFIGURAÇÃO DO SQLITE
@@ -54,7 +51,6 @@ function saveHistory(user, message, reply) {
   db.run("INSERT INTO history (user, message, reply) VALUES (?, ?, ?)", [user, message, reply]);
 }
 
-// Verifica se um utilizador tem pagamento confirmado
 function hasPaymentConfirmed(user) {
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM payments WHERE user = ? AND status = 'confirmed' ORDER BY timestamp DESC LIMIT 1", [user], (err, row) => {
@@ -98,7 +94,6 @@ app.post("/chat", (req, res) => {
   const { prompt, user = "Sebastião" } = req.body;
   if (!prompt) return res.status(400).json({ success: false, error: "Mensagem vazia." });
 
-  // Simulação de resposta (substituir depois por IA real)
   const reply = `🤖 Recebi a tua mensagem: "${prompt}". Em breve teremos respostas com IA integrada!`;
 
   saveHistory(user, prompt, reply);
@@ -186,6 +181,11 @@ app.post("/generate-image", async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+// ---------- ROTA RAIZ (para evitar "Not Found") ----------
+app.get('/', (req, res) => {
+  res.send('🚀 VagasBot API está online!');
 });
 
 // ============================================================
