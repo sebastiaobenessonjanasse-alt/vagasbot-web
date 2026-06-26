@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
-const axios = require("axios");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -12,7 +11,6 @@ app.use(express.json());
 // Base de dados SQLite
 const db = new sqlite3.Database("./vagasbot.db");
 
-// Criação de tabelas
 db.serialize(() => {
   db.run("CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, user TEXT, message TEXT, reply TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
   db.run("CREATE TABLE IF NOT EXISTS memory (id INTEGER PRIMARY KEY, key TEXT UNIQUE, value TEXT)");
@@ -24,7 +22,7 @@ function saveHistory(user, message, reply) {
   db.run("INSERT INTO history (user, message, reply) VALUES (?, ?, ?)", [user, message, reply]);
 }
 
-// Endpoints de histórico e memória
+// Endpoints
 app.get("/history", (req, res) => {
   db.all("SELECT * FROM history ORDER BY timestamp DESC", [], (err, rows) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
@@ -47,16 +45,12 @@ app.get("/memory", (req, res) => {
   });
 });
 
-// Pagamento via M-Pesa (simulação)
-app.post("/payment", async (req, res) => {
+// Pagamento (simulação)
+app.post("/payment", (req, res) => {
   const { user, amount, phone } = req.body;
-  try {
-    const transactionId = "TX-" + Date.now();
-    db.run("INSERT INTO payments (user, status, transactionId) VALUES (?, ?, ?)", [user, "confirmed", transactionId]);
-    res.json({ success: true, message: "Pagamento confirmado automaticamente!", transactionId });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
+  const transactionId = "TX-" + Date.now();
+  db.run("INSERT INTO payments (user, status, transactionId) VALUES (?, ?, ?)", [user, "confirmed", transactionId]);
+  res.json({ success: true, message: "Pagamento confirmado automaticamente!", transactionId });
 });
 
 // Upload de fotos (gratuito)
@@ -70,7 +64,7 @@ app.post("/generate-pdf", (req, res) => {
   const { user, content } = req.body;
   db.get("SELECT * FROM payments WHERE user = ? AND status = 'confirmed'", [user], (err, row) => {
     if (row) {
-      const filename = `pdf_${Date.now()}.txt`; // simulação de PDF
+      const filename = `pdf_${Date.now()}.txt`; // simulação
       fs.writeFileSync(filename, content);
       res.json({ success: true, message: "PDF gerado com sucesso!", file: filename });
     } else {
@@ -91,16 +85,12 @@ app.post("/generate-image", (req, res) => {
   });
 });
 
-// Chat com histórico
-app.post("/chat", async (req, res) => {
+// Chat
+app.post("/chat", (req, res) => {
   const { prompt, user } = req.body;
-  try {
-    const reply = "Aqui entraria a resposta da IA (fallback já configurado)";
-    saveHistory(user || "Sebastião", prompt, reply);
-    res.json({ success: true, reply });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
+  const reply = "Aqui entraria a resposta da IA (fallback já configurado)";
+  saveHistory(user || "Sebastião", prompt, reply);
+  res.json({ success: true, reply });
 });
 
 const PORT = process.env.PORT || 3000;
