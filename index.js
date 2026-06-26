@@ -1,6 +1,10 @@
-const express = require("express");
+```javascript
+app.get('/', (req, res) => {
+  res.send('🚀 VagasBot API está online!');
+});
+```const express = require("express");
 const cors = require("cors");
-const sqlite3 = require("sqlite3").verbose();
+const sqlite3 = const("sqlite3").verbose();
 const multer = require("multer");
 const fs = require("fs");
 
