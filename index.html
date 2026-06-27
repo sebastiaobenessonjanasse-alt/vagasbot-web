@@ -5,57 +5,205 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>VagasBot Neon</title>
   <style>
+    /* ===== RESET E BASE ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
-    body { background: #0a0a0a; color: #e0e0e0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
 
+    /* ===== HEADER ===== */
     header {
-      width: 100%; max-width: 600px; text-align: center; padding: 20px 16px 12px;
-      font-size: 24px; font-weight: 800; letter-spacing: 1px;
-      background: linear-gradient(90deg, #0ff, #a855f7, #0ff); background-size: 300%;
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      padding: 20px 16px 12px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #0ff, #a855f7, #0ff);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       animation: gradiente 4s ease infinite;
     }
-    @keyframes gradiente { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    header small { display: block; font-size: 12px; font-weight: 400; -webkit-text-fill-color: #aaa; }
+    @keyframes gradiente {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    header small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      -webkit-text-fill-color: #aaa;
+    }
 
+    /* ===== NAVEGAÇÃO ===== */
     nav {
-      width: 100%; max-width: 600px; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px;
-      background: #141414; padding: 6px; border-radius: 14px; margin: 10px 0 16px;
-      border: 1px solid #2a2a2a; -webkit-overflow-scrolling: touch;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 4px;
+      background: #141414;
+      padding: 6px;
+      border-radius: 14px;
+      margin: 10px 0 16px;
+      border: 1px solid #2a2a2a;
+      -webkit-overflow-scrolling: touch;
     }
     nav button {
-      flex: 0 0 auto; padding: 8px 14px; border: none; background: transparent;
-      color: #aaa; font-weight: 600; font-size: 12px; border-radius: 10px; cursor: pointer;
-      transition: 0.2s; white-space: nowrap;
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      color: #aaa;
+      font-weight: 600;
+      font-size: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
     }
     nav button:hover { background: #1f1f1f; color: #0ff; }
     nav button.active { background: #0ff; color: #000; font-weight: 700; box-shadow: 0 0 20px rgba(0,255,255,0.3); }
 
+    /* ===== CONTEÚDO ===== */
     .app-container {
-      width: 100%; max-width: 600px; background: #101010; border-radius: 18px; padding: 16px;
-      border: 1px solid #222; box-shadow: 0 0 40px rgba(0,255,255,0.03); min-height: 70vh;
+      width: 100%;
+      max-width: 600px;
+      background: #101010;
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid #222;
+      box-shadow: 0 0 40px rgba(0,255,255,0.03);
+      min-height: 70vh;
     }
     .tab { display: none; animation: fade 0.3s ease; }
     .tab.active { display: block; }
     @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* ===== CHAT BOX ===== */
     .chat-box {
-      background: #141414; border-radius: 14px; padding: 12px; margin: 8px 0;
-      border: 1px solid #222; height: 50vh; overflow-y: auto; scroll-behavior: smooth;
+      background: #141414;
+      border-radius: 14px;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #222;
+      height: 50vh;
+      overflow-y: auto;
+      scroll-behavior: smooth;
     }
-    .chat-box p { margin: 6px 0; color: #ccc; line-height: 1.5; border-bottom: 1px solid #1a1a1a; padding: 6px 0; }
-    .chat-box .user { color: #0ff; }
-    .chat-box .bot { color: #ddd; }
 
+    /* ===== BANNER NO TOPO DO CHAT ===== */
+    .chat-banner {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .chat-banner img {
+      width: 100%;
+      max-height: 140px;
+      border-radius: 14px;
+      border: 2px solid #a855f7;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
+      object-fit: cover;
+    }
+    .chat-banner p {
+      color: #0ff;
+      font-size: 13px;
+      margin-top: 6px;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+
+    /* ===== MENSAGENS COM AVATAR ===== */
+    .msg-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #1a1a1a;
+      padding-bottom: 8px;
+    }
+    .msg-wrapper.user { flex-direction: row-reverse; }
+    .msg-wrapper.bot { flex-direction: row; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      background: #1a1a1a;
+      border: 2px solid #2a2a2a;
+    }
+    .msg-wrapper.user .avatar {
+      background: #0ff;
+      color: #000;
+      border-color: #0ff;
+    }
+    .msg-wrapper.bot .avatar {
+      background: #a855f7;
+      color: #fff;
+      border-color: #a855f7;
+    }
+
+    .msg-content {
+      flex: 1;
+      color: #ccc;
+      line-height: 1.5;
+    }
+    .msg-content .user { color: #0ff; }
+    .msg-content .bot { color: #ddd; }
+    .msg-content strong { font-weight: 600; }
+
+    .btn-audio {
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #aaa;
+      padding: 2px 6px;
+      margin-left: 6px;
+    }
+    .btn-audio.playing { color: #0ff; animation: pulse 0.8s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+    /* ===== CAMPOS E BOTÕES ===== */
     input, textarea {
-      width: 100%; padding: 10px 14px; margin: 6px 0 10px; background: #1a1a1a;
-      border: 1px solid #2a2a2a; border-radius: 10px; color: #fff; font-size: 15px; transition: 0.3s;
+      width: 100%;
+      padding: 10px 14px;
+      margin: 6px 0 10px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      transition: 0.3s;
     }
     input:focus, textarea:focus { outline: none; border-color: #0ff; box-shadow: 0 0 15px rgba(0,255,255,0.1); }
 
     button {
-      padding: 8px 18px; border: none; border-radius: 10px; background: #0ff; color: #000;
-      font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #0ff;
+      color: #000;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
     }
     button:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(0,255,255,0.2); }
     button:active { transform: scale(0.97); }
@@ -66,35 +214,65 @@
     .valor-btn.ativo { background: #0ff; color: #000; border-color: #0ff; }
     .valor-btn.destaque { background: #f5b042; color: #000; border-color: #f5b042; }
 
+    /* ===== RODAPÉ (selectores) ===== */
     .footer-actions {
-      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; justify-content: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+      justify-content: center;
     }
     .selector-group {
-      display: flex; gap: 4px; background: #1a1a1a; border-radius: 30px; padding: 4px; border: 1px solid #2a2a2a;
+      display: flex;
+      gap: 4px;
+      background: #1a1a1a;
+      border-radius: 30px;
+      padding: 4px;
+      border: 1px solid #2a2a2a;
     }
     .selector-option {
-      background: transparent; border: none; padding: 4px 12px; border-radius: 30px;
-      font-size: 12px; font-weight: 600; cursor: pointer; color: #aaa; transition: 0.2s;
+      background: transparent;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #aaa;
+      transition: 0.2s;
     }
     .selector-option.active { background: #0ff; color: #000; }
 
-    .btn-audio { background: transparent; border: none; font-size: 16px; cursor: pointer; color: #aaa; padding: 2px 6px; }
-    .btn-audio.playing { color: #0ff; animation: pulse 0.8s infinite; }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-
+    /* ===== WHATSAPP FLUTUANTE ===== */
     #whatsappBtn {
-      position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;
-      background: #25D366; color: #fff; border: none; border-radius: 50%; font-size: 28px;
-      box-shadow: 0 4px 20px rgba(37,211,102,0.4); z-index: 999;
-      display: flex; align-items: center; justify-content: center; text-decoration: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 28px;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
     }
     #whatsappBtn:hover { transform: scale(1.08); }
 
+    /* ===== RESPONSIVIDADE ===== */
     @media (max-width: 480px) {
       header { font-size: 20px; padding: 14px; }
       nav button { font-size: 11px; padding: 6px 10px; }
       .app-container { padding: 12px; }
       .chat-box { height: 40vh; }
+      .avatar { width: 30px; height: 30px; font-size: 14px; }
+      .chat-banner img { max-height: 80px; }
       #whatsappBtn { width: 48px; height: 48px; font-size: 24px; bottom: 16px; right: 16px; }
     }
   </style>
@@ -103,6 +281,7 @@
 
   <header>⚡ VagasBot Neon <small>Inteligência, vagas e muito mais</small></header>
 
+  <!-- NAVEGAÇÃO -->
   <nav id="navTabs">
     <button class="active" data-tab="chat">💬 Chat</button>
     <button data-tab="payment">💳 Pagamento</button>
@@ -111,8 +290,15 @@
 
   <div class="app-container">
 
-    <!-- CHAT -->
+    <!-- ===== CHAT ===== -->
     <div id="chat" class="tab active">
+
+      <!-- BANNER (segunda foto) no topo do chat -->
+      <div class="chat-banner">
+        <img src="sbj_bot.png" alt="Banner VagasBot">
+        <p>⚡ VagasBot - O seu assistente de empregos</p>
+      </div>
+
       <div id="chatBox" class="chat-box"></div>
       <div style="display:flex; gap:8px;">
         <input id="prompt" type="text" placeholder="Digite a sua mensagem..." style="flex:1;">
@@ -140,7 +326,7 @@
       </div>
     </div>
 
-    <!-- PAGAMENTO -->
+    <!-- ===== PAGAMENTO ===== -->
     <div id="payment" class="tab">
       <h3 style="color:#0ff;">💳 Escolha o valor</h3>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
@@ -154,23 +340,58 @@
       <div id="paymentBox" class="chat-box" style="height:auto; min-height:80px;"></div>
     </div>
 
-    <!-- INFO -->
+    <!-- ===== INFO (com foto do dono) ===== -->
     <div id="info" class="tab">
-      <div style="display:flex; flex-direction:column; align-items:center; text-align:center;">
-        <!-- 🔴 ATUALIZE O NOME DA FOTO AQUI SE NECESSÁRIO -->
-        <img id="ownerPhoto" src="1782235162514.jpg" alt="Foto do Dono" style="width:100px; border-radius:50%; border:3px solid #0ff; box-shadow:0 0 30px rgba(0,255,255,0.3); margin-bottom:12px;">
-        <h2 style="color:#fff; font-size:20px;">👑 Sebastião Benesson Janasse</h2>
-        <p style="color:#aaa; max-width:400px; margin:8px auto; font-size:14px;">
-          Dono Supremo do VagasBot. Esta ferramenta ajuda moçambicanos a encontrar emprego, gerir documentos e muito mais.
-        </p>
-        <p style="color:#0ff; font-size:13px; margin-top:10px;">📞 Dúvidas? Fale connosco no WhatsApp!</p>
+      <h2 style="color:#0ff; text-align:center; font-size:20px;">📖 Como usar o VagasBot</h2>
+      <div style="background:#141414; border-radius:12px; padding:16px; margin-top:10px;">
+
+        <!-- Foto do dono (a primeira foto) -->
+        <div style="text-align:center; margin-bottom:12px;">
+          <img src="1782235162514.jpg" alt="Dono Supremo" style="width:100px; height:100px; border-radius:50%; border:3px solid #0ff; box-shadow:0 0 30px rgba(0,255,255,0.3); object-fit:cover;">
+          <p style="color:#0ff; font-weight:600; margin-top:6px;">👑 Sebastião Benesson Janasse</p>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:12px; align-items:flex-start;">
+          <span style="background:#0ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">1</span>
+          <div><strong>💬 Envie mensagens</strong> – Escreva no chat e receba respostas da IA. Use os botões <strong>PDF</strong> e <strong>Foto</strong> para ações rápidas.</div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:12px; align-items:flex-start;">
+          <span style="background:#0ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">2</span>
+          <div><strong>💳 Pagamento</strong> – Vá a "Pagamento", escolha o valor (20, 30, 50 ou 150 MT), insira o número Movitel e confirme.</div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:12px; align-items:flex-start;">
+          <span style="background:#0ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">3</span>
+          <div><strong>🔊 Ouvir respostas</strong> – Clique no ícone 🔊 ao lado de cada mensagem do bot para ouvir em voz alta.</div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:12px; align-items:flex-start;">
+          <span style="background:#0ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">4</span>
+          <div><strong>📄 Gerar PDF</strong> – Clique em "PDF", digite o conteúdo e o bot gerará um ficheiro (necessita de pagamento).</div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <span style="background:#0ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">5</span>
+          <div><strong>🖼️ Enviar Foto</strong> – Clique em "Foto", selecione uma imagem e faça upload (grátis).</div>
+        </div>
+
+      </div>
+
+      <div style="text-align:center; margin-top:16px; color:#aaa; font-size:13px;">
+        <p>📞 Dúvidas? Fale connosco no WhatsApp!</p>
+        <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank" style="display:inline-block; background:#25D366; color:#fff; padding:8px 20px; border-radius:30px; text-decoration:none; margin-top:6px;">💬 WhatsApp</a>
       </div>
     </div>
 
   </div>
 
+  <!-- WHATSAPP FLUTUANTE -->
   <a id="whatsappBtn" href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank">💬</a>
 
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT -->
+  <!-- ============================================================ -->
   <script>
     // ============================================================
     // CONFIGURAÇÕES
@@ -222,19 +443,34 @@
     // ============================================================
     function addMessage(text, type = 'bot') {
       const box = document.getElementById('chatBox');
-      const p = document.createElement('p');
-      p.className = type === 'user' ? 'user' : 'bot';
-      p.innerHTML = `<strong>${type === 'user' ? '👤 Você' : '🤖 Vaga'}:</strong> ${text}`;
-      box.appendChild(p);
-      box.scrollTop = box.scrollHeight;
-      
+
+      const wrapper = document.createElement('div');
+      wrapper.className = `msg-wrapper ${type}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = type === 'user' ? '👤' : '🤖';
+      wrapper.appendChild(avatar);
+
+      const content = document.createElement('div');
+      content.className = 'msg-content';
+      const strong = document.createElement('strong');
+      strong.textContent = type === 'user' ? 'Você' : 'Vaga';
+      strong.className = type === 'user' ? 'user' : 'bot';
+      content.appendChild(strong);
+      content.appendChild(document.createTextNode(': ' + text));
+
       if (type === 'bot' && text !== '⏳ A pensar...') {
         const audioBtn = document.createElement('button');
         audioBtn.className = 'btn-audio';
         audioBtn.textContent = '🔊';
         audioBtn.onclick = () => falar(text, audioBtn);
-        p.appendChild(audioBtn);
+        content.appendChild(audioBtn);
       }
+
+      wrapper.appendChild(content);
+      box.appendChild(wrapper);
+      box.scrollTop = box.scrollHeight;
     }
 
     async function sendMessage() {
@@ -249,11 +485,11 @@
         const resp = await fetch(`${API_URL}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            prompt: msg, 
-            user: USER, 
-            modelo: modeloIA, 
-            idioma: idiomaAtual 
+          body: JSON.stringify({
+            prompt: msg,
+            user: USER,
+            modelo: modeloIA,
+            idioma: idiomaAtual
           })
         });
         const data = await resp.json();
@@ -300,12 +536,12 @@
       if (voices.length === 0) {
         window.speechSynthesis.onvoiceschanged = () => {
           voices = window.speechSynthesis.getVoices();
-          const voz = voices.find(v => v.lang.startsWith(utterance.lang) && 
+          const voz = voices.find(v => v.lang.startsWith(utterance.lang) &&
             (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
           if (voz) utterance.voice = voz;
         };
       } else {
-        const voz = voices.find(v => v.lang.startsWith(utterance.lang) && 
+        const voz = voices.find(v => v.lang.startsWith(utterance.lang) &&
           (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
         if (voz) utterance.voice = voz;
       }
