@@ -25,11 +25,13 @@ db.serialize(() => {
     reply TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+
   db.run(`CREATE TABLE IF NOT EXISTS memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     key TEXT UNIQUE,
     value TEXT
   )`);
+
   db.run(`CREATE TABLE IF NOT EXISTS payments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user TEXT,
@@ -60,7 +62,6 @@ function hasPaymentConfirmed(user) {
 // ============================================================
 const OpenAI = require('openai');
 
-// Cliente OpenRouter (agregador de modelos gratuitos)
 const openRouterClient = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
   apiKey: process.env.OPENROUTER_API_KEY || 'SUA_CHAVE_OPENROUTER',
@@ -70,7 +71,6 @@ const openRouterClient = new OpenAI({
   }
 });
 
-// Cliente Groq (velocidade extrema)
 const groqClient = new OpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
   apiKey: process.env.GROQ_API_KEY || 'SUA_CHAVE_GROQ'
@@ -82,15 +82,13 @@ const groqClient = new OpenAI({
 async function gerarRespostaIA(prompt, modelo = 'openrouter') {
   try {
     if (modelo === 'openrouter') {
-      // Tenta OpenRouter primeiro
       const response = await openRouterClient.chat.completions.create({
-        model: 'openrouter/free', // router que escolhe o melhor modelo grátis
+        model: 'openrouter/free',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 1024,
       });
       return response.choices[0].message.content;
     } else if (modelo === 'groq') {
-      // Tenta Groq
       const response = await groqClient.chat.completions.create({
         model: 'mixtral-8x7b-32768',
         messages: [{ role: 'user', content: prompt }],
@@ -102,7 +100,6 @@ async function gerarRespostaIA(prompt, modelo = 'openrouter') {
     }
   } catch (error) {
     console.error(`Erro no ${modelo}:`, error.message);
-    // Fallback: tenta o outro modelo
     try {
       if (modelo === 'openrouter') {
         console.log('Tentando fallback para Groq...');
@@ -132,6 +129,11 @@ async function gerarRespostaIA(prompt, modelo = 'openrouter') {
 // ENDPOINTS
 // ============================================================
 
+// ---------- ROTA RAIZ ----------
+app.get('/', (req, res) => {
+  res.send('🚀 VagasBot API está online!');
+});
+
 // ---------- HISTÓRICO ----------
 app.get("/history", (req, res) => {
   db.all("SELECT * FROM history ORDER BY timestamp DESC LIMIT 50", [], (err, rows) => {
@@ -159,11 +161,12 @@ app.get("/memory", (req, res) => {
 
 // ---------- CHAT (COM IA) ----------
 app.post("/chat", async (req, res) => {
-  const { prompt, user = "Sebastião", modelo = "openrouter" } = req.body;
+  const { prompt, user = "Sebastião", modelo = "openrouter", idioma = "pt" } = req.body;
   if (!prompt) return res.status(400).json({ success: false, error: "Mensagem vazia." });
 
-  const systemPrompt = `Você é a Vaga, uma assistente de empregos em Moçambique. 
-Responda de forma breve, útil e com emojis. Seja simpática e profissional.`;
+  const systemPrompt = idioma === 'en'
+    ? `You are Vaga, a job assistant in Mozambique. Respond briefly, helpfully and with emojis. Be friendly and professional.`
+    : `Você é a Vaga, uma assistente de empregos em Moçambique. Responda de forma breve, útil e com emojis. Seja simpática e profissional.`;
 
   try {
     const resposta = await gerarRespostaIA(`${systemPrompt}\n\nUsuário: ${prompt}`, modelo);
@@ -207,7 +210,12 @@ const upload = multer({ storage });
 
 app.post("/upload-photo", upload.single("photo"), (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: "Nenhum ficheiro enviado." });
-  res.json({ success: true, message: "Foto recebida!", file: req.file.filename, url: `/uploads/${req.file.filename}` });
+  res.json({
+    success: true,
+    message: "Foto recebida com sucesso!",
+    file: req.file.filename,
+    url: `/uploads/${req.file.filename}`
+  });
 });
 
 // ---------- GERAR PDF ----------
@@ -216,10 +224,12 @@ app.post("/generate-pdf", async (req, res) => {
   if (!user || !content) return res.status(400).json({ success: false, message: "Dados incompletos." });
   try {
     const hasPayment = await hasPaymentConfirmed(user);
-    if (!hasPayment) return res.status(403).json({ success: false, message: "Pagamento necessário para gerar PDF." });
+    if (!hasPayment) {
+      return res.status(403).json({ success: false, message: "Pagamento necessário para gerar PDF." });
+    }
     const filename = `pdf_${Date.now()}.txt`;
     fs.writeFileSync(filename, content);
-    res.json({ success: true, message: "PDF gerado!", file: filename });
+    res.json({ success: true, message: "PDF gerado com sucesso!", file: filename });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -231,16 +241,18 @@ app.post("/generate-image", async (req, res) => {
   if (!user || !description) return res.status(400).json({ success: false, message: "Dados incompletos." });
   try {
     const hasPayment = await hasPaymentConfirmed(user);
-    if (!hasPayment) return res.status(403).json({ success: false, message: "Pagamento necessário para gerar imagens." });
-    res.json({ success: true, message: "Imagem gerada (simulação)!", description, url: `https://via.placeholder.com/400x300?text=${encodeURIComponent(description)}` });
+    if (!hasPayment) {
+      return res.status(403).json({ success: false, message: "Pagamento necessário para gerar imagens." });
+    }
+    res.json({
+      success: true,
+      message: "Imagem gerada com sucesso! (simulação)",
+      description,
+      url: `https://via.placeholder.com/400x300?text=${encodeURIComponent(description)}`
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
-});
-
-// ---------- ROTA RAIZ ----------
-app.get('/', (req, res) => {
-  res.send('🚀 VagasBot API está online!');
 });
 
 // ============================================================
