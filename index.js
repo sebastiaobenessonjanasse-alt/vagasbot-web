@@ -4,16 +4,13 @@ const sqlite3 = require("sqlite3").verbose();
 const multer = require("multer");
 const fs = require("fs");
 
-// ============================================================
-// CONFIGURAÇÃO DO EXPRESS
-// ============================================================
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
 // ============================================================
-// CONFIGURAÇÃO DO SQLITE
+// BASE DE DADOS SQLITE
 // ============================================================
 const db = new sqlite3.Database("./vagasbot.db");
 
@@ -129,12 +126,10 @@ async function gerarRespostaIA(prompt, modelo = 'openrouter') {
 // ENDPOINTS
 // ============================================================
 
-// ---------- ROTA RAIZ ----------
 app.get('/', (req, res) => {
   res.send('🚀 VagasBot API está online!');
 });
 
-// ---------- HISTÓRICO ----------
 app.get("/history", (req, res) => {
   db.all("SELECT * FROM history ORDER BY timestamp DESC LIMIT 50", [], (err, rows) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
@@ -142,7 +137,6 @@ app.get("/history", (req, res) => {
   });
 });
 
-// ---------- MEMÓRIA ----------
 app.post("/memory", (req, res) => {
   const { key, value } = req.body;
   if (!key || !value) return res.status(400).json({ success: false, error: "Chave e valor são obrigatórios." });
@@ -159,7 +153,6 @@ app.get("/memory", (req, res) => {
   });
 });
 
-// ---------- CHAT (COM IA) ----------
 app.post("/chat", async (req, res) => {
   const { prompt, user = "Sebastião", modelo = "openrouter", idioma = "pt" } = req.body;
   if (!prompt) return res.status(400).json({ success: false, error: "Mensagem vazia." });
@@ -178,7 +171,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// ---------- PAGAMENTO ----------
 app.post("/payment", (req, res) => {
   const { user, amount, phone } = req.body;
   if (!user || !amount || !phone) {
@@ -195,7 +187,6 @@ app.post("/payment", (req, res) => {
   });
 });
 
-// ---------- UPLOAD DE FOTOS ----------
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
@@ -218,7 +209,6 @@ app.post("/upload-photo", upload.single("photo"), (req, res) => {
   });
 });
 
-// ---------- GERAR PDF ----------
 app.post("/generate-pdf", async (req, res) => {
   const { user, content } = req.body;
   if (!user || !content) return res.status(400).json({ success: false, message: "Dados incompletos." });
@@ -235,7 +225,6 @@ app.post("/generate-pdf", async (req, res) => {
   }
 });
 
-// ---------- GERAR IMAGEM ----------
 app.post("/generate-image", async (req, res) => {
   const { user, description } = req.body;
   if (!user || !description) return res.status(400).json({ success: false, message: "Dados incompletos." });
@@ -255,9 +244,6 @@ app.post("/generate-image", async (req, res) => {
   }
 });
 
-// ============================================================
-// INICIAR SERVIDOR
-// ============================================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor VagasBot a correr na porta ${PORT}`);
