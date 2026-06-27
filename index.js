@@ -3,14 +3,18 @@ const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
 const multer = require("multer");
 const fs = require("fs");
+const fetch = require("node-fetch");
 
+// ============================================================
+// CONFIGURAÇÃO DO EXPRESS
+// ============================================================
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
 // ============================================================
-// BASE DE DADOS SQLITE
+// CONFIGURAÇÃO DO SQLITE
 // ============================================================
 const db = new sqlite3.Database("./vagasbot.db");
 
@@ -34,6 +38,8 @@ db.serialize(() => {
     user TEXT,
     status TEXT,
     transactionId TEXT,
+    amount INTEGER,
+    phone TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 });
@@ -123,13 +129,39 @@ async function gerarRespostaIA(prompt, modelo = 'openrouter') {
 }
 
 // ============================================================
+// TTS – SÍNTESE DE VOZ (VoiceRSS + fallback)
+// ============================================================
+app.post("/sintetizar-voz", async (req, res) => {
+  const { texto, idioma = "pt-BR" } = req.body;
+  if (!texto) return res.status(400).json({ erro: "Texto obrigatório" });
+
+  // Tenta VoiceRSS primeiro
+  try {
+    const voiceRssKey = process.env.VOICERSS_API_KEY || 'SUA_CHAVE_VOICERSS';
+    const lang = idioma === "pt-BR" ? "pt-br" : "en-us";
+    const url = `https://api.voicerss.org/?key=${voiceRssKey}&hl=${lang}&v=Maria&src=${encodeURIComponent(texto)}`;
+    const response = await fetch(url);
+    const audioBuffer = await response.arrayBuffer();
+    const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+    return res.json({ audio: audioBase64 });
+  } catch (error) {
+    console.warn('VoiceRSS falhou, tentando fallback...', error.message);
+    // Fallback: Web Speech API não é possível no backend, então retornamos erro
+    // e o frontend usará Web Speech API nativa
+    return res.status(500).json({ erro: 'Falha ao gerar áudio. Usando fallback do navegador.' });
+  }
+});
+
+// ============================================================
 // ENDPOINTS
 // ============================================================
 
+// ---------- ROTA RAIZ ----------
 app.get('/', (req, res) => {
   res.send('🚀 VagasBot API está online!');
 });
 
+// ---------- HISTÓRICO DE CONVERSAS ----------
 app.get("/history", (req, res) => {
   db.all("SELECT * FROM history ORDER BY timestamp DESC LIMIT 50", [], (err, rows) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
@@ -137,6 +169,15 @@ app.get("/history", (req, res) => {
   });
 });
 
+// ---------- HISTÓRICO DE PAGAMENTOS ----------
+app.get("/payment-history", (req, res) => {
+  db.all("SELECT * FROM payments ORDER BY timestamp DESC LIMIT 50", [], (err, rows) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, history: rows });
+  });
+});
+
+// ---------- MEMÓRIA ----------
 app.post("/memory", (req, res) => {
   const { key, value } = req.body;
   if (!key || !value) return res.status(400).json({ success: false, error: "Chave e valor são obrigatórios." });
@@ -153,6 +194,7 @@ app.get("/memory", (req, res) => {
   });
 });
 
+// ---------- CHAT (COM IA) ----------
 app.post("/chat", async (req, res) => {
   const { prompt, user = "Sebastião", modelo = "openrouter", idioma = "pt" } = req.body;
   if (!prompt) return res.status(400).json({ success: false, error: "Mensagem vazia." });
@@ -171,22 +213,28 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// ---------- PAGAMENTO (SIMULAÇÃO) ----------
 app.post("/payment", (req, res) => {
   const { user, amount, phone } = req.body;
   if (!user || !amount || !phone) {
     return res.status(400).json({ success: false, message: "Dados incompletos." });
   }
   const transactionId = "TX-" + Date.now();
-  db.run("INSERT INTO payments (user, status, transactionId) VALUES (?, ?, ?)", [user, "confirmed", transactionId], (err) => {
-    if (err) return res.status(500).json({ success: false, error: err.message });
-    res.json({
-      success: true,
-      message: `Pagamento de ${amount} MT confirmado! (número: ${phone})`,
-      transactionId
-    });
-  });
+  db.run(
+    "INSERT INTO payments (user, status, transactionId, amount, phone) VALUES (?, ?, ?, ?, ?)",
+    [user, "confirmed", transactionId, amount, phone],
+    (err) => {
+      if (err) return res.status(500).json({ success: false, error: err.message });
+      res.json({
+        success: true,
+        message: `Pagamento de ${amount} MT confirmado! (número: ${phone})`,
+        transactionId
+      });
+    }
+  );
 });
 
+// ---------- UPLOAD DE FOTOS ----------
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
@@ -209,6 +257,7 @@ app.post("/upload-photo", upload.single("photo"), (req, res) => {
   });
 });
 
+// ---------- GERAR PDF (PAGO) ----------
 app.post("/generate-pdf", async (req, res) => {
   const { user, content } = req.body;
   if (!user || !content) return res.status(400).json({ success: false, message: "Dados incompletos." });
@@ -225,6 +274,7 @@ app.post("/generate-pdf", async (req, res) => {
   }
 });
 
+// ---------- GERAR IMAGEM (PAGO) ----------
 app.post("/generate-image", async (req, res) => {
   const { user, description } = req.body;
   if (!user || !description) return res.status(400).json({ success: false, message: "Dados incompletos." });
@@ -244,6 +294,9 @@ app.post("/generate-image", async (req, res) => {
   }
 });
 
+// ============================================================
+// INICIAR SERVIDOR
+// ============================================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor VagasBot a correr na porta ${PORT}`);
