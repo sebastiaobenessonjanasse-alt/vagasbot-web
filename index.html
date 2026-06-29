@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>VagasBot Neon</title>
   <style>
-    /* ===== RESET E BASE ===== */
+    /* ===== BASE ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
     html, body {
       height: 100%;
@@ -19,6 +19,7 @@
       flex-direction: column;
       align-items: center;
       padding: 6px;
+      font-size: 18px;
     }
 
     /* ===== HEADER ===== */
@@ -26,7 +27,7 @@
       width: 100%;
       text-align: center;
       padding: 6px 8px 2px;
-      font-size: 20px;
+      font-size: 28px;
       font-weight: 800;
       background: linear-gradient(90deg, #0ff, #a855f7, #0ff);
       background-size: 300%;
@@ -42,7 +43,7 @@
     }
     header small {
       display: block;
-      font-size: 10px;
+      font-size: 14px;
       font-weight: 400;
       -webkit-text-fill-color: #aaa;
     }
@@ -110,7 +111,7 @@
       min-height: 0;
     }
 
-    /* ===== BANNER (foto GRANDE) ===== */
+    /* ===== BANNER ===== */
     .chat-banner {
       text-align: center;
       margin-bottom: 6px;
@@ -118,7 +119,7 @@
     }
     .chat-banner img {
       width: 100%;
-      max-height: 35vh; /* ocupa 35% da altura da tela */
+      max-height: 35vh;
       border-radius: 14px;
       border: 2px solid #a855f7;
       box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
@@ -126,7 +127,7 @@
     }
     .chat-banner p {
       color: #0ff;
-      font-size: 13px;
+      font-size: 16px;
       margin-top: 2px;
       font-weight: 600;
       text-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
@@ -162,12 +163,12 @@
     .msg-content {
       flex: 1;
       color: #ccc;
-      line-height: 1.4;
-      font-size: 14px;
+      line-height: 1.6;
+      font-size: 17px;
     }
+    .msg-content strong { font-size: 18px; font-weight: 600; }
     .msg-content .user { color: #0ff; }
     .msg-content .bot { color: #ddd; }
-    .msg-content strong { font-weight: 600; }
 
     .btn-audio {
       background: transparent;
@@ -190,12 +191,12 @@
     }
     .input-row input {
       flex: 1;
-      padding: 8px 12px;
+      padding: 12px 16px;
       background: #1a1a1a;
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       color: #fff;
-      font-size: 14px;
+      font-size: 17px;
       transition: 0.3s;
     }
     .input-row input:focus { outline: none; border-color: #0ff; box-shadow: 0 0 15px rgba(0,255,255,0.1); }
@@ -207,13 +208,13 @@
       flex-shrink: 0;
     }
     .btn-row button {
-      padding: 5px 12px;
+      padding: 8px 18px;
       border: none;
       border-radius: 10px;
       background: #0ff;
       color: #000;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 15px;
       cursor: pointer;
       transition: 0.2s;
     }
@@ -242,9 +243,9 @@
     .selector-option {
       background: transparent;
       border: none;
-      padding: 3px 10px;
+      padding: 6px 14px;
       border-radius: 30px;
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       color: #aaa;
@@ -252,7 +253,7 @@
     }
     .selector-option.active { background: #0ff; color: #000; }
 
-    /* ===== WHATSAPP FLUTUANTE ===== */
+    /* ===== WHATSAPP ===== */
     #whatsappBtn {
       position: fixed;
       bottom: 16px;
@@ -273,10 +274,21 @@
     }
     #whatsappBtn:hover { transform: scale(1.08); }
 
-    /* ===== PAGAMENTO E HISTÓRICO ===== */
-    .valor-btn { background: #1a1a1a; color: #aaa; border: 1px solid #2a2a2a; }
-    .valor-btn.ativo { background: #0ff; color: #000; border-color: #0ff; }
-    .valor-btn.destaque { background: #f5b042; color: #000; border-color: #f5b042; }
+    /* ===== PLANOS DE PAGAMENTO ===== */
+    .plano-card {
+      background: #1a1a1a;
+      border: 2px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1 1 120px;
+    }
+    .plano-card:hover { border-color: #0ff; box-shadow: 0 0 20px rgba(0,255,255,0.1); }
+    .plano-card.selecionado { border-color: #0ff; background: #0a2a2a; }
+    .plano-card .preco { font-size: 22px; font-weight: 700; color: #0ff; }
+    .plano-card .descricao { font-size: 14px; color: #aaa; }
 
     /* ===== INFO ===== */
     .info-content {
@@ -296,8 +308,8 @@
       box-shadow: 0 0 30px rgba(0,255,255,0.3);
       object-fit: cover;
     }
-    .info-content h2 { font-size: 17px; margin: 6px 0; color: #fff; }
-    .info-content p { font-size: 13px; color: #aaa; max-width: 400px; margin: 3px auto; }
+    .info-content h2 { font-size: 22px; margin: 6px 0; color: #fff; }
+    .info-content p { font-size: 16px; color: #aaa; max-width: 400px; margin: 3px auto; }
     .step {
       display: flex;
       gap: 8px;
@@ -320,19 +332,27 @@
       flex-shrink: 0;
       font-size: 12px;
     }
-    .step .desc { font-size: 13px; color: #ccc; }
+    .step .desc { font-size: 15px; color: #ccc; }
     .step .desc strong { color: #0ff; }
 
     @media (max-width: 480px) {
-      header { font-size: 17px; padding: 4px; }
+      body { font-size: 16px; }
+      header { font-size: 22px; padding: 4px; }
       nav button { font-size: 10px; padding: 4px 8px; }
       .app-container { padding: 4px; }
       .chat-banner img { max-height: 25vh; }
-      .msg-content { font-size: 13px; }
+      .msg-content { font-size: 15px; }
+      .msg-content strong { font-size: 16px; }
       .avatar { width: 26px; height: 26px; font-size: 13px; }
-      .btn-row button { font-size: 11px; padding: 4px 8px; }
+      .input-row input { font-size: 15px; padding: 10px 12px; }
+      .btn-row button { font-size: 13px; padding: 6px 12px; }
+      .selector-option { font-size: 12px; padding: 4px 10px; }
+      .plano-card .preco { font-size: 18px; }
       #whatsappBtn { width: 42px; height: 42px; font-size: 20px; bottom: 12px; right: 12px; }
       .info-content img { width: 70px; height: 70px; }
+      .info-content h2 { font-size: 18px; }
+      .info-content p { font-size: 14px; }
+      .step .desc { font-size: 13px; }
     }
   </style>
 </head>
@@ -340,7 +360,6 @@
 
   <header>⚡ VagasBot Neon <small>Inteligência, vagas e muito mais</small></header>
 
-  <!-- NAVEGAÇÃO -->
   <nav id="navTabs">
     <button class="active" data-tab="chat">💬 Chat</button>
     <button data-tab="payment">💳 Pagamento</button>
@@ -350,27 +369,21 @@
 
   <div class="app-container">
 
-    <!-- ===== CHAT ===== -->
+    <!-- CHAT -->
     <div id="chat" class="tab active">
-
-      <!-- BANNER GRANDE -->
       <div class="chat-banner">
         <img src="sbj_bot.png" alt="Banner VagasBot">
         <p>⚡ VagasBot - O seu assistente de empregos</p>
       </div>
-
       <div class="chat-box" id="chatBox"></div>
-
       <div class="input-row">
         <input id="prompt" type="text" placeholder="Digite a sua mensagem...">
         <button onclick="sendMessage()" style="padding:6px 14px;">Enviar</button>
       </div>
-
       <div class="btn-row">
         <button onclick="gerarPDF()" class="secondary">📄 PDF</button>
         <button onclick="uploadFoto()" class="secondary">🖼️ Foto</button>
       </div>
-
       <div class="footer-actions">
         <div class="selector-group" id="iaSelector">
           <button class="selector-option active" data-modelo="openrouter">🧠 OR</button>
@@ -389,28 +402,40 @@
       </div>
     </div>
 
-    <!-- ===== PAGAMENTO ===== -->
+    <!-- PAGAMENTO -->
     <div id="payment" class="tab" style="display:none; flex-direction:column; height:100%;">
-      <h3 style="color:#0ff; margin-bottom:4px;">💳 Escolha o valor</h3>
-      <div style="display:flex; gap:6px; flex-wrap:wrap; margin:4px 0;">
-        <button onclick="escolherValor(20)" class="valor-btn">20 MT</button>
-        <button onclick="escolherValor(30)" class="valor-btn">30 MT</button>
-        <button onclick="escolherValor(50)" class="valor-btn">50 MT</button>
-        <button onclick="escolherValor(150)" class="valor-btn destaque">150 MT</button>
+      <h3 style="color:#0ff; margin-bottom:4px;">💳 Escolha o plano</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin:4px 0;">
+        <div class="plano-card" onclick="escolherPlano(50)" id="plano-50">
+          <div class="preco">50 MT</div>
+          <div class="descricao">1 Semana</div>
+        </div>
+        <div class="plano-card" onclick="escolherPlano(100)" id="plano-100">
+          <div class="preco">100 MT</div>
+          <div class="descricao">2 Semanas</div>
+        </div>
+        <div class="plano-card" onclick="escolherPlano(150)" id="plano-150">
+          <div class="preco">150 MT</div>
+          <div class="descricao">3 Semanas</div>
+        </div>
+        <div class="plano-card" onclick="escolherPlano(200)" id="plano-200">
+          <div class="preco">200 MT</div>
+          <div class="descricao">1 Mês</div>
+        </div>
       </div>
       <input id="phone" type="text" placeholder="Número Movitel (ex: 879306034)">
-      <button onclick="startPayment()" style="margin:4px 0;">💳 Confirmar</button>
+      <button onclick="startPayment()" style="margin:4px 0;">💳 Confirmar Pagamento</button>
       <div id="paymentBox" class="chat-box" style="flex:1; min-height:60px;"></div>
     </div>
 
-    <!-- ===== HISTÓRICO DE PAGAMENTOS ===== -->
+    <!-- HISTÓRICO DE PAGAMENTOS -->
     <div id="payment-history" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff;">📜 Histórico de Pagamentos</h3>
       <button onclick="loadPaymentHistory()" class="secondary" style="margin:4px 0;">🔄 Atualizar</button>
       <div id="historyPaymentBox" class="chat-box" style="flex:1; min-height:80px;"></div>
     </div>
 
-    <!-- ===== INFO ===== -->
+    <!-- INFO -->
     <div id="info" class="tab" style="display:none; flex-direction:column; height:100%;">
       <div class="info-content">
         <img src="1782235162514.jpg" alt="Dono Supremo">
@@ -418,23 +443,19 @@
         <p>Dono Supremo do VagasBot. Esta ferramenta ajuda moçambicanos a encontrar emprego, gerir documentos e muito mais.</p>
         <div style="width:100%; max-width:400px; margin-top:8px;">
           <div class="step"><span class="num">1</span><span class="desc"><strong>💬 Envie mensagens</strong> – Escreva e receba respostas da IA.</span></div>
-          <div class="step"><span class="num">2</span><span class="desc"><strong>💳 Pagamento</strong> – Escolha valor, insira número Movitel e confirme.</span></div>
+          <div class="step"><span class="num">2</span><span class="desc"><strong>💳 Pagamento</strong> – Escolha o plano, insira número Movitel e confirme.</span></div>
           <div class="step"><span class="num">3</span><span class="desc"><strong>🔊 Ouvir</strong> – Clique em 🔊 para ouvir em voz alta.</span></div>
-          <div class="step"><span class="num">4</span><span class="desc"><strong>📄 PDF</strong> – Gere PDF (necessita pagamento).</span></div>
+          <div class="step"><span class="num">4</span><span class="desc"><strong>📄 PDF</strong> – Gere PDF (necessita assinatura).</span></div>
           <div class="step"><span class="num">5</span><span class="desc"><strong>🖼️ Foto</strong> – Envie imagens (grátis).</span></div>
         </div>
-        <p style="margin-top:8px; color:#aaa; font-size:13px;">📞 Dúvidas? <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank" style="color:#0ff; text-decoration:none;">Fale no WhatsApp</a></p>
+        <p style="margin-top:8px; color:#aaa; font-size:14px;">📞 Dúvidas? <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank" style="color:#0ff; text-decoration:none;">Fale no WhatsApp</a></p>
       </div>
     </div>
 
   </div>
 
-  <!-- WHATSAPP FLUTUANTE -->
   <a id="whatsappBtn" href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank">💬</a>
 
-  <!-- ============================================================ -->
-  <!-- JAVASCRIPT -->
-  <!-- ============================================================ -->
   <script>
     // ============================================================
     // CONFIGURAÇÕES
@@ -480,6 +501,15 @@
         }
       });
     });
+
+    // ============================================================
+    // PLANOS
+    // ============================================================
+    function escolherPlano(valor) {
+      valorSelecionado = valor;
+      document.querySelectorAll('.plano-card').forEach(c => c.classList.remove('selecionado'));
+      document.getElementById(`plano-${valor}`).classList.add('selecionado');
+    }
 
     // ============================================================
     // CHAT
@@ -549,70 +579,38 @@
     });
 
     // ============================================================
-    // VOZ (TTS via backend - VoiceRSS ou Google TTS)
+    // VOZ (Web Speech API)
     // ============================================================
-    async function falar(texto, elementoBotao) {
-      // Fallback: se o backend não estiver disponível, usa Web Speech API
-      try {
-        const resp = await fetch(`${API_URL}/sintetizar-voz`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ texto, idioma: idiomaAtual === 'pt' ? 'pt-BR' : 'en-US' })
-        });
-        const data = await resp.json();
-        if (data.audio) {
-          const audioBlob = new Blob([Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))], { type: 'audio/mp3' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          if (elementoBotao) {
-            elementoBotao.classList.add('playing');
-            elementoBotao.textContent = '🔊';
-            document.getElementById('stopAudioBtn').style.display = 'inline-block';
-          }
-          audio.onended = () => {
-            if (elementoBotao) {
-              elementoBotao.classList.remove('playing');
-              elementoBotao.textContent = '🔊';
-            }
-            document.getElementById('stopAudioBtn').style.display = 'none';
-          };
-          audio.play();
-          return;
-        }
-      } catch (e) {
-        console.warn('TTS via backend falhou, usando Web Speech API');
-      }
-      // Fallback: Web Speech API
+    function falar(texto, elementoBotao) {
       if (!('speechSynthesis' in window)) {
         alert('Seu navegador não suporta leitura em voz alta.');
         return;
       }
       if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+
       const textoLimpo = texto.replace(/<[^>]*>/g, '').trim();
       if (!textoLimpo) return;
+
       const utterance = new SpeechSynthesisUtterance(textoLimpo);
       utterance.lang = idiomaAtual === 'pt' ? 'pt-BR' : 'en-US';
+
       switch (vozSelecionada) {
         case 'feminina': utterance.pitch = 1.0; utterance.rate = 0.9; break;
         case 'masculina': utterance.pitch = 0.8; utterance.rate = 0.9; break;
         case 'crianca': utterance.pitch = 1.4; utterance.rate = 0.85; break;
       }
-      let voices = window.speechSynthesis.getVoices();
-      if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-          voices = window.speechSynthesis.getVoices();
-          const voz = voices.find(v => v.lang.startsWith(utterance.lang) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
-          if (voz) utterance.voice = voz;
-        };
-      } else {
-        const voz = voices.find(v => v.lang.startsWith(utterance.lang) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
-        if (voz) utterance.voice = voz;
-      }
+
+      const voices = window.speechSynthesis.getVoices();
+      const voz = voices.find(v => v.lang.startsWith(utterance.lang) &&
+        (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
+      if (voz) utterance.voice = voz;
+
       if (elementoBotao) {
         elementoBotao.classList.add('playing');
         elementoBotao.textContent = '🔊';
         document.getElementById('stopAudioBtn').style.display = 'inline-block';
       }
+
       utterance.onend = () => {
         if (elementoBotao) {
           elementoBotao.classList.remove('playing');
@@ -620,14 +618,17 @@
         }
         document.getElementById('stopAudioBtn').style.display = 'none';
       };
+
       utterance.onerror = (e) => {
-        console.error(e);
+        console.error('Erro na voz:', e);
         if (elementoBotao) {
           elementoBotao.classList.remove('playing');
           elementoBotao.textContent = '🔊';
         }
         document.getElementById('stopAudioBtn').style.display = 'none';
+        alert('Não foi possível reproduzir o áudio.');
       };
+
       window.speechSynthesis.speak(utterance);
     }
 
@@ -641,25 +642,38 @@
     });
 
     // ============================================================
-    // PAGAMENTO
+    // PAGAMENTO (SIMULAÇÃO + PAYSUITE)
     // ============================================================
-    function escolherValor(valor) {
-      valorSelecionado = valor;
-      document.querySelectorAll('.valor-btn').forEach(b => b.classList.remove('ativo'));
-    }
-    document.querySelectorAll('.valor-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.valor-btn').forEach(b => b.classList.remove('ativo'));
-        this.classList.add('ativo');
-        valorSelecionado = parseInt(this.textContent);
-      });
-    });
-
     async function startPayment() {
       const phone = document.getElementById('phone').value.trim();
       if (!phone) return alert('Digite o número Movitel.');
       const box = document.getElementById('paymentBox');
-      box.innerHTML = '⏳ Processando... (simulação)';
+      box.innerHTML = '⏳ Processando...';
+
+      // Tenta PaySuite primeiro (se estiver configurada)
+      try {
+        const resp = await fetch(`${API_URL}/criar-pagamento-paysuite`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            telefone: phone,
+            amount: valorSelecionado
+          })
+        });
+        const data = await resp.json();
+        if (data.success && data.payment_url) {
+          window.open(data.payment_url, '_blank');
+          box.innerHTML = `
+            <p style="color:#0ff;">🔗 A página de pagamento foi aberta.</p>
+            <p style="color:#aaa;">Após a confirmação, a assinatura será ativada automaticamente.</p>
+          `;
+          return;
+        }
+      } catch (e) {
+        console.warn('PaySuite falhou, usando simulação local:', e.message);
+      }
+
+      // Fallback: simulação local
       try {
         const resp = await fetch(`${API_URL}/payment`, {
           method: 'POST',
@@ -669,17 +683,15 @@
         const data = await resp.json();
         if (data.success) {
           box.innerHTML = `
-            <p style="color:#0f0;">✅ Pagamento simulado com sucesso!</p>
-            <p style="color:#aaa;">💰 Valor: ${valorSelecionado} MT</p>
+            <p style="color:#0f0;">✅ ${data.message}</p>
             <p style="color:#aaa;">📱 Número: ${phone}</p>
             <p style="color:#888; font-size:12px;">🔒 Transacção: ${data.transactionId || 'N/A'}</p>
-            <p style="color:#666; font-size:11px; margin-top:6px;">⚠️ Esta é uma simulação. O PIN não é solicitado.</p>
           `;
         } else {
           box.innerHTML = `<p style="color:#f44;">❌ ${data.message || 'Erro no pagamento.'}</p>`;
         }
       } catch (e) {
-        box.innerHTML = '⚠️ Erro de rede.';
+        box.innerHTML = '⚠️ Erro de rede. Tente novamente.';
         console.error(e);
       }
     }
@@ -706,6 +718,7 @@
           p.innerHTML = `
             <strong style="color:#0ff;">${item.user}</strong><br>
             💰 ${item.transactionId} - <span style="color:#0f0;">${item.status}</span><br>
+            📅 ${item.plano} - ${new Date(item.dataAtivacao).toLocaleDateString()} até ${new Date(item.dataExpiracao).toLocaleDateString()}<br>
             <span style="color:#666; font-size:12px;">${new Date(item.timestamp).toLocaleString()}</span>
           `;
           box.appendChild(p);
@@ -776,6 +789,7 @@
     addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos.', 'bot');
     addMessage('🧠 Modelo: OpenRouter | 🇧🇷 PT', 'bot');
     addMessage('⚡ Envia uma mensagem ou usa os botões abaixo.', 'bot');
+    addMessage('💳 Para assinar, vá a "Pagamento" e escolha o plano.', 'bot');
   </script>
 
 </body>
