@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>VagasBot Neon</title>
   <style>
-    /* ===== BASE ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
     html, body {
       height: 100%;
@@ -19,15 +18,14 @@
       flex-direction: column;
       align-items: center;
       padding: 6px;
-      font-size: 20px;
+      font-size: 20px !important;
     }
 
-    /* ===== HEADER ===== */
     header {
       width: 100%;
       text-align: center;
       padding: 6px 8px 2px;
-      font-size: 30px;
+      font-size: 32px !important;
       font-weight: 800;
       background: linear-gradient(90deg, #0ff, #a855f7, #0ff);
       background-size: 300%;
@@ -43,12 +41,11 @@
     }
     header small {
       display: block;
-      font-size: 16px;
+      font-size: 16px !important;
       font-weight: 400;
       -webkit-text-fill-color: #aaa;
     }
 
-    /* ===== NAVEGAÇÃO ===== */
     nav {
       width: 100%;
       display: flex;
@@ -78,7 +75,6 @@
     nav button:hover { background: #1f1f1f; color: #0ff; }
     nav button.active { background: #0ff; color: #000; font-weight: 700; box-shadow: 0 0 20px rgba(0,255,255,0.3); }
 
-    /* ===== CONTEÚDO ===== */
     .app-container {
       width: 100%;
       flex: 1;
@@ -99,7 +95,6 @@
     .tab.active { display: flex; }
     @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ===== CHAT ===== */
     .chat-box {
       flex: 1;
       background: #141414;
@@ -111,7 +106,6 @@
       min-height: 0;
     }
 
-    /* ===== BANNER ===== */
     .chat-banner {
       text-align: center;
       margin-bottom: 6px;
@@ -127,13 +121,12 @@
     }
     .chat-banner p {
       color: #0ff;
-      font-size: 18px;
+      font-size: 18px !important;
       margin-top: 2px;
       font-weight: 600;
       text-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
     }
 
-    /* ===== MENSAGENS ===== */
     .msg-wrapper {
       display: flex;
       align-items: flex-start;
@@ -164,10 +157,10 @@
       flex: 1;
       color: #ccc;
       line-height: 1.6;
-      font-size: 19px;
+      font-size: 20px !important;
     }
     .msg-content strong {
-      font-size: 20px;
+      font-size: 22px !important;
       font-weight: 600;
     }
     .msg-content .user { color: #0ff; }
@@ -185,7 +178,6 @@
     .btn-audio.playing { color: #0ff; animation: pulse 0.8s infinite; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-    /* ===== INPUT E BOTÕES ===== */
     .input-row {
       display: flex;
       gap: 6px;
@@ -199,7 +191,7 @@
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       color: #fff;
-      font-size: 19px;
+      font-size: 20px !important;
       transition: 0.3s;
     }
     .input-row input:focus { outline: none; border-color: #0ff; box-shadow: 0 0 15px rgba(0,255,255,0.1); }
@@ -217,7 +209,7 @@
       background: #0ff;
       color: #000;
       font-weight: 700;
-      font-size: 17px;
+      font-size: 18px !important;
       cursor: pointer;
       transition: 0.2s;
     }
@@ -248,7 +240,7 @@
       border: none;
       padding: 6px 14px;
       border-radius: 30px;
-      font-size: 16px;
+      font-size: 16px !important;
       font-weight: 600;
       cursor: pointer;
       color: #aaa;
@@ -256,7 +248,6 @@
     }
     .selector-option.active { background: #0ff; color: #000; }
 
-    /* ===== WHATSAPP ===== */
     #whatsappBtn {
       position: fixed;
       bottom: 16px;
@@ -277,7 +268,6 @@
     }
     #whatsappBtn:hover { transform: scale(1.08); }
 
-    /* ===== PLANOS DE PAGAMENTO ===== */
     .plano-card {
       background: #1a1a1a;
       border: 2px solid #2a2a2a;
@@ -290,10 +280,9 @@
     }
     .plano-card:hover { border-color: #0ff; box-shadow: 0 0 20px rgba(0,255,255,0.1); }
     .plano-card.selecionado { border-color: #0ff; background: #0a2a2a; }
-    .plano-card .preco { font-size: 24px; font-weight: 700; color: #0ff; }
-    .plano-card .descricao { font-size: 16px; color: #aaa; }
+    .plano-card .preco { font-size: 24px !important; font-weight: 700; color: #0ff; }
+    .plano-card .descricao { font-size: 16px !important; color: #aaa; }
 
-    /* ===== INFO ===== */
     .info-content {
       display: flex;
       flex-direction: column;
@@ -312,12 +301,12 @@
       object-fit: cover;
     }
     .info-content h2 {
-      font-size: 24px;
+      font-size: 24px !important;
       margin: 6px 0;
       color: #fff;
     }
     .info-content p {
-      font-size: 18px;
+      font-size: 18px !important;
       color: #aaa;
       max-width: 400px;
       margin: 3px auto;
@@ -345,31 +334,31 @@
       font-size: 12px;
     }
     .step .desc {
-      font-size: 17px;
+      font-size: 17px !important;
       color: #ccc;
     }
     .step .desc strong { color: #0ff; }
 
     @media (max-width: 480px) {
-      body { font-size: 18px; }
-      header { font-size: 24px; padding: 4px; }
-      header small { font-size: 14px; }
+      body { font-size: 18px !important; }
+      header { font-size: 26px !important; padding: 4px; }
+      header small { font-size: 14px !important; }
       nav button { font-size: 10px; padding: 4px 8px; }
       .app-container { padding: 4px; }
       .chat-banner img { max-height: 25vh; }
-      .msg-content { font-size: 17px; }
-      .msg-content strong { font-size: 18px; }
+      .msg-content { font-size: 18px !important; }
+      .msg-content strong { font-size: 20px !important; }
       .avatar { width: 26px; height: 26px; font-size: 13px; }
-      .input-row input { font-size: 17px; padding: 10px 12px; }
-      .btn-row button { font-size: 15px; padding: 6px 12px; }
-      .selector-option { font-size: 14px; padding: 4px 10px; }
-      .plano-card .preco { font-size: 20px; }
-      .plano-card .descricao { font-size: 14px; }
+      .input-row input { font-size: 18px !important; padding: 10px 12px; }
+      .btn-row button { font-size: 16px !important; padding: 6px 12px; }
+      .selector-option { font-size: 14px !important; padding: 4px 10px; }
+      .plano-card .preco { font-size: 20px !important; }
+      .plano-card .descricao { font-size: 14px !important; }
       #whatsappBtn { width: 42px; height: 42px; font-size: 20px; bottom: 12px; right: 12px; }
       .info-content img { width: 70px; height: 70px; }
-      .info-content h2 { font-size: 20px; }
-      .info-content p { font-size: 16px; }
-      .step .desc { font-size: 15px; }
+      .info-content h2 { font-size: 20px !important; }
+      .info-content p { font-size: 16px !important; }
+      .step .desc { font-size: 15px !important; }
     }
   </style>
 </head>
@@ -386,7 +375,6 @@
 
   <div class="app-container">
 
-    <!-- CHAT -->
     <div id="chat" class="tab active">
       <div class="chat-banner">
         <img src="sbj_bot.png" alt="Banner VagasBot">
@@ -395,7 +383,7 @@
       <div class="chat-box" id="chatBox"></div>
       <div class="input-row">
         <input id="prompt" type="text" placeholder="Digite a sua mensagem...">
-        <button id="sendBtn" style="padding:6px 14px;">Enviar</button>
+        <button id="sendBtn">Enviar</button>
       </div>
       <div class="btn-row">
         <button onclick="gerarPDF()" class="secondary">📄 PDF</button>
@@ -411,33 +399,28 @@
           <button class="selector-option" data-idioma="en">🇺🇸 EN</button>
         </div>
         <div class="selector-group" id="voiceSelector">
-          <button class="selector-option active" data-voz="feminina">👩</button>
-          <button class="selector-option" data-voz="masculina">👨</button>
-          <button class="selector-option" data-voz="crianca">🧒</button>
+          <button class="selector-option active" data-voz="pt-BR">🇧🇷 PT-BR</button>
+          <button class="selector-option" data-voz="pt-PT">🇵🇹 PT-PT</button>
+          <button class="selector-option" data-voz="en-US">🇺🇸 EN</button>
         </div>
         <button class="secondary" id="stopAudioBtn" style="display:none;">⏹ Parar</button>
       </div>
     </div>
 
-    <!-- PAGAMENTO -->
     <div id="payment" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff; margin-bottom:4px;">💳 Escolha o plano</h3>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin:4px 0;">
         <div class="plano-card" onclick="escolherPlano(50)" id="plano-50">
           <div class="preco">50 MT</div>
-          <div class="descricao">1 Semana</div>
+          <div class="descricao">7 dias</div>
         </div>
         <div class="plano-card" onclick="escolherPlano(100)" id="plano-100">
           <div class="preco">100 MT</div>
-          <div class="descricao">2 Semanas</div>
+          <div class="descricao">14 dias</div>
         </div>
         <div class="plano-card" onclick="escolherPlano(150)" id="plano-150">
           <div class="preco">150 MT</div>
-          <div class="descricao">3 Semanas</div>
-        </div>
-        <div class="plano-card" onclick="escolherPlano(200)" id="plano-200">
-          <div class="preco">200 MT</div>
-          <div class="descricao">1 Mês</div>
+          <div class="descricao">1 mês</div>
         </div>
       </div>
       <input id="phone" type="text" placeholder="Número Movitel (ex: 879306034)">
@@ -445,14 +428,12 @@
       <div id="paymentBox" class="chat-box" style="flex:1; min-height:60px;"></div>
     </div>
 
-    <!-- HISTÓRICO DE PAGAMENTOS -->
     <div id="payment-history" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff;">📜 Histórico de Pagamentos</h3>
       <button onclick="loadPaymentHistory()" class="secondary" style="margin:4px 0;">🔄 Atualizar</button>
       <div id="historyPaymentBox" class="chat-box" style="flex:1; min-height:80px;"></div>
     </div>
 
-    <!-- INFO -->
     <div id="info" class="tab" style="display:none; flex-direction:column; height:100%;">
       <div class="info-content">
         <img src="1782235162514.jpg" alt="Dono Supremo">
@@ -480,9 +461,12 @@
     const API_URL = 'https://vagasbot-web-api.onrender.com';
     const USER = 'Sebastião';
     let modeloIA = 'openrouter';
-    let idiomaAtual = 'pt';
-    let vozSelecionada = 'feminina';
+    let idiomaAtual = 'pt';       // para a IA (pt/en)
+    let vozSelecionada = 'pt-BR'; // para a voz (pt-BR, pt-PT, en-US)
     let valorSelecionado = 150;
+    let assinanteAtivo = false;
+    let historicoConversa = [];
+    let tentativas = parseInt(localStorage.getItem('vagasbot_tentativas') || '0');
 
     // ============================================================
     // NAVEGAÇÃO
@@ -515,6 +499,8 @@
         } else if (group.id === 'voiceSelector') {
           vozSelecionada = btn.dataset.voz;
           if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+          const nome = { 'pt-BR': 'Português Brasil', 'pt-PT': 'Português Portugal', 'en-US': 'Inglês' };
+          addMessage(`🔊 Voz: ${nome[vozSelecionada]}`, 'bot');
         }
       });
     });
@@ -529,7 +515,7 @@
     }
 
     // ============================================================
-    // CHAT – ADICIONAR MENSAGEM
+    // ADICIONAR MENSAGEM (COM HISTÓRICO)
     // ============================================================
     function addMessage(text, type = 'bot') {
       const box = document.getElementById('chatBox');
@@ -556,21 +542,24 @@
       wrapper.appendChild(content);
       box.appendChild(wrapper);
       box.scrollTop = box.scrollHeight;
+
+      if (type !== 'bot' || (text !== '⏳ A pensar...' && text !== '⏳ A buscar vagas...' && text !== '⏳ A verificar...')) {
+        historicoConversa.push({ role: type === 'user' ? 'user' : 'assistant', content: text });
+        if (historicoConversa.length > 12) historicoConversa.shift();
+      }
     }
 
     // ============================================================
-    // ENVIAR MENSAGEM (COM DETEÇÃO DE COMANDOS)
+    // ENVIAR MENSAGEM (COM TRIAL E CONTEXTO)
     // ============================================================
     async function enviarMensagem() {
       const input = document.getElementById('prompt');
       const msg = input.value.trim();
       if (!msg) return;
       input.value = '';
-
       addMessage(msg, 'user');
 
       const lower = msg.toLowerCase();
-      // Comando "vagas"
       if (lower.startsWith('vagas')) {
         const partes = lower.split(' ');
         let cidade = null;
@@ -604,14 +593,26 @@
         return;
       }
 
-      // IA
+      // TRIAL: 2 respostas grátis
+      if (!assinanteAtivo) {
+        if (tentativas >= 2) {
+          addMessage('🔒 Atingiu o limite de 2 respostas grátis. Envie "assinar" para ter acesso ilimitado.', 'bot');
+          return;
+        }
+        tentativas++;
+        localStorage.setItem('vagasbot_tentativas', String(tentativas));
+      }
+
+      const contexto = historicoConversa.slice(-6).map(m => `${m.role === 'user' ? 'Usuário' : 'Vaga'}: ${m.content}`).join('\n');
+      const promptCompleto = contexto ? `${contexto}\nUsuário: ${msg}` : msg;
+
       addMessage('⏳ A pensar...', 'bot');
       try {
         const resp = await fetch(`${API_URL}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            prompt: msg,
+            prompt: promptCompleto,
             user: USER,
             modelo: modeloIA,
             idioma: idiomaAtual
@@ -698,8 +699,10 @@
         if (last && last.textContent.includes('A verificar')) last.remove();
 
         if (data.assinante) {
+          assinanteAtivo = true;
           addMessage(`✅ Assinatura ativa! Faltam ${data.diasRestantes} dias.`, 'bot');
         } else {
+          assinanteAtivo = false;
           addMessage('🔒 Não tens assinatura ativa. Vai a "Pagamento" para assinar.', 'bot');
         }
       } catch (e) {
@@ -712,29 +715,49 @@
     }
 
     // ============================================================
-    // VOZ (Web Speech API)
+    // VOZ (com seleção PT-PT, PT-BR, EN)
     // ============================================================
     function falar(texto, elementoBotao) {
       if (!('speechSynthesis' in window)) {
         alert('Seu navegador não suporta leitura em voz alta.');
         return;
       }
-      if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
 
       const textoLimpo = texto.replace(/<[^>]*>/g, '').trim();
       if (!textoLimpo) return;
 
-      const utterance = new SpeechSynthesisUtterance(textoLimpo);
-      utterance.lang = idiomaAtual === 'pt' ? 'pt-BR' : 'en-US';
+      // Obtém o idioma a partir da voz selecionada
+      const langMap = {
+        'pt-BR': 'pt-BR',
+        'pt-PT': 'pt-PT',
+        'en-US': 'en-US'
+      };
+      const lang = langMap[vozSelecionada] || 'pt-BR';
 
-      switch (vozSelecionada) {
-        case 'feminina': utterance.pitch = 1.0; utterance.rate = 0.9; break;
-        case 'masculina': utterance.pitch = 0.8; utterance.rate = 0.9; break;
-        case 'crianca': utterance.pitch = 1.4; utterance.rate = 0.85; break;
+      let voices = window.speechSynthesis.getVoices();
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          voices = window.speechSynthesis.getVoices();
+          reproduzirVoz(textoLimpo, elementoBotao, voices, lang);
+        };
+      } else {
+        reproduzirVoz(textoLimpo, elementoBotao, voices, lang);
       }
+    }
 
-      const voices = window.speechSynthesis.getVoices();
-      const voz = voices.find(v => v.lang.startsWith(utterance.lang) &&
+    function reproduzirVoz(texto, elementoBotao, voices, lang) {
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = lang;
+
+      // Ajusta pitch/rate para dar variedade (mas mantém natural)
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+
+      // Tenta encontrar uma voz que corresponda ao idioma (prioriza feminina)
+      const voz = voices.find(v => v.lang.startsWith(lang) &&
         (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
       if (voz) utterance.voice = voz;
 
@@ -759,7 +782,10 @@
           elementoBotao.textContent = '🔊';
         }
         document.getElementById('stopAudioBtn').style.display = 'none';
-        alert('Não foi possível reproduzir o áudio.');
+        // Fallback
+        const fallback = new SpeechSynthesisUtterance(texto);
+        fallback.lang = lang;
+        window.speechSynthesis.speak(fallback);
       };
 
       window.speechSynthesis.speak(utterance);
@@ -920,6 +946,8 @@
     addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos.', 'bot');
     addMessage('🧠 Modelo: OpenRouter | 🇧🇷 PT', 'bot');
     addMessage('📌 Comandos: "vagas", "vagas Maputo", "ajuda", "assinar", "verificar"', 'bot');
+    addMessage('🎁 Tens 2 respostas grátis. Após isso, assina para continuar.', 'bot');
+    addMessage('🔊 Voz atual: Português Brasil. Altere no seletor "👩"', 'bot');
   </script>
 
 </body>
