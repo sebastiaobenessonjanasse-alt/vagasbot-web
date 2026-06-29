@@ -19,7 +19,7 @@
       flex-direction: column;
       align-items: center;
       padding: 6px;
-      font-size: 18px;
+      font-size: 20px;
     }
 
     /* ===== HEADER ===== */
@@ -27,7 +27,7 @@
       width: 100%;
       text-align: center;
       padding: 6px 8px 2px;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 800;
       background: linear-gradient(90deg, #0ff, #a855f7, #0ff);
       background-size: 300%;
@@ -43,7 +43,7 @@
     }
     header small {
       display: block;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 400;
       -webkit-text-fill-color: #aaa;
     }
@@ -127,7 +127,7 @@
     }
     .chat-banner p {
       color: #0ff;
-      font-size: 16px;
+      font-size: 18px;
       margin-top: 2px;
       font-weight: 600;
       text-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
@@ -164,9 +164,12 @@
       flex: 1;
       color: #ccc;
       line-height: 1.6;
-      font-size: 17px;
+      font-size: 19px;
     }
-    .msg-content strong { font-size: 18px; font-weight: 600; }
+    .msg-content strong {
+      font-size: 20px;
+      font-weight: 600;
+    }
     .msg-content .user { color: #0ff; }
     .msg-content .bot { color: #ddd; }
 
@@ -196,7 +199,7 @@
       border: 1px solid #2a2a2a;
       border-radius: 10px;
       color: #fff;
-      font-size: 17px;
+      font-size: 19px;
       transition: 0.3s;
     }
     .input-row input:focus { outline: none; border-color: #0ff; box-shadow: 0 0 15px rgba(0,255,255,0.1); }
@@ -214,7 +217,7 @@
       background: #0ff;
       color: #000;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 17px;
       cursor: pointer;
       transition: 0.2s;
     }
@@ -245,7 +248,7 @@
       border: none;
       padding: 6px 14px;
       border-radius: 30px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       color: #aaa;
@@ -287,8 +290,8 @@
     }
     .plano-card:hover { border-color: #0ff; box-shadow: 0 0 20px rgba(0,255,255,0.1); }
     .plano-card.selecionado { border-color: #0ff; background: #0a2a2a; }
-    .plano-card .preco { font-size: 22px; font-weight: 700; color: #0ff; }
-    .plano-card .descricao { font-size: 14px; color: #aaa; }
+    .plano-card .preco { font-size: 24px; font-weight: 700; color: #0ff; }
+    .plano-card .descricao { font-size: 16px; color: #aaa; }
 
     /* ===== INFO ===== */
     .info-content {
@@ -308,8 +311,17 @@
       box-shadow: 0 0 30px rgba(0,255,255,0.3);
       object-fit: cover;
     }
-    .info-content h2 { font-size: 22px; margin: 6px 0; color: #fff; }
-    .info-content p { font-size: 16px; color: #aaa; max-width: 400px; margin: 3px auto; }
+    .info-content h2 {
+      font-size: 24px;
+      margin: 6px 0;
+      color: #fff;
+    }
+    .info-content p {
+      font-size: 18px;
+      color: #aaa;
+      max-width: 400px;
+      margin: 3px auto;
+    }
     .step {
       display: flex;
       gap: 8px;
@@ -332,27 +344,32 @@
       flex-shrink: 0;
       font-size: 12px;
     }
-    .step .desc { font-size: 15px; color: #ccc; }
+    .step .desc {
+      font-size: 17px;
+      color: #ccc;
+    }
     .step .desc strong { color: #0ff; }
 
     @media (max-width: 480px) {
-      body { font-size: 16px; }
-      header { font-size: 22px; padding: 4px; }
+      body { font-size: 18px; }
+      header { font-size: 24px; padding: 4px; }
+      header small { font-size: 14px; }
       nav button { font-size: 10px; padding: 4px 8px; }
       .app-container { padding: 4px; }
       .chat-banner img { max-height: 25vh; }
-      .msg-content { font-size: 15px; }
-      .msg-content strong { font-size: 16px; }
+      .msg-content { font-size: 17px; }
+      .msg-content strong { font-size: 18px; }
       .avatar { width: 26px; height: 26px; font-size: 13px; }
-      .input-row input { font-size: 15px; padding: 10px 12px; }
-      .btn-row button { font-size: 13px; padding: 6px 12px; }
-      .selector-option { font-size: 12px; padding: 4px 10px; }
-      .plano-card .preco { font-size: 18px; }
+      .input-row input { font-size: 17px; padding: 10px 12px; }
+      .btn-row button { font-size: 15px; padding: 6px 12px; }
+      .selector-option { font-size: 14px; padding: 4px 10px; }
+      .plano-card .preco { font-size: 20px; }
+      .plano-card .descricao { font-size: 14px; }
       #whatsappBtn { width: 42px; height: 42px; font-size: 20px; bottom: 12px; right: 12px; }
       .info-content img { width: 70px; height: 70px; }
-      .info-content h2 { font-size: 18px; }
-      .info-content p { font-size: 14px; }
-      .step .desc { font-size: 13px; }
+      .info-content h2 { font-size: 20px; }
+      .info-content p { font-size: 16px; }
+      .step .desc { font-size: 15px; }
     }
   </style>
 </head>
@@ -378,7 +395,7 @@
       <div class="chat-box" id="chatBox"></div>
       <div class="input-row">
         <input id="prompt" type="text" placeholder="Digite a sua mensagem...">
-        <button onclick="sendMessage()" style="padding:6px 14px;">Enviar</button>
+        <button id="sendBtn" style="padding:6px 14px;">Enviar</button>
       </div>
       <div class="btn-row">
         <button onclick="gerarPDF()" class="secondary">📄 PDF</button>
@@ -448,7 +465,7 @@
           <div class="step"><span class="num">4</span><span class="desc"><strong>📄 PDF</strong> – Gere PDF (necessita assinatura).</span></div>
           <div class="step"><span class="num">5</span><span class="desc"><strong>🖼️ Foto</strong> – Envie imagens (grátis).</span></div>
         </div>
-        <p style="margin-top:8px; color:#aaa; font-size:14px;">📞 Dúvidas? <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank" style="color:#0ff; text-decoration:none;">Fale no WhatsApp</a></p>
+        <p style="margin-top:8px; color:#aaa; font-size:16px;">📞 Dúvidas? <a href="https://wa.me/258879306034?text=Olá!%20Vim%20pelo%20VagasBot%20e%20gostaria%20de%20saber%20mais." target="_blank" style="color:#0ff; text-decoration:none;">Fale no WhatsApp</a></p>
       </div>
     </div>
 
@@ -512,7 +529,7 @@
     }
 
     // ============================================================
-    // CHAT
+    // CHAT – ADICIONAR MENSAGEM
     // ============================================================
     function addMessage(text, type = 'bot') {
       const box = document.getElementById('chatBox');
@@ -529,7 +546,7 @@
       strong.className = type === 'user' ? 'user' : 'bot';
       content.appendChild(strong);
       content.appendChild(document.createTextNode(': ' + text));
-      if (type === 'bot' && text !== '⏳ A pensar...') {
+      if (type === 'bot' && text !== '⏳ A pensar...' && text !== '⏳ A buscar vagas...' && text !== '⏳ A verificar...') {
         const audioBtn = document.createElement('button');
         audioBtn.className = 'btn-audio';
         audioBtn.textContent = '🔊';
@@ -541,14 +558,54 @@
       box.scrollTop = box.scrollHeight;
     }
 
-    async function sendMessage() {
+    // ============================================================
+    // ENVIAR MENSAGEM (COM DETEÇÃO DE COMANDOS)
+    // ============================================================
+    async function enviarMensagem() {
       const input = document.getElementById('prompt');
       const msg = input.value.trim();
       if (!msg) return;
       input.value = '';
-      addMessage(msg, 'user');
-      addMessage('⏳ A pensar...', 'bot');
 
+      addMessage(msg, 'user');
+
+      const lower = msg.toLowerCase();
+      // Comando "vagas"
+      if (lower.startsWith('vagas')) {
+        const partes = lower.split(' ');
+        let cidade = null;
+        let area = null;
+        if (partes.length > 1) {
+          const filtro = partes.slice(1).join(' ');
+          const cidades = ['maputo', 'beira', 'nampula', 'pemba', 'tete', 'quelimane', 'chimoio', 'xai-xai'];
+          if (cidades.some(c => filtro.includes(c))) {
+            cidade = filtro;
+          } else {
+            area = filtro;
+          }
+        }
+        await buscarVagas(cidade, area);
+        return;
+      }
+
+      if (lower === 'ajuda' || lower === '?') {
+        addMessage('📋 Comandos:\n• vagas – lista todas as vagas\n• vagas [cidade] – filtra por cidade\n• vagas [área] – filtra por área\n• assinar – planos premium\n• verificar – estado da assinatura', 'bot');
+        return;
+      }
+
+      if (lower === 'assinar') {
+        document.querySelector('[data-tab="payment"]').click();
+        addMessage('💳 Vá para a aba "Pagamento" e escolha o plano.', 'bot');
+        return;
+      }
+
+      if (lower === 'verificar') {
+        await verificarAcesso();
+        return;
+      }
+
+      // IA
+      addMessage('⏳ A pensar...', 'bot');
       try {
         const resp = await fetch(`${API_URL}/chat`, {
           method: 'POST',
@@ -574,9 +631,85 @@
       }
     }
 
+    document.getElementById('sendBtn').addEventListener('click', enviarMensagem);
     document.getElementById('prompt').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
+      if (e.key === 'Enter') enviarMensagem();
     });
+
+    // ============================================================
+    // BUSCAR VAGAS
+    // ============================================================
+    async function buscarVagas(cidade = null, area = null) {
+      addMessage('⏳ A buscar vagas...', 'bot');
+      try {
+        const payload = {};
+        if (cidade) payload.cidade = cidade;
+        if (area) payload.area = area;
+
+        const resp = await fetch(`${API_URL}/vagas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A buscar vagas')) last.remove();
+
+        if (!data.success || data.total === 0) {
+          addMessage('😕 Nenhuma vaga encontrada.', 'bot');
+          return;
+        }
+
+        let filtro = '';
+        if (cidade) filtro = ` em ${cidade}`;
+        else if (area) filtro = ` na área ${area}`;
+        addMessage(`📌 *Vagas${filtro}* – ${data.total} encontradas`, 'bot');
+
+        data.vagas.forEach(v => {
+          const texto = `• ${v.titulo} – ${v.cidade} – ${v.salario || 'A combinar'}` +
+            (v.beneficio ? `\n   Benefícios: ${v.beneficio}` : '');
+          addMessage(texto, 'bot');
+        });
+      } catch (e) {
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A buscar vagas')) last.remove();
+        addMessage('⚠️ Erro ao buscar vagas.', 'bot');
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // VERIFICAR ACESSO
+    // ============================================================
+    async function verificarAcesso() {
+      addMessage('⏳ A verificar...', 'bot');
+      try {
+        const resp = await fetch(`${API_URL}/verificar-acesso`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: USER })
+        });
+        const data = await resp.json();
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A verificar')) last.remove();
+
+        if (data.assinante) {
+          addMessage(`✅ Assinatura ativa! Faltam ${data.diasRestantes} dias.`, 'bot');
+        } else {
+          addMessage('🔒 Não tens assinatura ativa. Vai a "Pagamento" para assinar.', 'bot');
+        }
+      } catch (e) {
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A verificar')) last.remove();
+        addMessage('⚠️ Erro ao verificar.', 'bot');
+        console.error(e);
+      }
+    }
 
     // ============================================================
     // VOZ (Web Speech API)
@@ -642,7 +775,7 @@
     });
 
     // ============================================================
-    // PAGAMENTO (SIMULAÇÃO + PAYSUITE)
+    // PAGAMENTO
     // ============================================================
     async function startPayment() {
       const phone = document.getElementById('phone').value.trim();
@@ -650,7 +783,6 @@
       const box = document.getElementById('paymentBox');
       box.innerHTML = '⏳ Processando...';
 
-      // Tenta PaySuite primeiro (se estiver configurada)
       try {
         const resp = await fetch(`${API_URL}/criar-pagamento-paysuite`, {
           method: 'POST',
@@ -673,7 +805,6 @@
         console.warn('PaySuite falhou, usando simulação local:', e.message);
       }
 
-      // Fallback: simulação local
       try {
         const resp = await fetch(`${API_URL}/payment`, {
           method: 'POST',
@@ -788,8 +919,7 @@
     // ============================================================
     addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos.', 'bot');
     addMessage('🧠 Modelo: OpenRouter | 🇧🇷 PT', 'bot');
-    addMessage('⚡ Envia uma mensagem ou usa os botões abaixo.', 'bot');
-    addMessage('💳 Para assinar, vá a "Pagamento" e escolha o plano.', 'bot');
+    addMessage('📌 Comandos: "vagas", "vagas Maputo", "ajuda", "assinar", "verificar"', 'bot');
   </script>
 
 </body>
