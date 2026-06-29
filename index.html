@@ -459,12 +459,14 @@
     // CONFIGURAÇÕES
     // ============================================================
     const API_URL = 'https://vagasbot-web-api.onrender.com';
-    const USER = 'Sebastião';
+    const USER = '879306034'; // número do dono
+    const DONO_TELEFONE = '879306034';
     let modeloIA = 'openrouter';
-    let idiomaAtual = 'pt';       // para a IA (pt/en)
-    let vozSelecionada = 'pt-BR'; // para a voz (pt-BR, pt-PT, en-US)
+    let idiomaAtual = 'pt';
+    let vozSelecionada = 'pt-BR';
     let valorSelecionado = 150;
     let assinanteAtivo = false;
+    let isDono = false;
     let historicoConversa = [];
     let tentativas = parseInt(localStorage.getItem('vagasbot_tentativas') || '0');
 
@@ -593,14 +595,16 @@
         return;
       }
 
-      // TRIAL: 2 respostas grátis
-      if (!assinanteAtivo) {
-        if (tentativas >= 2) {
-          addMessage('🔒 Atingiu o limite de 2 respostas grátis. Envie "assinar" para ter acesso ilimitado.', 'bot');
-          return;
+      // TRIAL: apenas se não for dono
+      if (!isDono) {
+        if (!assinanteAtivo) {
+          if (tentativas >= 2) {
+            addMessage('🔒 Atingiu o limite de 2 respostas grátis. Envie "assinar" para ter acesso ilimitado.', 'bot');
+            return;
+          }
+          tentativas++;
+          localStorage.setItem('vagasbot_tentativas', String(tentativas));
         }
-        tentativas++;
-        localStorage.setItem('vagasbot_tentativas', String(tentativas));
       }
 
       const contexto = historicoConversa.slice(-6).map(m => `${m.role === 'user' ? 'Usuário' : 'Vaga'}: ${m.content}`).join('\n');
@@ -698,7 +702,11 @@
         const last = box.lastElementChild;
         if (last && last.textContent.includes('A verificar')) last.remove();
 
-        if (data.assinante) {
+        if (data.dono) {
+          isDono = true;
+          assinanteAtivo = true;
+          addMessage('👑 Olá, Dono Supremo! Tens acesso vitalício a todas as funcionalidades.', 'bot');
+        } else if (data.assinante) {
           assinanteAtivo = true;
           addMessage(`✅ Assinatura ativa! Faltam ${data.diasRestantes} dias.`, 'bot');
         } else {
@@ -715,7 +723,7 @@
     }
 
     // ============================================================
-    // VOZ (com seleção PT-PT, PT-BR, EN)
+    // VOZ SUAVE (com seleção PT-PT, PT-BR, EN)
     // ============================================================
     function falar(texto, elementoBotao) {
       if (!('speechSynthesis' in window)) {
@@ -729,12 +737,7 @@
       const textoLimpo = texto.replace(/<[^>]*>/g, '').trim();
       if (!textoLimpo) return;
 
-      // Obtém o idioma a partir da voz selecionada
-      const langMap = {
-        'pt-BR': 'pt-BR',
-        'pt-PT': 'pt-PT',
-        'en-US': 'en-US'
-      };
+      const langMap = { 'pt-BR': 'pt-BR', 'pt-PT': 'pt-PT', 'en-US': 'en-US' };
       const lang = langMap[vozSelecionada] || 'pt-BR';
 
       let voices = window.speechSynthesis.getVoices();
@@ -751,15 +754,20 @@
     function reproduzirVoz(texto, elementoBotao, voices, lang) {
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = lang;
-
-      // Ajusta pitch/rate para dar variedade (mas mantém natural)
-      utterance.rate = 0.9;
+      utterance.rate = 0.85; // mais lento e suave
       utterance.pitch = 1.0;
 
-      // Tenta encontrar uma voz que corresponda ao idioma (prioriza feminina)
-      const voz = voices.find(v => v.lang.startsWith(lang) &&
-        (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('feminina')));
-      if (voz) utterance.voice = voz;
+      // Prioriza vozes mais naturais e suaves (Google, Microsoft, Apple)
+      const vozPreferida = voices.find(v =>
+        v.lang.startsWith(lang) &&
+        (v.name.toLowerCase().includes('google') ||
+         v.name.toLowerCase().includes('microsoft') ||
+         v.name.toLowerCase().includes('samantha') ||
+         v.name.toLowerCase().includes('maria') ||
+         v.name.toLowerCase().includes('joanna') ||
+         v.name.toLowerCase().includes('female'))
+      );
+      if (vozPreferida) utterance.voice = vozPreferida;
 
       if (elementoBotao) {
         elementoBotao.classList.add('playing');
@@ -782,7 +790,7 @@
           elementoBotao.textContent = '🔊';
         }
         document.getElementById('stopAudioBtn').style.display = 'none';
-        // Fallback
+        // Fallback simples
         const fallback = new SpeechSynthesisUtterance(texto);
         fallback.lang = lang;
         window.speechSynthesis.speak(fallback);
@@ -946,8 +954,11 @@
     addMessage('💬 Olá! Sou a Vaga, a tua assistente de empregos.', 'bot');
     addMessage('🧠 Modelo: OpenRouter | 🇧🇷 PT', 'bot');
     addMessage('📌 Comandos: "vagas", "vagas Maputo", "ajuda", "assinar", "verificar"', 'bot');
-    addMessage('🎁 Tens 2 respostas grátis. Após isso, assina para continuar.', 'bot');
-    addMessage('🔊 Voz atual: Português Brasil. Altere no seletor "👩"', 'bot');
+    addMessage('🎁 Tens 2 respostas grátis (se não fores o dono).', 'bot');
+    addMessage('🔊 Voz suave ativa. Altere no seletor "👩"', 'bot');
+
+    // Verifica o estado do dono ao carregar
+    setTimeout(verificarAcesso, 1000);
   </script>
 
 </body>
