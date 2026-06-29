@@ -14,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+app.use(express.static("uploads")); // para servir comprovativos
 
 // ============================================================
 // VARIÁVEIS DE AMBIENTE
@@ -22,10 +23,6 @@ const PAYSUITE_API_KEY = process.env.PAYSUITE_API_KEY || 'SUA_API_KEY';
 const PAYSUITE_SECRET = process.env.PAYSUITE_SECRET || 'SUA_SECRET';
 const PAYSUITE_BASE_URL = process.env.PAYSUITE_BASE_URL || 'https://api.paysuite.tech/v1';
 const VOICERSS_API_KEY = process.env.VOICERSS_API_KEY || 'SUA_CHAVE_VOICERSS';
-
-// ============================================================
-// DONO (acesso vitalício)
-// ============================================================
 const DONO_TELEFONE = '879306034';
 
 // ============================================================
@@ -38,7 +35,7 @@ const PLANOS = {
 };
 
 // ============================================================
-// CONFIGURAÇÃO DO SQLITE
+// CONFIGURAÇÃO DO SQLITE (com tabelas adicionais)
 // ============================================================
 const db = new sqlite3.Database("./vagasbot.db");
 
@@ -88,17 +85,40 @@ db.serialize(() => {
     data_publicacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     fonte TEXT
   )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS comprovativos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user TEXT,
+    filename TEXT,
+    status TEXT DEFAULT 'pendente',
+    data_upload DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS utilizadores (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    telefone TEXT UNIQUE,
+    nome TEXT,
+    area TEXT,
+    data_registo DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS imagens_geradas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user TEXT,
+    descricao TEXT,
+    url TEXT,
+    data_geracao DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
 });
 
 // ============================================================
-// FUNÇÕES AUXILIARES (com verificação de dono)
+// FUNÇÕES AUXILIARES
 // ============================================================
 function saveHistory(user, message, reply) {
   db.run("INSERT INTO history (user, message, reply) VALUES (?, ?, ?)", [user, message, reply]);
 }
 
 function isAssinanteAtivo(user) {
-  // Dono tem acesso vitalício
   if (user === DONO_TELEFONE) return true;
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM assinantes WHERE user = ? AND dataExpiracao > datetime('now')", [user], (err, row) => {
@@ -109,7 +129,7 @@ function isAssinanteAtivo(user) {
 }
 
 function getDiasRestantes(user) {
-  if (user === DONO_TELEFONE) return Promise.resolve(9999); // dono tem "sempre"
+  if (user === DONO_TELEFONE) return Promise.resolve(9999);
   return new Promise((resolve, reject) => {
     db.get("SELECT julianday(dataExpiracao) - julianday('now') AS dias FROM assinantes WHERE user = ? AND dataExpiracao > datetime('now')", [user], (err, row) => {
       if (err) return reject(err);
@@ -121,21 +141,15 @@ function getDiasRestantes(user) {
 function ativarAssinante(user, amount, phone, transactionId) {
   const plano = PLANOS[amount.toString()];
   if (!plano) return Promise.reject(new Error('Plano inválido'));
-
   const dataAtivacao = new Date();
   const dataExpiracao = new Date();
   dataExpiracao.setDate(dataExpiracao.getDate() + plano.dias);
-
   return new Promise((resolve, reject) => {
-    db.run(
-      `INSERT OR REPLACE INTO assinantes (user, plano, dataAtivacao, dataExpiracao)
-       VALUES (?, ?, ?, ?)`,
+    db.run(`INSERT OR REPLACE INTO assinantes (user, plano, dataAtivacao, dataExpiracao) VALUES (?, ?, ?, ?)`,
       [user, plano.descricao, dataAtivacao.toISOString(), dataExpiracao.toISOString()],
       (err) => {
         if (err) return reject(err);
-        db.run(
-          `INSERT INTO payments (user, status, transactionId, amount, plano, phone, dataAtivacao, dataExpiracao)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        db.run(`INSERT INTO payments (user, status, transactionId, amount, plano, phone, dataAtivacao, dataExpiracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [user, 'confirmed', transactionId, amount, plano.descricao, phone, dataAtivacao.toISOString(), dataExpiracao.toISOString()],
           (err2) => {
             if (err2) return reject(err2);
@@ -155,10 +169,7 @@ const OpenAI = require('openai');
 const openRouterClient = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
   apiKey: process.env.OPENROUTER_API_KEY || 'SUA_CHAVE_OPENROUTER',
-  defaultHeaders: {
-    'HTTP-Referer': 'https://vagasbot-web-api.onrender.com',
-    'X-Title': 'VagasBot'
-  }
+  defaultHeaders: { 'HTTP-Referer': 'https://vagasbot-web-api.onrender.com', 'X-Title': 'VagasBot' }
 });
 
 const groqClient = new OpenAI({
@@ -213,22 +224,15 @@ async function gerarRespostaIA(prompt, modelo = 'openrouter') {
 }
 
 // ============================================================
-// TTS – SÍNTESE DE VOZ (VoiceRSS)
+// TTS – SÍNTESE DE VOZ
 // ============================================================
 app.post("/sintetizar-voz", async (req, res) => {
   const { texto, idioma = "pt-BR" } = req.body;
   if (!texto) return res.status(400).json({ erro: "Texto obrigatório" });
-
   try {
-    const langMap = {
-      'pt-PT': 'pt-pt',
-      'pt-BR': 'pt-br',
-      'en-US': 'en-us'
-    };
+    const langMap = { 'pt-PT': 'pt-pt', 'pt-BR': 'pt-br', 'en-US': 'en-us' };
     const lang = langMap[idioma] || 'pt-br';
-    // Usamos a voz "Maria" (português) ou "Joanna" (inglês) para qualidade suave
-    let voice = 'Maria';
-    if (idioma === 'en-US') voice = 'Joanna';
+    let voice = idioma === 'en-US' ? 'Joanna' : 'Maria';
     const url = `https://api.voicerss.org/?key=${VOICERSS_API_KEY}&hl=${lang}&v=${voice}&src=${encodeURIComponent(texto)}`;
     const response = await fetch(url);
     const audioBuffer = await response.arrayBuffer();
@@ -249,13 +253,8 @@ async function guardarVagas(vagas) {
       db.run("DELETE FROM vagas", (err) => {
         if (err) return reject(err);
         if (vagas.length === 0) return resolve();
-
-        const stmt = db.prepare(
-          "INSERT INTO vagas (titulo, cidade, salario, area, beneficio, fonte) VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        vagas.forEach(v => {
-          stmt.run(v.titulo, v.cidade, v.salario, v.area, v.beneficio, v.fonte || 'scraping');
-        });
+        const stmt = db.prepare("INSERT INTO vagas (titulo, cidade, salario, area, beneficio, fonte) VALUES (?, ?, ?, ?, ?, ?)");
+        vagas.forEach(v => stmt.run(v.titulo, v.cidade, v.salario, v.area, v.beneficio, v.fonte || 'scraping'));
         stmt.finalize();
         resolve();
       });
@@ -330,7 +329,6 @@ async function atualizarVagas() {
   }
   console.warn('⚠️ Nenhuma fonte retornou vagas. A manter as anteriores.');
 }
-
 cron.schedule('0 */6 * * *', () => { atualizarVagas(); });
 setTimeout(atualizarVagas, 5000);
 
@@ -370,7 +368,7 @@ app.post("/webhook-paysuite", async (req, res) => {
 });
 
 // ============================================================
-// ENDPOINTS (com verificação de dono)
+// ENDPOINTS
 // ============================================================
 app.get('/', (req, res) => res.send('🚀 VagasBot API está online!'));
 
@@ -401,28 +399,115 @@ app.post("/verificar-acesso", async (req, res) => {
   }
 });
 
-app.post("/memory", (req, res) => {
-  const { key, value } = req.body;
-  if (!key || !value) return res.status(400).json({ success: false, error: "Chave e valor são obrigatórios." });
-  db.run("INSERT OR REPLACE INTO memory (key, value) VALUES (?, ?)", [key, value], (err) => {
+// ---------- UTILIZADORES (registar dados do cliente) ----------
+app.post("/registar-utilizador", (req, res) => {
+  const { telefone, nome, area } = req.body;
+  if (!telefone) return res.status(400).json({ success: false, error: "Telefone é obrigatório" });
+  db.run("INSERT OR REPLACE INTO utilizadores (telefone, nome, area) VALUES (?, ?, ?)", [telefone, nome || '', area || ''], (err) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
     res.json({ success: true });
   });
 });
 
-app.get("/memory", (req, res) => {
-  db.all("SELECT * FROM memory", [], (err, rows) => {
+app.get("/utilizadores", (req, res) => {
+  db.all("SELECT * FROM utilizadores ORDER BY data_registo DESC", [], (err, rows) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
-    res.json({ success: true, memory: rows });
+    res.json({ success: true, utilizadores: rows });
   });
 });
 
+// ---------- COMPROVATIVOS ----------
+const uploadComprovativo = multer({ dest: "uploads/comprovativos/" });
+app.post("/upload-comprovativo", uploadComprovativo.single("comprovativo"), (req, res) => {
+  if (!req.file) return res.status(400).json({ success: false, message: "Nenhum ficheiro enviado." });
+  const { user } = req.body;
+  db.run("INSERT INTO comprovativos (user, filename, status) VALUES (?, ?, 'pendente')", [user, req.file.filename], (err) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, message: "Comprovativo enviado com sucesso! Aguarde confirmação.", filename: req.file.filename });
+  });
+});
+
+app.post("/confirmar-comprovativo", (req, res) => {
+  const { user, filename } = req.body;
+  if (!user || !filename) return res.status(400).json({ success: false, message: "Dados incompletos." });
+  db.run("UPDATE comprovativos SET status = 'confirmado' WHERE user = ? AND filename = ?", [user, filename], (err) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, message: "Comprovativo confirmado! Assinatura ativada." });
+  });
+});
+
+// ---------- GERAR PDF (com dados do utilizador) ----------
+app.post("/gerar-pdf", async (req, res) => {
+  const { user, tipo, conteudo } = req.body;
+  if (!user) return res.status(400).json({ success: false, message: "Utilizador obrigatório." });
+  const ativo = await isAssinanteAtivo(user);
+  if (!ativo && user !== DONO_TELEFONE) return res.status(403).json({ success: false, message: "Assinatura necessária." });
+  const filename = `${tipo || 'documento'}_${Date.now()}.txt`;
+  fs.writeFileSync(filename, conteudo || 'Conteúdo do documento');
+  res.json({ success: true, message: "Documento gerado!", file: filename });
+});
+
+// ---------- GERAR IMAGEM (simulação) ----------
+app.post("/gerar-imagem", async (req, res) => {
+  const { user, descricao } = req.body;
+  if (!user) return res.status(400).json({ success: false, message: "Utilizador obrigatório." });
+  const ativo = await isAssinanteAtivo(user);
+  if (!ativo && user !== DONO_TELEFONE) return res.status(403).json({ success: false, message: "Assinatura necessária." });
+  const url = `https://via.placeholder.com/600x400?text=${encodeURIComponent(descricao || 'Imagem VagasBot')}`;
+  db.run("INSERT INTO imagens_geradas (user, descricao, url) VALUES (?, ?, ?)", [user, descricao || '', url]);
+  res.json({ success: true, message: "Imagem gerada com sucesso!", url });
+});
+
+app.get("/imagens-geradas", (req, res) => {
+  db.all("SELECT * FROM imagens_geradas ORDER BY data_geracao DESC LIMIT 20", [], (err, rows) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, imagens: rows });
+  });
+});
+
+// ---------- PAINEL DO DONO (estatísticas) ----------
+app.get("/painel-dono", (req, res) => {
+  db.get("SELECT COUNT(*) AS total_utilizadores FROM utilizadores", [], (err, row1) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    db.get("SELECT COUNT(*) AS total_assinantes FROM assinantes WHERE dataExpiracao > datetime('now')", [], (err, row2) => {
+      if (err) return res.status(500).json({ success: false, error: err.message });
+      db.get("SELECT COUNT(*) AS total_conversas FROM history", [], (err, row3) => {
+        if (err) return res.status(500).json({ success: false, error: err.message });
+        db.get("SELECT COUNT(*) AS total_pagamentos FROM payments", [], (err, row4) => {
+          if (err) return res.status(500).json({ success: false, error: err.message });
+          res.json({
+            success: true,
+            estatisticas: {
+              utilizadores: row1.total_utilizadores || 0,
+              assinantes_ativos: row2.total_assinantes || 0,
+              conversas: row3.total_conversas || 0,
+              pagamentos: row4.total_pagamentos || 0
+            }
+          });
+        });
+      });
+    });
+  });
+});
+
+// ---------- CHAT (com FD e interação automática) ----------
 app.post("/chat", async (req, res) => {
-  const { prompt, user = "Sebastião", modelo = "openrouter", idioma = "pt" } = req.body;
+  const { prompt, user = "anonimo", modelo = "openrouter", idioma = "pt" } = req.body;
   if (!prompt) return res.status(400).json({ success: false, error: "Mensagem vazia." });
+
+  // Verifica se é dono
+  const isDono = (user === DONO_TELEFONE);
+
+  // Registar utilizador se for novo (apenas se tiver telefone válido)
+  if (user && user !== 'anonimo' && user !== DONO_TELEFONE) {
+    db.run("INSERT OR IGNORE INTO utilizadores (telefone) VALUES (?)", [user]);
+  }
+
+  // Monta prompt com contexto de FD (se for a primeira interação)
   const systemPrompt = idioma === 'en'
-    ? `You are Vaga, a job assistant in Mozambique. Respond briefly, helpfully and with emojis. Be friendly and professional.`
-    : `Você é a Vaga, uma assistente de empregos em Moçambique. Responda de forma breve, útil e com emojis. Seja simpática e profissional.`;
+    ? `You are Vaga, a job assistant in Mozambique. Be friendly, helpful and use emojis. If the user is new, ask for their name and area of interest.`
+    : `Você é a Vaga, uma assistente de empregos em Moçambique. Seja simpática, útil e use emojis. Se o utilizador for novo, pergunte o nome e a área de interesse.`;
+
   try {
     const resposta = await gerarRespostaIA(`${systemPrompt}\n\nUsuário: ${prompt}`, modelo);
     saveHistory(user, prompt, resposta);
@@ -433,6 +518,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// ---------- PAGAMENTO (simulação) ----------
 app.post("/payment", async (req, res) => {
   const { user, amount, phone } = req.body;
   if (!user || !amount || !phone) return res.status(400).json({ success: false, message: "Dados incompletos." });
@@ -447,7 +533,7 @@ app.post("/payment", async (req, res) => {
   }
 });
 
-// ---------- UPLOAD DE FOTOS ----------
+// ---------- UPLOAD DE FOTOS (grátis) ----------
 const storage = multer.diskStorage({
   destination: (req, file, cb) => { if (!fs.existsSync("uploads")) fs.mkdirSync("uploads"); cb(null, "uploads/"); },
   filename: (req, file, cb) => { const ext = file.originalname.split('.').pop(); cb(null, `foto_${Date.now()}.${ext}`); }
@@ -456,44 +542,20 @@ const upload = multer({ storage });
 
 app.post("/upload-photo", upload.single("photo"), (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: "Nenhum ficheiro enviado." });
-  res.json({ success: true, message: "Foto recebida com sucesso!", file: req.file.filename, url: `/uploads/${req.file.filename}` });
+  res.json({ success: true, message: "Foto recebida!", file: req.file.filename, url: `/uploads/${req.file.filename}` });
 });
 
-app.post("/generate-pdf", async (req, res) => {
-  const { user, content } = req.body;
-  if (!user || !content) return res.status(400).json({ success: false, message: "Dados incompletos." });
-  const isDono = (user === DONO_TELEFONE);
-  try {
-    const ativo = isDono || await isAssinanteAtivo(user);
-    if (!ativo) return res.status(403).json({ success: false, message: "Assinatura necessária para gerar PDF." });
-    const filename = `pdf_${Date.now()}.txt`;
-    fs.writeFileSync(filename, content);
-    res.json({ success: true, message: "PDF gerado com sucesso!", file: filename });
-  } catch (error) { res.status(500).json({ success: false, error: error.message }); }
-});
-
-app.post("/generate-image", async (req, res) => {
-  const { user, description } = req.body;
-  if (!user || !description) return res.status(400).json({ success: false, message: "Dados incompletos." });
-  const isDono = (user === DONO_TELEFONE);
-  try {
-    const ativo = isDono || await isAssinanteAtivo(user);
-    if (!ativo) return res.status(403).json({ success: false, message: "Assinatura necessária para gerar imagens." });
-    res.json({ success: true, message: "Imagem gerada com sucesso! (simulação)", description, url: `https://via.placeholder.com/400x300?text=${encodeURIComponent(description)}` });
-  } catch (error) { res.status(500).json({ success: false, error: error.message }); }
-});
-
+// ---------- VAGAS ----------
 app.post("/vagas", (req, res) => {
   const { cidade, area } = req.body;
   let sql = "SELECT * FROM vagas";
-  const params = [];
-  const conditions = [];
+  const params = [], conditions = [];
   if (cidade) { conditions.push("cidade LIKE ?"); params.push(`%${cidade}%`); }
   if (area) { conditions.push("area LIKE ?"); params.push(`%${area}%`); }
   if (conditions.length > 0) sql += " WHERE " + conditions.join(" AND ");
   sql += " ORDER BY data_publicacao DESC LIMIT 50";
   db.all(sql, params, (err, rows) => {
-    if (err) { console.error('Erro ao buscar vagas:', err); return res.status(500).json({ success: false, error: err.message }); }
+    if (err) return res.status(500).json({ success: false, error: err.message });
     res.json({ success: true, vagas: rows, total: rows.length });
   });
 });
