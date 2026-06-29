@@ -1,7 +1,7 @@
 {
   "name": "vagasbot",
-  "version": "2.0.0",
-  "description": "VagasBot com planos, vozes suaves, acesso vitalício para o dono, trial e scraping.",
+  "version": "3.0.0",
+  "description": "VagasBot completo com FD, imagens, comprovativos, painel dono, expiração e muito mais.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
