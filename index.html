@@ -86,12 +86,7 @@
       border: 1px solid #222;
       min-height: 0;
     }
-    .tab {
-      display: none;
-      flex-direction: column;
-      height: 100%;
-      animation: fade 0.3s ease;
-    }
+    .tab { display: none; flex-direction: column; height: 100%; animation: fade 0.3s ease; }
     .tab.active { display: flex; }
     @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -159,10 +154,7 @@
       line-height: 1.6;
       font-size: 20px !important;
     }
-    .msg-content strong {
-      font-size: 22px !important;
-      font-weight: 600;
-    }
+    .msg-content strong { font-size: 22px !important; font-weight: 600; }
     .msg-content .user { color: #0ff; }
     .msg-content .bot { color: #ddd; }
 
@@ -300,17 +292,8 @@
       box-shadow: 0 0 30px rgba(0,255,255,0.3);
       object-fit: cover;
     }
-    .info-content h2 {
-      font-size: 24px !important;
-      margin: 6px 0;
-      color: #fff;
-    }
-    .info-content p {
-      font-size: 18px !important;
-      color: #aaa;
-      max-width: 400px;
-      margin: 3px auto;
-    }
+    .info-content h2 { font-size: 24px !important; margin: 6px 0; color: #fff; }
+    .info-content p { font-size: 18px !important; color: #aaa; max-width: 400px; margin: 3px auto; }
     .step {
       display: flex;
       gap: 8px;
@@ -320,33 +303,15 @@
       width: 100%;
       max-width: 400px;
     }
-    .step .num {
-      background: #0ff;
-      color: #000;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      flex-shrink: 0;
-      font-size: 12px;
-    }
-    .step .desc {
-      font-size: 17px !important;
-      color: #ccc;
-    }
+    .step .num { background: #0ff; color: #000; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 12px; }
+    .step .desc { font-size: 17px !important; color: #ccc; }
     .step .desc strong { color: #0ff; }
 
-    /* ===== ESTILOS PARA HISTÓRICO ===== */
-    #searchHistory, #filterHistory {
-      font-size: 16px !important;
-    }
-    #historyFullBox p, #memoryFullBox p {
-      padding: 6px 0;
-      border-bottom: 1px solid #1a1a1a;
-    }
+    #searchHistory, #filterHistory { font-size: 16px !important; }
+    #historyFullBox p, #memoryFullBox p { padding: 6px 0; border-bottom: 1px solid #1a1a1a; }
+
+    .painel-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 12px; text-align: center; flex: 1 1 120px; }
+    .painel-card .numero { font-size: 28px; font-weight: 700; color: #0ff; }
 
     @media (max-width: 480px) {
       body { font-size: 18px !important; }
@@ -369,6 +334,7 @@
       .info-content p { font-size: 16px !important; }
       .step .desc { font-size: 15px !important; }
       #searchHistory, #filterHistory { font-size: 14px !important; }
+      .painel-card .numero { font-size: 22px; }
     }
   </style>
 </head>
@@ -381,16 +347,19 @@
     <button data-tab="payment">💳 Pagamento</button>
     <button data-tab="payment-history">📜 Pag. Hist.</button>
     <button data-tab="history-memory">📚 Histórico</button>
+    <button data-tab="imagens">📸 Imagens</button>
+    <button data-tab="comprovativo">📎 Comprovativo</button>
+    <button data-tab="painel">📊 Painel Dono</button>
     <button data-tab="info">ℹ️ Info</button>
   </nav>
 
   <div class="app-container">
 
-    <!-- ===== CHAT ===== -->
+    <!-- CHAT -->
     <div id="chat" class="tab active">
       <div class="chat-banner">
-        <img src="sbj_bot.png" alt="Banner VagasBot">
-        <p>⚡ VagasBot - O seu assistente de empregos</p>
+        <img src="dono.png" alt="Dono Supremo" style="width:80px; height:80px; border-radius:50%; border:3px solid #0ff; box-shadow:0 0 30px rgba(0,255,255,0.3); object-fit:cover;">
+        <p>👑 VagasBot - Dono Supremo</p>
       </div>
       <div class="chat-box" id="chatBox"></div>
       <div class="input-row">
@@ -400,6 +369,7 @@
       <div class="btn-row">
         <button onclick="gerarPDF()" class="secondary">📄 PDF</button>
         <button onclick="uploadFoto()" class="secondary">🖼️ Foto</button>
+        <button onclick="gerarImagemChat()" class="secondary">🎨 Imagem</button>
       </div>
       <div class="footer-actions">
         <div class="selector-group" id="iaSelector">
@@ -419,36 +389,27 @@
       </div>
     </div>
 
-    <!-- ===== PAGAMENTO ===== -->
+    <!-- PAGAMENTO -->
     <div id="payment" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff; margin-bottom:4px;">💳 Escolha o plano</h3>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin:4px 0;">
-        <div class="plano-card" onclick="escolherPlano(50)" id="plano-50">
-          <div class="preco">50 MT</div>
-          <div class="descricao">7 dias</div>
-        </div>
-        <div class="plano-card" onclick="escolherPlano(100)" id="plano-100">
-          <div class="preco">100 MT</div>
-          <div class="descricao">14 dias</div>
-        </div>
-        <div class="plano-card" onclick="escolherPlano(150)" id="plano-150">
-          <div class="preco">150 MT</div>
-          <div class="descricao">1 mês</div>
-        </div>
+        <div class="plano-card" onclick="escolherPlano(50)" id="plano-50"><div class="preco">50 MT</div><div class="descricao">7 dias</div></div>
+        <div class="plano-card" onclick="escolherPlano(100)" id="plano-100"><div class="preco">100 MT</div><div class="descricao">14 dias</div></div>
+        <div class="plano-card" onclick="escolherPlano(150)" id="plano-150"><div class="preco">150 MT</div><div class="descricao">1 mês</div></div>
       </div>
       <input id="phone" type="text" placeholder="Número Movitel (ex: 879306034)">
       <button onclick="startPayment()" style="margin:4px 0;">💳 Confirmar Pagamento</button>
       <div id="paymentBox" class="chat-box" style="flex:1; min-height:60px;"></div>
     </div>
 
-    <!-- ===== HISTÓRICO DE PAGAMENTOS ===== -->
+    <!-- HISTÓRICO DE PAGAMENTOS -->
     <div id="payment-history" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff;">📜 Histórico de Pagamentos</h3>
       <button onclick="loadPaymentHistory()" class="secondary" style="margin:4px 0;">🔄 Atualizar</button>
       <div id="historyPaymentBox" class="chat-box" style="flex:1; min-height:80px;"></div>
     </div>
 
-    <!-- ===== HISTÓRICO E MEMÓRIA (NOVO) ===== -->
+    <!-- HISTÓRICO E MEMÓRIA -->
     <div id="history-memory" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff; margin-bottom:4px;">📚 Histórico & Memória</h3>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
@@ -471,10 +432,43 @@
       <div id="memoryFullBox" class="chat-box" style="flex:1; min-height:60px; overflow-y:auto; margin-top:4px;"></div>
     </div>
 
-    <!-- ===== INFO ===== -->
+    <!-- IMAGENS (GERADAS) -->
+    <div id="imagens" class="tab" style="display:none; flex-direction:column; height:100%;">
+      <h3 style="color:#0ff; margin-bottom:4px;">📸 Imagens Geradas</h3>
+      <button onclick="carregarImagens()" class="secondary" style="margin:4px 0;">🔄 Atualizar</button>
+      <div id="imagensBox" class="chat-box" style="flex:1; overflow-y:auto;"></div>
+    </div>
+
+    <!-- COMPROVATIVO -->
+    <div id="comprovativo" class="tab" style="display:none; flex-direction:column; height:100%;">
+      <h3 style="color:#0ff; margin-bottom:4px;">📎 Enviar Comprovativo</h3>
+      <p style="color:#aaa; font-size:14px;">Envie o comprovativo de pagamento (M-Pesa/e-Mola) para confirmação manual.</p>
+      <input type="file" id="comprovativoInput" accept="image/*" style="margin:8px 0;">
+      <input id="comprovativoUser" type="text" placeholder="Seu número de telefone" style="margin:4px 0; padding:8px 12px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; color:#fff; font-size:16px;">
+      <button onclick="uploadComprovativo()">📤 Enviar</button>
+      <div id="comprovativoBox" class="chat-box" style="flex:1; min-height:60px; margin-top:8px;"></div>
+    </div>
+
+    <!-- PAINEL DONO -->
+    <div id="painel" class="tab" style="display:none; flex-direction:column; height:100%;">
+      <h3 style="color:#0ff; margin-bottom:4px;">📊 Painel do Dono</h3>
+      <div id="painelBox" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+        <div class="painel-card"><div class="numero" id="statUtilizadores">0</div><div class="descricao">Utilizadores</div></div>
+        <div class="painel-card"><div class="numero" id="statAssinantes">0</div><div class="descricao">Assinantes Ativos</div></div>
+        <div class="painel-card"><div class="numero" id="statConversas">0</div><div class="descricao">Conversas</div></div>
+        <div class="painel-card"><div class="numero" id="statPagamentos">0</div><div class="descricao">Pagamentos</div></div>
+      </div>
+      <button onclick="carregarPainel()" class="secondary">🔄 Atualizar</button>
+      <div style="margin-top:8px;">
+        <h4 style="color:#aaa;">👥 Utilizadores Registados</h4>
+        <div id="listaUtilizadores" class="chat-box" style="flex:1; min-height:100px; overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- INFO -->
     <div id="info" class="tab" style="display:none; flex-direction:column; height:100%;">
       <div class="info-content">
-        <img src="1782235162514.jpg" alt="Dono Supremo">
+        <img src="info-dono.jpg" alt="Dono Supremo" style="width:90px; height:90px; border-radius:50%; border:3px solid #0ff; box-shadow:0 0 30px rgba(0,255,255,0.3); object-fit:cover;">
         <h2>👑 Sebastião Benesson Janasse</h2>
         <p>Dono Supremo do VagasBot. Esta ferramenta ajuda moçambicanos a encontrar emprego, gerir documentos e muito mais.</p>
         <div style="width:100%; max-width:400px; margin-top:8px;">
@@ -497,7 +491,7 @@
     // CONFIGURAÇÕES
     // ============================================================
     const API_URL = 'https://vagasbot-web-api.onrender.com';
-    const USER = '879306034'; // número do dono
+    const USER = '879306034';
     const DONO_TELEFONE = '879306034';
     let modeloIA = 'openrouter';
     let idiomaAtual = 'pt';
@@ -518,11 +512,9 @@
         btn.classList.add('active');
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(btn.dataset.tab).classList.add('active');
-        // Se for a aba de histórico, carrega os dados
-        if (btn.dataset.tab === 'history-memory') {
-          loadFullHistory();
-          loadMemoryFull();
-        }
+        if (btn.dataset.tab === 'history-memory') { loadFullHistory(); loadMemoryFull(); }
+        if (btn.dataset.tab === 'imagens') carregarImagens();
+        if (btn.dataset.tab === 'painel') carregarPainel();
       });
     });
 
@@ -607,42 +599,28 @@
       const lower = msg.toLowerCase();
       if (lower.startsWith('vagas')) {
         const partes = lower.split(' ');
-        let cidade = null;
-        let area = null;
+        let cidade = null, area = null;
         if (partes.length > 1) {
           const filtro = partes.slice(1).join(' ');
           const cidades = ['maputo', 'beira', 'nampula', 'pemba', 'tete', 'quelimane', 'chimoio', 'xai-xai'];
-          if (cidades.some(c => filtro.includes(c))) {
-            cidade = filtro;
-          } else {
-            area = filtro;
-          }
+          if (cidades.some(c => filtro.includes(c))) cidade = filtro;
+          else area = filtro;
         }
         await buscarVagas(cidade, area);
         return;
       }
-
       if (lower === 'ajuda' || lower === '?') {
-        addMessage('📋 Comandos:\n• vagas – lista todas as vagas\n• vagas [cidade] – filtra por cidade\n• vagas [área] – filtra por área\n• assinar – planos premium\n• verificar – estado da assinatura', 'bot');
+        addMessage('📋 Comandos: vagas, vagas [cidade], assinar, verificar, ajuda', 'bot');
         return;
       }
+      if (lower === 'assinar') { document.querySelector('[data-tab="payment"]').click(); addMessage('💳 Vá para a aba Pagamento.', 'bot'); return; }
+      if (lower === 'verificar') { await verificarAcesso(); return; }
 
-      if (lower === 'assinar') {
-        document.querySelector('[data-tab="payment"]').click();
-        addMessage('💳 Vá para a aba "Pagamento" e escolha o plano.', 'bot');
-        return;
-      }
-
-      if (lower === 'verificar') {
-        await verificarAcesso();
-        return;
-      }
-
-      // TRIAL: apenas se não for dono
+      // TRIAL
       if (!isDono) {
         if (!assinanteAtivo) {
           if (tentativas >= 2) {
-            addMessage('🔒 Atingiu o limite de 2 respostas grátis. Envie "assinar" para ter acesso ilimitado.', 'bot');
+            addMessage('🔒 Limite de 2 respostas grátis. Envie "assinar".', 'bot');
             return;
           }
           tentativas++;
@@ -652,18 +630,12 @@
 
       const contexto = historicoConversa.slice(-6).map(m => `${m.role === 'user' ? 'Usuário' : 'Vaga'}: ${m.content}`).join('\n');
       const promptCompleto = contexto ? `${contexto}\nUsuário: ${msg}` : msg;
-
       addMessage('⏳ A pensar...', 'bot');
       try {
         const resp = await fetch(`${API_URL}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: promptCompleto,
-            user: USER,
-            modelo: modeloIA,
-            idioma: idiomaAtual
-          })
+          body: JSON.stringify({ prompt: promptCompleto, user: USER, modelo: modeloIA, idioma: idiomaAtual })
         });
         const data = await resp.json();
         const box = document.getElementById('chatBox');
@@ -680,9 +652,7 @@
     }
 
     document.getElementById('sendBtn').addEventListener('click', enviarMensagem);
-    document.getElementById('prompt').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') enviarMensagem();
-    });
+    document.getElementById('prompt').addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensagem(); });
 
     // ============================================================
     // BUSCAR VAGAS
@@ -693,33 +663,40 @@
         const payload = {};
         if (cidade) payload.cidade = cidade;
         if (area) payload.area = area;
-
         const resp = await fetch(`${API_URL}/vagas`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
         const data = await resp.json();
-
         const box = document.getElementById('chatBox');
         const last = box.lastElementChild;
         if (last && last.textContent.includes('A buscar vagas')) last.remove();
-
-        if (!data.success || data.total === 0) {
-          addMessage('😕 Nenhuma vaga encontrada.', 'bot');
-          return;
-        }
-
+        if (!data.success || data.total === 0) { addMessage('😕 Nenhuma vaga encontrada.', 'bot'); return; }
         let filtro = '';
         if (cidade) filtro = ` em ${cidade}`;
         else if (area) filtro = ` na área ${area}`;
         addMessage(`📌 *Vagas${filtro}* – ${data.total} encontradas`, 'bot');
-
         data.vagas.forEach(v => {
-          const texto = `• ${v.titulo} – ${v.cidade} – ${v.salario || 'A combinar'}` +
-            (v.beneficio ? `\n   Benefícios: ${v.beneficio}` : '');
+          const texto = `• ${v.titulo} – ${v.cidade} – ${v.salario || 'A combinar'}` + (v.beneficio ? `\n   Benefícios: ${v.beneficio}` : '');
           addMessage(texto, 'bot');
         });
+        // Gerar imagem automaticamente para atrair clientes
+        if (data.total > 0) {
+          const descricao = `Vagas disponíveis em ${cidade || 'Moçambique'} - ${data.total} oportunidades`;
+          addMessage('🎨 A gerar imagem ilustrativa...', 'bot');
+          try {
+            const respImg = await fetch(`${API_URL}/gerar-imagem`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user: USER, descricao })
+            });
+            const imgData = await respImg.json();
+            if (imgData.success) {
+              addMessage(`📸 Imagem gerada: <a href="${imgData.url}" target="_blank" style="color:#0ff;">Ver imagem</a>`, 'bot');
+            }
+          } catch (e) { console.warn('Erro ao gerar imagem automática:', e); }
+        }
       } catch (e) {
         const box = document.getElementById('chatBox');
         const last = box.lastElementChild;
@@ -744,18 +721,9 @@
         const box = document.getElementById('chatBox');
         const last = box.lastElementChild;
         if (last && last.textContent.includes('A verificar')) last.remove();
-
-        if (data.dono) {
-          isDono = true;
-          assinanteAtivo = true;
-          addMessage('👑 Olá, Dono Supremo! Tens acesso vitalício a todas as funcionalidades.', 'bot');
-        } else if (data.assinante) {
-          assinanteAtivo = true;
-          addMessage(`✅ Assinatura ativa! Faltam ${data.diasRestantes} dias.`, 'bot');
-        } else {
-          assinanteAtivo = false;
-          addMessage('🔒 Não tens assinatura ativa. Vai a "Pagamento" para assinar.', 'bot');
-        }
+        if (data.dono) { isDono = true; assinanteAtivo = true; addMessage('👑 Olá, Dono Supremo! Acesso vitalício.', 'bot'); }
+        else if (data.assinante) { assinanteAtivo = true; addMessage(`✅ Assinatura ativa! Faltam ${data.diasRestantes} dias.`, 'bot'); }
+        else { assinanteAtivo = false; addMessage('🔒 Não tens assinatura ativa. Envie "assinar".', 'bot'); }
       } catch (e) {
         const box = document.getElementById('chatBox');
         const last = box.lastElementChild;
@@ -766,32 +734,22 @@
     }
 
     // ============================================================
-    // VOZ SUAVE
+    // VOZ
     // ============================================================
     function falar(texto, elementoBotao) {
-      if (!('speechSynthesis' in window)) {
-        alert('Seu navegador não suporta leitura em voz alta.');
-        return;
-      }
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-      }
-
+      if (!('speechSynthesis' in window)) { alert('Seu navegador não suporta leitura em voz alta.'); return; }
+      if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
       const textoLimpo = texto.replace(/<[^>]*>/g, '').trim();
       if (!textoLimpo) return;
-
       const langMap = { 'pt-BR': 'pt-BR', 'pt-PT': 'pt-PT', 'en-US': 'en-US' };
       const lang = langMap[vozSelecionada] || 'pt-BR';
-
       let voices = window.speechSynthesis.getVoices();
       if (voices.length === 0) {
         window.speechSynthesis.onvoiceschanged = () => {
           voices = window.speechSynthesis.getVoices();
           reproduzirVoz(textoLimpo, elementoBotao, voices, lang);
         };
-      } else {
-        reproduzirVoz(textoLimpo, elementoBotao, voices, lang);
-      }
+      } else { reproduzirVoz(textoLimpo, elementoBotao, voices, lang); }
     }
 
     function reproduzirVoz(texto, elementoBotao, voices, lang) {
@@ -799,58 +757,22 @@
       utterance.lang = lang;
       utterance.rate = 0.85;
       utterance.pitch = 1.0;
-
-      const vozPreferida = voices.find(v =>
-        v.lang.startsWith(lang) &&
-        (v.name.toLowerCase().includes('google') ||
-         v.name.toLowerCase().includes('microsoft') ||
-         v.name.toLowerCase().includes('samantha') ||
-         v.name.toLowerCase().includes('maria') ||
-         v.name.toLowerCase().includes('joanna') ||
-         v.name.toLowerCase().includes('female'))
-      );
+      const vozPreferida = voices.find(v => v.lang.startsWith(lang) && (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('microsoft') || v.name.toLowerCase().includes('samantha') || v.name.toLowerCase().includes('maria') || v.name.toLowerCase().includes('joanna') || v.name.toLowerCase().includes('female')));
       if (vozPreferida) utterance.voice = vozPreferida;
-
-      if (elementoBotao) {
-        elementoBotao.classList.add('playing');
-        elementoBotao.textContent = '🔊';
-        document.getElementById('stopAudioBtn').style.display = 'inline-block';
-      }
-
-      utterance.onend = () => {
-        if (elementoBotao) {
-          elementoBotao.classList.remove('playing');
-          elementoBotao.textContent = '🔊';
-        }
-        document.getElementById('stopAudioBtn').style.display = 'none';
-      };
-
-      utterance.onerror = (e) => {
-        console.error('Erro na voz:', e);
-        if (elementoBotao) {
-          elementoBotao.classList.remove('playing');
-          elementoBotao.textContent = '🔊';
-        }
-        document.getElementById('stopAudioBtn').style.display = 'none';
-        const fallback = new SpeechSynthesisUtterance(texto);
-        fallback.lang = lang;
-        window.speechSynthesis.speak(fallback);
-      };
-
+      if (elementoBotao) { elementoBotao.classList.add('playing'); elementoBotao.textContent = '🔊'; document.getElementById('stopAudioBtn').style.display = 'inline-block'; }
+      utterance.onend = () => { if (elementoBotao) { elementoBotao.classList.remove('playing'); elementoBotao.textContent = '🔊'; } document.getElementById('stopAudioBtn').style.display = 'none'; };
+      utterance.onerror = (e) => { console.error('Erro na voz:', e); if (elementoBotao) { elementoBotao.classList.remove('playing'); elementoBotao.textContent = '🔊'; } document.getElementById('stopAudioBtn').style.display = 'none'; const fallback = new SpeechSynthesisUtterance(texto); fallback.lang = lang; window.speechSynthesis.speak(fallback); };
       window.speechSynthesis.speak(utterance);
     }
 
     document.getElementById('stopAudioBtn').addEventListener('click', function() {
       if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
-      document.querySelectorAll('.btn-audio.playing').forEach(b => {
-        b.classList.remove('playing');
-        b.textContent = '🔊';
-      });
+      document.querySelectorAll('.btn-audio.playing').forEach(b => { b.classList.remove('playing'); b.textContent = '🔊'; });
       this.style.display = 'none';
     });
 
     // ============================================================
-    // HISTÓRICO COMPLETO (com pesquisa e filtros)
+    // HISTÓRICO COMPLETO
     // ============================================================
     async function loadFullHistory() {
       const box = document.getElementById('historyFullBox');
@@ -859,55 +781,28 @@
         const resp = await fetch(`${API_URL}/history`);
         const data = await resp.json();
         if (!data.success) throw new Error(data.error);
-
         const search = document.getElementById('searchHistory').value.toLowerCase();
         const filter = document.getElementById('filterHistory').value;
         let items = data.history;
-
         const now = new Date();
-        if (filter === 'today') {
-          items = items.filter(item => new Date(item.timestamp).toDateString() === now.toDateString());
-        } else if (filter === 'yesterday') {
-          const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
-          items = items.filter(item => new Date(item.timestamp).toDateString() === yesterday.toDateString());
-        } else if (filter === '7days') {
-          const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
-          items = items.filter(item => new Date(item.timestamp) >= weekAgo);
-        }
-
-        if (search) {
-          items = items.filter(item =>
-            item.message.toLowerCase().includes(search) ||
-            item.reply.toLowerCase().includes(search) ||
-            item.user.toLowerCase().includes(search)
-          );
-        }
-
+        if (filter === 'today') items = items.filter(item => new Date(item.timestamp).toDateString() === now.toDateString());
+        else if (filter === 'yesterday') { const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1); items = items.filter(item => new Date(item.timestamp).toDateString() === yesterday.toDateString()); }
+        else if (filter === '7days') { const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7); items = items.filter(item => new Date(item.timestamp) >= weekAgo); }
+        if (search) items = items.filter(item => item.message.toLowerCase().includes(search) || item.reply.toLowerCase().includes(search) || item.user.toLowerCase().includes(search));
         box.innerHTML = '';
-        if (items.length === 0) {
-          box.innerHTML = '<p>📭 Nenhuma conversa encontrada.</p>';
-          return;
-        }
+        if (items.length === 0) { box.innerHTML = '<p>📭 Nenhuma conversa encontrada.</p>'; return; }
         items.forEach(item => {
           const p = document.createElement('p');
           p.style.borderBottom = '1px solid #1a1a1a';
           p.style.padding = '6px 0';
-          p.innerHTML = `
-            <strong style="color:#0ff;">${item.user}</strong>
-            <span style="color:#666; font-size:12px; float:right;">${new Date(item.timestamp).toLocaleString()}</span><br>
-            <span style="color:#aaa;">💬 ${item.message}</span><br>
-            <span style="color:#ddd;">🤖 ${item.reply}</span>
-          `;
+          p.innerHTML = `<strong style="color:#0ff;">${item.user}</strong><span style="color:#666; font-size:12px; float:right;">${new Date(item.timestamp).toLocaleString()}</span><br><span style="color:#aaa;">💬 ${item.message}</span><br><span style="color:#ddd;">🤖 ${item.reply}</span>`;
           box.appendChild(p);
         });
-      } catch (e) {
-        box.innerHTML = '⚠️ Erro ao carregar histórico.';
-        console.error(e);
-      }
+      } catch (e) { box.innerHTML = '⚠️ Erro ao carregar histórico.'; console.error(e); }
     }
 
     // ============================================================
-    // MEMÓRIA (na aba de histórico)
+    // MEMÓRIA
     // ============================================================
     async function loadMemoryFull() {
       const box = document.getElementById('memoryFullBox');
@@ -917,10 +812,7 @@
         const data = await resp.json();
         if (!data.success) throw new Error(data.error);
         box.innerHTML = '';
-        if (data.memory.length === 0) {
-          box.innerHTML = '<p>🧠 Nenhuma memória guardada.</p>';
-          return;
-        }
+        if (data.memory.length === 0) { box.innerHTML = '<p>🧠 Nenhuma memória guardada.</p>'; return; }
         data.memory.forEach(item => {
           const p = document.createElement('p');
           p.style.borderBottom = '1px solid #1a1a1a';
@@ -928,10 +820,7 @@
           p.innerHTML = `<strong style="color:#0ff;">${item.key}</strong>: ${item.value}`;
           box.appendChild(p);
         });
-      } catch (e) {
-        box.innerHTML = '⚠️ Erro ao carregar memória.';
-        console.error(e);
-      }
+      } catch (e) { box.innerHTML = '⚠️ Erro ao carregar memória.'; console.error(e); }
     }
 
     async function saveMemoryFull() {
@@ -945,18 +834,138 @@
           body: JSON.stringify({ key, value })
         });
         const data = await resp.json();
+        if (data.success) { alert('✅ Memória salva!'); document.getElementById('memoryKeyFull').value = ''; document.getElementById('memoryValueFull').value = ''; loadMemoryFull(); }
+        else { alert('❌ Erro ao salvar.'); }
+      } catch (e) { alert('❌ Erro de rede.'); console.error(e); }
+    }
+
+    // ============================================================
+    // IMAGENS
+    // ============================================================
+    async function carregarImagens() {
+      const box = document.getElementById('imagensBox');
+      box.innerHTML = '⏳ Carregando...';
+      try {
+        const resp = await fetch(`${API_URL}/imagens-geradas`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error);
+        box.innerHTML = '';
+        if (data.imagens.length === 0) { box.innerHTML = '<p>📸 Nenhuma imagem gerada ainda.</p>'; return; }
+        data.imagens.forEach(img => {
+          const div = document.createElement('div');
+          div.style.borderBottom = '1px solid #1a1a1a';
+          div.style.padding = '8px 0';
+          div.innerHTML = `<strong style="color:#0ff;">${img.user}</strong><br><span style="color:#aaa;">${img.descricao || 'Sem descrição'}</span><br><a href="${img.url}" target="_blank" style="color:#0ff;">Ver imagem</a><br><span style="color:#666; font-size:12px;">${new Date(img.data_geracao).toLocaleString()}</span>`;
+          box.appendChild(div);
+        });
+      } catch (e) { box.innerHTML = '⚠️ Erro ao carregar imagens.'; console.error(e); }
+    }
+
+    async function gerarImagemChat() {
+      const descricao = prompt('✏️ Descreva a imagem que deseja gerar:');
+      if (!descricao) return;
+      addMessage('⏳ A gerar imagem...', 'bot');
+      try {
+        const resp = await fetch(`${API_URL}/gerar-imagem`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: USER, descricao })
+        });
+        const data = await resp.json();
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A gerar imagem')) last.remove();
         if (data.success) {
-          alert('✅ Memória salva!');
-          document.getElementById('memoryKeyFull').value = '';
-          document.getElementById('memoryValueFull').value = '';
-          loadMemoryFull();
+          addMessage(`📸 Imagem gerada: <a href="${data.url}" target="_blank" style="color:#0ff;">Ver imagem</a>`, 'bot');
         } else {
-          alert('❌ Erro ao salvar.');
+          addMessage('⚠️ Erro ao gerar imagem.', 'bot');
         }
       } catch (e) {
-        alert('❌ Erro de rede.');
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A gerar imagem')) last.remove();
+        addMessage('⚠️ Erro ao gerar imagem.', 'bot');
         console.error(e);
       }
+    }
+
+    // ============================================================
+    // COMPROVATIVO
+    // ============================================================
+    async function uploadComprovativo() {
+      const input = document.getElementById('comprovativoInput');
+      const user = document.getElementById('comprovativoUser').value.trim();
+      if (!input.files || !input.files[0]) return alert('Seleccione uma imagem.');
+      if (!user) return alert('Digite o seu número de telefone.');
+      const formData = new FormData();
+      formData.append('comprovativo', input.files[0]);
+      formData.append('user', user);
+      const box = document.getElementById('comprovativoBox');
+      box.innerHTML = '⏳ A enviar...';
+      try {
+        const resp = await fetch(`${API_URL}/upload-comprovativo`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await resp.json();
+        if (data.success) {
+          box.innerHTML = `<p style="color:#0f0;">✅ ${data.message}</p><p>📎 Ficheiro: ${data.filename}</p><button onclick="confirmarComprovativo('${user}','${data.filename}')" style="margin-top:8px;">✅ Confirmar</button>`;
+        } else {
+          box.innerHTML = `<p style="color:#f44;">❌ ${data.message || 'Erro no upload.'}</p>`;
+        }
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro de rede.';
+        console.error(e);
+      }
+    }
+
+    async function confirmarComprovativo(user, filename) {
+      try {
+        const resp = await fetch(`${API_URL}/confirmar-comprovativo`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, filename })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          alert('✅ Comprovativo confirmado! Assinatura ativada.');
+          document.getElementById('comprovativoBox').innerHTML = `<p style="color:#0f0;">✅ Comprovativo confirmado!</p>`;
+        } else {
+          alert('❌ Erro ao confirmar.');
+        }
+      } catch (e) { alert('❌ Erro de rede.'); console.error(e); }
+    }
+
+    // ============================================================
+    // PAINEL DONO
+    // ============================================================
+    async function carregarPainel() {
+      try {
+        const resp = await fetch(`${API_URL}/painel-dono`);
+        const data = await resp.json();
+        if (data.success) {
+          document.getElementById('statUtilizadores').textContent = data.estatisticas.utilizadores || 0;
+          document.getElementById('statAssinantes').textContent = data.estatisticas.assinantes_ativos || 0;
+          document.getElementById('statConversas').textContent = data.estatisticas.conversas || 0;
+          document.getElementById('statPagamentos').textContent = data.estatisticas.pagamentos || 0;
+        }
+        // Carregar lista de utilizadores
+        const respUsers = await fetch(`${API_URL}/utilizadores`);
+        const dataUsers = await respUsers.json();
+        const box = document.getElementById('listaUtilizadores');
+        if (dataUsers.success && dataUsers.utilizadores.length > 0) {
+          box.innerHTML = '';
+          dataUsers.utilizadores.forEach(u => {
+            const p = document.createElement('p');
+            p.style.borderBottom = '1px solid #1a1a1a';
+            p.style.padding = '4px 0';
+            p.innerHTML = `<strong style="color:#0ff;">${u.telefone}</strong> - ${u.nome || 'Anónimo'} (${u.area || 'N/A'})<br><span style="color:#666; font-size:12px;">Registo: ${new Date(u.data_registo).toLocaleString()}</span>`;
+            box.appendChild(p);
+          });
+        } else {
+          box.innerHTML = '<p>📭 Nenhum utilizador registado.</p>';
+        }
+      } catch (e) { console.error('Erro no painel:', e); }
     }
 
     // ============================================================
@@ -967,29 +976,19 @@
       if (!phone) return alert('Digite o número Movitel.');
       const box = document.getElementById('paymentBox');
       box.innerHTML = '⏳ Processando...';
-
       try {
         const resp = await fetch(`${API_URL}/criar-pagamento-paysuite`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            telefone: phone,
-            amount: valorSelecionado
-          })
+          body: JSON.stringify({ telefone: phone, amount: valorSelecionado })
         });
         const data = await resp.json();
         if (data.success && data.payment_url) {
           window.open(data.payment_url, '_blank');
-          box.innerHTML = `
-            <p style="color:#0ff;">🔗 A página de pagamento foi aberta.</p>
-            <p style="color:#aaa;">Após a confirmação, a assinatura será ativada automaticamente.</p>
-          `;
+          box.innerHTML = `<p style="color:#0ff;">🔗 A página de pagamento foi aberta.</p><p style="color:#aaa;">Após a confirmação, a assinatura será ativada automaticamente.</p>`;
           return;
         }
-      } catch (e) {
-        console.warn('PaySuite falhou, usando simulação local:', e.message);
-      }
-
+      } catch (e) { console.warn('PaySuite falhou, usando simulação local:', e.message); }
       try {
         const resp = await fetch(`${API_URL}/payment`, {
           method: 'POST',
@@ -998,11 +997,7 @@
         });
         const data = await resp.json();
         if (data.success) {
-          box.innerHTML = `
-            <p style="color:#0f0;">✅ ${data.message}</p>
-            <p style="color:#aaa;">📱 Número: ${phone}</p>
-            <p style="color:#888; font-size:12px;">🔒 Transacção: ${data.transactionId || 'N/A'}</p>
-          `;
+          box.innerHTML = `<p style="color:#0f0;">✅ ${data.message}</p><p style="color:#aaa;">📱 Número: ${phone}</p><p style="color:#888; font-size:12px;">🔒 Transacção: ${data.transactionId || 'N/A'}</p>`;
         } else {
           box.innerHTML = `<p style="color:#f44;">❌ ${data.message || 'Erro no pagamento.'}</p>`;
         }
@@ -1023,26 +1018,15 @@
         const data = await resp.json();
         if (!data.success) throw new Error(data.error);
         box.innerHTML = '';
-        if (data.history.length === 0) {
-          box.innerHTML = '<p>📭 Nenhum pagamento registado.</p>';
-          return;
-        }
+        if (data.history.length === 0) { box.innerHTML = '<p>📭 Nenhum pagamento registado.</p>'; return; }
         data.history.forEach(item => {
           const p = document.createElement('p');
           p.style.borderBottom = '1px solid #1a1a1a';
           p.style.padding = '6px 0';
-          p.innerHTML = `
-            <strong style="color:#0ff;">${item.user}</strong><br>
-            💰 ${item.transactionId} - <span style="color:#0f0;">${item.status}</span><br>
-            📅 ${item.plano} - ${new Date(item.dataAtivacao).toLocaleDateString()} até ${new Date(item.dataExpiracao).toLocaleDateString()}<br>
-            <span style="color:#666; font-size:12px;">${new Date(item.timestamp).toLocaleString()}</span>
-          `;
+          p.innerHTML = `<strong style="color:#0ff;">${item.user}</strong><br>💰 ${item.transactionId} - <span style="color:#0f0;">${item.status}</span><br>📅 ${item.plano} - ${new Date(item.dataAtivacao).toLocaleDateString()} até ${new Date(item.dataExpiracao).toLocaleDateString()}<br><span style="color:#666; font-size:12px;">${new Date(item.timestamp).toLocaleString()}</span>`;
           box.appendChild(p);
         });
-      } catch (e) {
-        box.innerHTML = '⚠️ Erro ao carregar histórico.';
-        console.error(e);
-      }
+      } catch (e) { box.innerHTML = '⚠️ Erro ao carregar histórico.'; console.error(e); }
     }
 
     // ============================================================
@@ -1053,10 +1037,10 @@
       if (!content) return;
       addMessage('⏳ A gerar PDF...', 'bot');
       try {
-        const resp = await fetch(`${API_URL}/generate-pdf`, {
+        const resp = await fetch(`${API_URL}/gerar-pdf`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user: USER, content })
+          body: JSON.stringify({ user: USER, tipo: 'documento', conteudo: content })
         });
         const data = await resp.json();
         const box = document.getElementById('chatBox');
@@ -1064,6 +1048,9 @@
         if (last && last.textContent.includes('A gerar PDF')) last.remove();
         addMessage(data.success ? `✅ ${data.message} (${data.file})` : `❌ ${data.message}`, 'bot');
       } catch (e) {
+        const box = document.getElementById('chatBox');
+        const last = box.lastElementChild;
+        if (last && last.textContent.includes('A gerar PDF')) last.remove();
         addMessage('⚠️ Erro ao gerar PDF.', 'bot');
         console.error(e);
       }
@@ -1092,6 +1079,9 @@
           if (last && last.textContent.includes('A enviar foto')) last.remove();
           addMessage(data.success ? `✅ ${data.message} (${data.file})` : `❌ ${data.message}`, 'bot');
         } catch (e) {
+          const box = document.getElementById('chatBox');
+          const last = box.lastElementChild;
+          if (last && last.textContent.includes('A enviar foto')) last.remove();
           addMessage('⚠️ Erro no upload.', 'bot');
           console.error(e);
         }
@@ -1107,11 +1097,9 @@
     addMessage('📌 Comandos: "vagas", "vagas Maputo", "ajuda", "assinar", "verificar"', 'bot');
     addMessage('🎁 Tens 2 respostas grátis (se não fores o dono).', 'bot');
     addMessage('🔊 Voz suave ativa. Altere no seletor "👩"', 'bot');
+    addMessage('📸 O bot pode gerar imagens para atrair clientes!', 'bot');
 
-    // Verifica o estado do dono ao carregar
     setTimeout(verificarAcesso, 1000);
-
-    // Carregar histórico e memória quando a aba for acedida (já tratado no evento de clique)
   </script>
 
 </body>
