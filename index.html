@@ -339,6 +339,15 @@
     }
     .step .desc strong { color: #0ff; }
 
+    /* ===== ESTILOS PARA HISTÓRICO ===== */
+    #searchHistory, #filterHistory {
+      font-size: 16px !important;
+    }
+    #historyFullBox p, #memoryFullBox p {
+      padding: 6px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
     @media (max-width: 480px) {
       body { font-size: 18px !important; }
       header { font-size: 26px !important; padding: 4px; }
@@ -359,6 +368,7 @@
       .info-content h2 { font-size: 20px !important; }
       .info-content p { font-size: 16px !important; }
       .step .desc { font-size: 15px !important; }
+      #searchHistory, #filterHistory { font-size: 14px !important; }
     }
   </style>
 </head>
@@ -369,12 +379,14 @@
   <nav id="navTabs">
     <button class="active" data-tab="chat">💬 Chat</button>
     <button data-tab="payment">💳 Pagamento</button>
-    <button data-tab="payment-history">📜 Histórico</button>
+    <button data-tab="payment-history">📜 Pag. Hist.</button>
+    <button data-tab="history-memory">📚 Histórico</button>
     <button data-tab="info">ℹ️ Info</button>
   </nav>
 
   <div class="app-container">
 
+    <!-- ===== CHAT ===== -->
     <div id="chat" class="tab active">
       <div class="chat-banner">
         <img src="sbj_bot.png" alt="Banner VagasBot">
@@ -407,6 +419,7 @@
       </div>
     </div>
 
+    <!-- ===== PAGAMENTO ===== -->
     <div id="payment" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff; margin-bottom:4px;">💳 Escolha o plano</h3>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin:4px 0;">
@@ -428,12 +441,37 @@
       <div id="paymentBox" class="chat-box" style="flex:1; min-height:60px;"></div>
     </div>
 
+    <!-- ===== HISTÓRICO DE PAGAMENTOS ===== -->
     <div id="payment-history" class="tab" style="display:none; flex-direction:column; height:100%;">
       <h3 style="color:#0ff;">📜 Histórico de Pagamentos</h3>
       <button onclick="loadPaymentHistory()" class="secondary" style="margin:4px 0;">🔄 Atualizar</button>
       <div id="historyPaymentBox" class="chat-box" style="flex:1; min-height:80px;"></div>
     </div>
 
+    <!-- ===== HISTÓRICO E MEMÓRIA (NOVO) ===== -->
+    <div id="history-memory" class="tab" style="display:none; flex-direction:column; height:100%;">
+      <h3 style="color:#0ff; margin-bottom:4px;">📚 Histórico & Memória</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+        <input id="searchHistory" type="text" placeholder="🔍 Pesquisar conversas..." style="flex:1; padding:8px 12px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; color:#fff; font-size:16px;">
+        <select id="filterHistory" style="padding:8px 12px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; color:#fff; font-size:16px;">
+          <option value="all">Todos</option>
+          <option value="today">Hoje</option>
+          <option value="yesterday">Ontem</option>
+          <option value="7days">Últimos 7 dias</option>
+        </select>
+        <button onclick="loadFullHistory()" class="secondary" style="padding:8px 16px;">🔄 Atualizar</button>
+      </div>
+      <div id="historyFullBox" class="chat-box" style="flex:1; min-height:80px; overflow-y:auto;"></div>
+      <h4 style="color:#aaa; margin-top:6px;">🧠 Memória (chave-valor)</h4>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <input id="memoryKeyFull" type="text" placeholder="Chave" style="flex:1; padding:8px 12px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; color:#fff; font-size:16px;">
+        <input id="memoryValueFull" type="text" placeholder="Valor" style="flex:2; padding:8px 12px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; color:#fff; font-size:16px;">
+        <button onclick="saveMemoryFull()" style="padding:8px 16px;">💾 Salvar</button>
+      </div>
+      <div id="memoryFullBox" class="chat-box" style="flex:1; min-height:60px; overflow-y:auto; margin-top:4px;"></div>
+    </div>
+
+    <!-- ===== INFO ===== -->
     <div id="info" class="tab" style="display:none; flex-direction:column; height:100%;">
       <div class="info-content">
         <img src="1782235162514.jpg" alt="Dono Supremo">
@@ -480,6 +518,11 @@
         btn.classList.add('active');
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(btn.dataset.tab).classList.add('active');
+        // Se for a aba de histórico, carrega os dados
+        if (btn.dataset.tab === 'history-memory') {
+          loadFullHistory();
+          loadMemoryFull();
+        }
       });
     });
 
@@ -723,7 +766,7 @@
     }
 
     // ============================================================
-    // VOZ SUAVE (com seleção PT-PT, PT-BR, EN)
+    // VOZ SUAVE
     // ============================================================
     function falar(texto, elementoBotao) {
       if (!('speechSynthesis' in window)) {
@@ -754,10 +797,9 @@
     function reproduzirVoz(texto, elementoBotao, voices, lang) {
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = lang;
-      utterance.rate = 0.85; // mais lento e suave
+      utterance.rate = 0.85;
       utterance.pitch = 1.0;
 
-      // Prioriza vozes mais naturais e suaves (Google, Microsoft, Apple)
       const vozPreferida = voices.find(v =>
         v.lang.startsWith(lang) &&
         (v.name.toLowerCase().includes('google') ||
@@ -790,7 +832,6 @@
           elementoBotao.textContent = '🔊';
         }
         document.getElementById('stopAudioBtn').style.display = 'none';
-        // Fallback simples
         const fallback = new SpeechSynthesisUtterance(texto);
         fallback.lang = lang;
         window.speechSynthesis.speak(fallback);
@@ -807,6 +848,116 @@
       });
       this.style.display = 'none';
     });
+
+    // ============================================================
+    // HISTÓRICO COMPLETO (com pesquisa e filtros)
+    // ============================================================
+    async function loadFullHistory() {
+      const box = document.getElementById('historyFullBox');
+      box.innerHTML = '⏳ Carregando...';
+      try {
+        const resp = await fetch(`${API_URL}/history`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error);
+
+        const search = document.getElementById('searchHistory').value.toLowerCase();
+        const filter = document.getElementById('filterHistory').value;
+        let items = data.history;
+
+        const now = new Date();
+        if (filter === 'today') {
+          items = items.filter(item => new Date(item.timestamp).toDateString() === now.toDateString());
+        } else if (filter === 'yesterday') {
+          const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
+          items = items.filter(item => new Date(item.timestamp).toDateString() === yesterday.toDateString());
+        } else if (filter === '7days') {
+          const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+          items = items.filter(item => new Date(item.timestamp) >= weekAgo);
+        }
+
+        if (search) {
+          items = items.filter(item =>
+            item.message.toLowerCase().includes(search) ||
+            item.reply.toLowerCase().includes(search) ||
+            item.user.toLowerCase().includes(search)
+          );
+        }
+
+        box.innerHTML = '';
+        if (items.length === 0) {
+          box.innerHTML = '<p>📭 Nenhuma conversa encontrada.</p>';
+          return;
+        }
+        items.forEach(item => {
+          const p = document.createElement('p');
+          p.style.borderBottom = '1px solid #1a1a1a';
+          p.style.padding = '6px 0';
+          p.innerHTML = `
+            <strong style="color:#0ff;">${item.user}</strong>
+            <span style="color:#666; font-size:12px; float:right;">${new Date(item.timestamp).toLocaleString()}</span><br>
+            <span style="color:#aaa;">💬 ${item.message}</span><br>
+            <span style="color:#ddd;">🤖 ${item.reply}</span>
+          `;
+          box.appendChild(p);
+        });
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro ao carregar histórico.';
+        console.error(e);
+      }
+    }
+
+    // ============================================================
+    // MEMÓRIA (na aba de histórico)
+    // ============================================================
+    async function loadMemoryFull() {
+      const box = document.getElementById('memoryFullBox');
+      box.innerHTML = '⏳ Carregando...';
+      try {
+        const resp = await fetch(`${API_URL}/memory`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error);
+        box.innerHTML = '';
+        if (data.memory.length === 0) {
+          box.innerHTML = '<p>🧠 Nenhuma memória guardada.</p>';
+          return;
+        }
+        data.memory.forEach(item => {
+          const p = document.createElement('p');
+          p.style.borderBottom = '1px solid #1a1a1a';
+          p.style.padding = '4px 0';
+          p.innerHTML = `<strong style="color:#0ff;">${item.key}</strong>: ${item.value}`;
+          box.appendChild(p);
+        });
+      } catch (e) {
+        box.innerHTML = '⚠️ Erro ao carregar memória.';
+        console.error(e);
+      }
+    }
+
+    async function saveMemoryFull() {
+      const key = document.getElementById('memoryKeyFull').value.trim();
+      const value = document.getElementById('memoryValueFull').value.trim();
+      if (!key || !value) return alert('Preencha chave e valor.');
+      try {
+        const resp = await fetch(`${API_URL}/memory`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key, value })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          alert('✅ Memória salva!');
+          document.getElementById('memoryKeyFull').value = '';
+          document.getElementById('memoryValueFull').value = '';
+          loadMemoryFull();
+        } else {
+          alert('❌ Erro ao salvar.');
+        }
+      } catch (e) {
+        alert('❌ Erro de rede.');
+        console.error(e);
+      }
+    }
 
     // ============================================================
     // PAGAMENTO
@@ -959,6 +1110,8 @@
 
     // Verifica o estado do dono ao carregar
     setTimeout(verificarAcesso, 1000);
+
+    // Carregar histórico e memória quando a aba for acedida (já tratado no evento de clique)
   </script>
 
 </body>
