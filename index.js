@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use(express.static("uploads"));
+app.use(express.static(".")); // serve ficheiros da raiz (dono.png, info-dono.jpg)
 
 // ============================================================
 // VARIÁVEIS DE AMBIENTE
@@ -414,7 +415,7 @@ app.post("/registar-utilizador", (req, res) => {
 app.get("/utilizadores", (req, res) => {
   db.all("SELECT * FROM utilizadores ORDER BY data_registo DESC", [], (err, rows) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
-    res.json({ success: true, utilzadores: rows });
+    res.json({ success: true, utilizadores: rows });
   });
 });
 
