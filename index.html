@@ -1,26 +1,86 @@
-html
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VagasBot</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>VagasBot Neon</title>
+  <style>
+    body { background:#0d0d0d; color:#fff; font-family:Segoe UI; margin:0; }
+    header { text-align:center; padding:20px; font-size:28px; color:#0ff; text-shadow:0 0 10px #0ff; }
+    nav { display:flex; justify-content:center; background:#222; }
+    nav button { flex:1; padding:15px; border:none; background:#222; color:#0ff; cursor:pointer; }
+    nav button:hover { background:#0ff; color:#000; }
+    .tab { display:none; padding:20px; }
+    .active { display:block; }
+    #chatBox,#historyBox,#memoryBox,#paymentBox,#pdfBox,#photoBox,#imageBox,#infoBox { background:#111; border-radius:10px; padding:20px; height:300px; overflow-y:auto; box-shadow:0 0 15px #0ff; }
+    #ownerPhoto { width:120px; border-radius:50%; border:3px solid #0ff; margin-bottom:15px; }
+    #whatsappBtn { position:fixed; bottom:20px; right:20px; background:#25D366; color:#fff; border:none; border-radius:50%; width:60px; height:60px; font-size:28px; cursor:pointer; box-shadow:0 0 10px #000; }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>VagasBot - Assistente de Empregos</h1>
-    </header>
-    <main id="chat-area">
-        <div id="messages"></div>
-        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
-        <button id="send-button">Enviar</button>
-        <button id="voice-input">🎤</button>
-    </main>
-    <footer>
-        <p>Contacte-nos via <a href="https://wa.me/yourwhatsappnumber">WhatsApp</a></p>
-    </footer>
-    <script src="index.js"></script>
-</body>
-</html>
-`
+  <header>⚡ VagasBot Neon ⚡</header>
+  <nav>
+    <button onclick="showTab('chat')">💬 Chat</button>
+    <button onclick="showTab('history')">📜 Histórico</button>
+    <button onclick="showTab('memory')">🧠 Memória</button>
+    <button onclick="showTab('payment')">💳 Pagamento</button>
+    <button onclick="showTab('pdf')">📄 PDF</button>
+    <button onclick="showTab('photo')">🖼️ Fotos</button>
+    <button onclick="showTab('image')">🎨 Imagens</button>
+    <button onclick="showTab('info')">ℹ️ Como Funciona</button>
+  </nav>
+
+  <!-- Chat -->
+  <div id="chat" class="tab active">
+    <div id="chatBox"></div>
+    <input id="prompt" type="text" placeholder="Mensagem...">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+
+  <!-- Histórico -->
+  <div id="history" class="tab">
+    <div id="historyBox"></div>
+    <button onclick="loadHistory()">Atualizar Histórico</button>
+  </div>
+
+  <!-- Memória -->
+  <div id="memory" class="tab">
+    <div id="memoryBox"></div>
+    <button onclick="loadMemory()">Ver Memória</button>
+  </div>
+
+  <!-- Pagamento -->
+  <div id="payment" class="tab">
+    <h2>Assinatura Premium</h2>
+    <input id="phone" type="text" placeholder="Número Movitel">
+    <button onclick="startPayment()">💳 Pagar</button>
+    <div id="paymentBox"></div>
+  </div>
+
+  <!-- PDF -->
+  <div id="pdf" class="tab">
+    <h2>Gerar PDF (Pago)</h2>
+    <textarea id="pdfContent" placeholder="Conteúdo do PDF"></textarea>
+    <button onclick="generatePDF()">Gerar PDF</button>
+    <div id="pdfBox"></div>
+  </div>
+
+  <!-- Fotos -->
+  <div id="photo" class="tab">
+    <h2>Upload de Foto (Grátis)</h2>
+    <input type="file" id="photoInput">
+    <button onclick="uploadPhoto()">Enviar Foto</button>
+    <div id="photoBox"></div>
+  </div>
+
+  <!-- Imagens -->
+  <div id="image" class="tab">
+    <h2>Gerar Imagem (Pago)</h2>
+    <input id="imageDesc" type="text" placeholder="Descrição da imagem">
+    <button onclick="generateImage()">Gerar Imagem</button>
+    <div id="imageBox"></div>
+  </div>
+
+  <!-- Informações -->
+  <div id="info" class="tab">
+    <img id="ownerPhoto" src="dono.png" alt="Foto do Dono Supremo">
+    <h2>Bem-vindo, Sebastião Benesson Janassetmltml
