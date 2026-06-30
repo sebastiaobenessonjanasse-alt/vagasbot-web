@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use(express.static("uploads"));
-app.use(express.static(".")); // serve ficheiros da raiz (dono.png, info-dono.jpg)
+app.use(express.static("."));
 
 // ============================================================
 // VARIÁVEIS DE AMBIENTE
